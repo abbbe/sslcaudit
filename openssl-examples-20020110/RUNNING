@@ -1,0 +1,98 @@
+RUNNING THE EXAMPLE PROGRAMS
+
+There are five example programs:
+
+wclient	    -- a simple web client emulator
+wserver	    -- a simple web server emulator
+wclient2    -- a version of wclient with some extra options
+	       including setting the cipher suite and 
+	       session caching.
+wserver2    -- a version of wserver2 with some extra options
+	       including setting the cipher suite, client
+	       authentication, rehandshake, and session caching.
+sclient	    -- a simple client program that echos from the keyboard
+	       to the server and vice versa. sclient is a simple
+	       model of a terminal client such as Telnet.
+
+WCLIENT/WCLIENT2
+wclient and wclient2 connect to the server of choice and issue
+an HTTP GET request for the root of the server (e.g. 
+what you would get if you went to http://www.example.com/).
+They print the response to the screen (without checking it)
+and then shut down.
+
+The client expects the server's certificate to be rooted in a CA found
+in the file 'root.pem'. The client's key and certificate must be in
+'client.pem'. An appropriate set of these files is included with the
+distribution.
+
+wclient accepts the following command line flags:
+
+	-h <host>     connect to <host> (default is localhost)
+	-p <port>     connect to <port> (default is 4433)
+	-i	      don't require the server to present a
+		      certificate. This is insecure but is
+		      useful for testing.
+
+wclient2 accepts all the wclient flags as well as:
+	-a <ciphers>  restrict the cipher list to <ciphers>
+		      <ciphers> is a colon-separated list.
+		      do 'openssl ciphers' for a list of supported
+		      ciphers
+    
+        -r	      after the initial handshake, hang up and
+		      reconnect, attempting to resume the session
+
+SCLIENT
+sclient connects to the server and then forwards data between the
+client's keyboard and the server and the server and the client's
+screen. This is useful for debugging and as a simple remote access
+client. sclient accepts the -h, -p, -i, and -a flags.
+
+WSERVER/WSERVER2
+wserver and wserver2 are mock HTTP servers. They read data from
+the client until they encounter a pair of CRLFs. They then
+return a canned HTTP response. No attempt is made to actually
+examine the content of the client's request. A separate process
+is forked for each client unless the '-n' flag is used (with
+wserver2) thus allowing concurrent support for multiple clients.
+
+The server expects its certificate to be rooted in a CA found in the
+file 'root.pem'. The server's key and certificate must be in
+'server.pem'. An appropriate set of these files is included with
+the distribution.
+
+wserver accepts no command line flags. It listens on port 4433.
+
+wserver2 accepts the following command line flags:
+	 
+	-c	      request (but don't require) certificate based
+		      client authentication
+        -C	      require certificate based client authentication.
+	-x	      after the client has sent its request, force
+		      a rehandshake requiring certificate based client
+		      authentication. This emulates a server which
+		      only requires client authentication for a proper
+		      subset of its content.
+	-a <ciphers>  restrict the cipher list to <ciphers>
+		      <ciphers> is a colon-separated list.
+		      do 'openssl ciphers' for a list of supported
+		      ciphers
+        -n	      don't fork a new process for each client.
+		      The -n flag allows you to demonstrate session
+		      resumption with the server, but at the cost
+		      of not serving concurrent clients. If you
+		      use 'wclient2 -r' with 'wserver' it will
+		      still work but you won't get session resumption.
+
+BUGS
+wclient generates an error if you attempt to use wserver2 with the
+-x flag. Use wclient2. This bug will not be fixed.
+
+wserver generates an error if you attempt to use wclient2 with the
+-r flag. Use wserver2. This bug will not be fixed.
+
+These programs were originally designed to run under Linux and
+therefore depend on /dev/random for their randomness. A future 
+version will include an option for other sources of randomness.
+
