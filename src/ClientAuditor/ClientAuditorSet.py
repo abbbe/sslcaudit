@@ -1,5 +1,8 @@
-class ClientAuditorProfileSet(object):
-    '''A class containing a set of client audit profiles.'''
+class ClientAuditorSet(object):
+    '''
+    This is a base class for sets of client auditors.
+    '''
+
     def __init__(self, profiles):
         self.profiles = profiles
 

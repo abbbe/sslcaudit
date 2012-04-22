@@ -1,7 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="0a262045-b9f4-4e07-9951-df427a8c22d6" name="Default" comment="" />
+    <list default="true" id="0a262045-b9f4-4e07-9951-df427a8c22d6" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ClientAuditor/ClientAuditorServer.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ClientAuditor/ConnectionHandler.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyClientAuditor.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyClientAuditorSet.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ClientAuditor/SSL/SSLClientAuditorSet.py" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/src/ClientAuditor/SessionHandler.py" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyProfile.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyProfileSet.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/ClientAuditor/SSL/DefaultSSLProfileSet.py" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/src/ClientAuditor/TCPClientAuditor.py" afterPath="" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/ClientAuditor/ClientAuditorProfile.py" afterPath="$PROJECT_DIR$/src/ClientAuditor/ClientAuditor.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/ClientAuditor/ClientAuditorProfileSet.py" afterPath="$PROJECT_DIR$/src/ClientAuditor/ClientAuditorSet.py" />
+      <change type="MOVED" beforePath="$PROJECT_DIR$/src/ClientAuditor/SSL/SelfSignedSSLProfile.py" afterPath="$PROJECT_DIR$/src/ClientAuditor/SSL/SelfSignedSSLClientAuditor.py" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/src/Main.py" afterPath="$PROJECT_DIR$/src/Main.py" />
+    </list>
     <ignored path="sslcaudit.iws" />
     <ignored path=".idea/workspace.xml" />
     <option name="TRACKING_ENABLED" value="true" />
@@ -21,7 +37,99 @@
     <favorites_list name="sslcaudit" />
   </component>
   <component name="FileEditorManager">
-    <leaf />
+    <leaf>
+      <file leaf-file-name="ClientAuditorServer.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ClientAuditor/ClientAuditorServer.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="4" column="47" selection-start="164" selection-end="164" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ConnectionHandler.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ClientAuditor/ConnectionHandler.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="18" column="95" selection-start="820" selection-end="820" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SessionHandler.py" pinned="false" current="true" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/ClientAuditor/SessionHandler.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="26" column="0" selection-start="963" selection-end="963" vertical-scroll-proportion="0.7731398">
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DummyClientAuditorSet.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyClientAuditorSet.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="9" column="109" selection-start="404" selection-end="404" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#0#63#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="SelfSignedSSLClientAuditor.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ClientAuditor/SSL/SelfSignedSSLClientAuditor.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="4" column="17" selection-start="130" selection-end="130" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ClientAuditor.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ClientAuditor/ClientAuditor.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="2" column="89" selection-start="130" selection-end="130" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ClientAuditorSet.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ClientAuditor/ClientAuditorSet.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="9" column="0" selection-start="195" selection-end="195" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="Main.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/Main.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="11" column="0" selection-start="396" selection-end="396" vertical-scroll-proportion="0.0">
+              <folding>
+                <element signature="e#0#14#0" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="DummyClientAuditor.py" pinned="false" current="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyClientAuditor.py">
+          <provider selected="true" editor-type-id="text-editor">
+            <state line="18" column="39" selection-start="544" selection-end="544" vertical-scroll-proportion="0.0">
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+    </leaf>
   </component>
   <component name="FindManager">
     <FindUsagesManager>
@@ -34,22 +142,22 @@
   <component name="IdeDocumentHistory">
     <option name="changedFiles">
       <list>
-        <option value="$PROJECT_DIR$/src/SSLClientAuditor/DefaultSSLProfileSet.py" />
-        <option value="$PROJECT_DIR$/src/ClientAuditor/ClientAuditorProfileSet.py" />
-        <option value="$PROJECT_DIR$/src/SSLClientAuditor/DummyProfile.py" />
-        <option value="$PROJECT_DIR$/src/SSLClientAuditor/SelfSignedSSLProfile.py" />
-        <option value="$PROJECT_DIR$/src/ClientAuditor/DummyProfile.py" />
-        <option value="$PROJECT_DIR$/src/ClientAuditor/ClientAuditorProfile.py" />
-        <option value="$PROJECT_DIR$/src/ClientAuditor/SSLClientAuditor/DefaultSSLProfileSet.py" />
-        <option value="$PROJECT_DIR$/src/ClientAuditor/SSL/DefaultProfileSet.py" />
-        <option value="$PROJECT_DIR$/src/ClientAuditor/Dummy/__init__.py" />
-        <option value="$PROJECT_DIR$/src/ClientAuditor/SSL/__init__.py" />
         <option value="$PROJECT_DIR$/src/__init__.py" />
-        <option value="$PROJECT_DIR$/src/Main.py" />
-        <option value="$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyProfile.py" />
         <option value="$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyProfileSet.py" />
+        <option value="$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyProfile.py" />
+        <option value="$PROJECT_DIR$/src/ClientAuditor/ClientAuditorSet.py" />
+        <option value="$PROJECT_DIR$/src/ClientAuditor/ClientAuditor.py" />
         <option value="$PROJECT_DIR$/src/ClientAuditor/SSL/DefaultSSLProfileSet.py" />
+        <option value="$PROJECT_DIR$/src/ClientAuditor/SSL/SelfSignedSSLProfile.py" />
+        <option value="$PROJECT_DIR$/src/ClientAuditor/SSL/SSLClientAuditorSet.py" />
         <option value="$PROJECT_DIR$/src/ClientAuditor/TCPClientAuditor.py" />
+        <option value="$PROJECT_DIR$/src/ClientAuditor/Server.py" />
+        <option value="$PROJECT_DIR$/src/ClientAuditor/ClientAuditorServer.py" />
+        <option value="$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyClientAuditorSet.py" />
+        <option value="$PROJECT_DIR$/src/Main.py" />
+        <option value="$PROJECT_DIR$/src/ClientAuditor/ConnectionHandler.py" />
+        <option value="$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyClientAuditor.py" />
+        <option value="$PROJECT_DIR$/src/ClientAuditor/SessionHandler.py" />
       </list>
     </option>
   </component>
@@ -103,17 +211,97 @@
               <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
             </PATH_ELEMENT>
           </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sslcaudit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sslcaudit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sslcaudit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sslcaudit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sslcaudit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sslcaudit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ClientAuditor" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
+          <PATH>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sslcaudit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.ProjectViewProjectNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="sslcaudit" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="src" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="ClientAuditor" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+            <PATH_ELEMENT>
+              <option name="myItemId" value="Dummy" />
+              <option name="myItemType" value="com.intellij.ide.projectView.impl.nodes.PsiDirectoryNode" />
+            </PATH_ELEMENT>
+          </PATH>
         </subPane>
       </pane>
     </panes>
   </component>
   <component name="PropertiesComponent">
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder0" value="0" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth0" value="231" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth1" value="249" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder3" value="3" />
     <property name="options.splitter.main.proportions" value="0.3" />
-    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder1" value="1" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeOrder2" value="2" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth0" value="230" />
+    <property name="options.lastSelected" value="settings.github" />
     <property name="recentsLimit" value="5" />
-    <property name="options.lastSelected" value="reference.settingsdialog.IDE.editor.colors.Font" />
-    <property name="options.searchVisible" value="true" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder1" value="1" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder0" value="0" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth2" value="256" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth3" value="1154" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatWidth3" value="1154" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth2" value="256" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_treeWidth1" value="250" />
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder2" value="2" />
+    <property name="FileHistory.git4idea.history.GitHistoryProvider_flatOrder3" value="3" />
     <property name="options.splitter.details.proportions" value="0.2" />
+    <property name="options.searchVisible" value="true" />
   </component>
   <component name="PyConsoleOptionsProvider">
     <option name="myPythonConsoleState">
@@ -245,14 +433,14 @@
       <window_info id="Data Sources" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Changes" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.54057145" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.54" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="true" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.17005348" sideWeight="0.67085713" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.165625" sideWeight="0.6711111" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.32914287" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
-      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32914287" sideWeight="0.5005348" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" weight="0.3288889" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.32" sideWeight="0.49572194" order="-1" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -330,29 +518,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/Main.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="11" column="0" selection-start="369" selection-end="369" vertical-scroll-proportion="0.0">
-          <folding>
-            <element signature="e#0#14#0" expanded="true" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/ClientAuditorProfile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="0" column="23" selection-start="6" selection-end="23" vertical-scroll-proportion="0.0">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/ClientAuditorProfileSet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="7" column="0" selection-start="232" selection-end="232" vertical-scroll-proportion="0.31362006">
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/src/ClientAuditor/SSL/__init__.py">
       <provider selected="true" editor-type-id="text-editor">
         <state line="0" column="0" selection-start="0" selection-end="0" vertical-scroll-proportion="0.0">
@@ -374,42 +539,85 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/SSL/SelfSignedSSLProfile.py">
+    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/SSL/SSLClientAuditorSet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="8" selection-start="185" selection-end="185" vertical-scroll-proportion="0.22401434">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyProfile.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="2" column="6" selection-start="98" selection-end="98" vertical-scroll-proportion="0.089605734">
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyProfileSet.py">
-      <provider selected="true" editor-type-id="text-editor">
-        <state line="5" column="47" selection-start="260" selection-end="260" vertical-scroll-proportion="0.22401434">
+        <state line="3" column="10" selection-start="163" selection-end="163" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#0#77#0" expanded="true" />
+            <element signature="e#0#63#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/SSL/DefaultSSLProfileSet.py">
+    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/SSL/SelfSignedSSLClientAuditor.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="8" column="0" selection-start="327" selection-end="327" vertical-scroll-proportion="0.0">
+        <state line="4" column="17" selection-start="130" selection-end="130" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/ClientAuditorSet.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="9" column="0" selection-start="195" selection-end="195" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/ClientAuditor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="2" column="89" selection-start="130" selection-end="130" vertical-scroll-proportion="0.0">
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/ClientAuditorServer.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="4" column="47" selection-start="164" selection-end="164" vertical-scroll-proportion="0.0">
           <folding>
-            <element signature="e#0#77#0" expanded="true" />
+            <element signature="e#0#14#0" expanded="true" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/TCPClientAuditor.py">
+    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyClientAuditorSet.py">
       <provider selected="true" editor-type-id="text-editor">
-        <state line="14" column="24" selection-start="571" selection-end="571" vertical-scroll-proportion="0.5878136">
+        <state line="9" column="109" selection-start="404" selection-end="404" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#0#63#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/Main.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="11" column="0" selection-start="396" selection-end="396" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/ConnectionHandler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="95" selection-start="820" selection-end="820" vertical-scroll-proportion="0.0">
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/Dummy/DummyClientAuditor.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="18" column="39" selection-start="544" selection-end="544" vertical-scroll-proportion="0.0">
           <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/ClientAuditor/SessionHandler.py">
+      <provider selected="true" editor-type-id="text-editor">
+        <state line="26" column="0" selection-start="963" selection-end="963" vertical-scroll-proportion="0.7731398">
+          <folding>
+            <element signature="e#0#14#0" expanded="true" />
+          </folding>
         </state>
       </provider>
     </entry>
