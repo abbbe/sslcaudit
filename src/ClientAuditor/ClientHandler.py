@@ -49,7 +49,7 @@ class ClientHandler(object):
             return
 
         # perform the audit
-        res = auditor.handle(sock)
+        res = auditor.handle(conn)
         logger.debug('auditing client %s [key %s] using auditor %s resulted in %s',
             conn.getpeername(), conn.get_client_id(), auditor, res)
         self.res_queue.put(res)

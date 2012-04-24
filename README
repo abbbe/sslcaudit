@@ -1,0 +1,30 @@
+There are several publicly available tools to audit security properties of SSL servers, but there appears to be no tool
+to automate security audit of client side software. The goal of this project is to fill this gap.
+
+Any distributed client-server system communicating over an untrusted network should be tested for resilience against
+MITM attacks. If handled with care, SSL protocol (for convenience we will use 'SSL' term to refer to both SSL and TLS
+protocols) is secure enough, but often enough software developers misuse the protocol, by mistake or for convenience.
+
+Typical security flaws include:
+    1. The client fails to validate server certificate and happily establishes connection to any SSL server.
+    2. The client validates CN of the server certificate, but accepts a self-signed server certificate.
+    3. The client fails to properly validates CA attributes in the chain of trust.
+    4. The client agrees to use protocol version susceptible to version / cipher downgrade attacks.
+    5. The client supports weak ciphers.
+
+Sslcaudit tool helps to make testing for these flaws easier. To use the tool a pentester needs to convince the client
+under test to establish a series of connection to the listener of sslcaudit. Sslcaudit plays the role of a rogue SSL
+server, trying different configurations of SSL server and records the outcome of the test.
+
+In sslcaudit 1.x we want to support XXX
+
+Example:
+
+ $ sslcaudit -d -p 8443 --server imaps.gmail.com:imaps --mitm-ca sslcaudit-gremwell-com.pem
+ Fingerprinting imaps.gmail.com:imaps
+ Listening on localhost:8443, SSLClientAuditorSet
+ 127.0.0.1:48326 (1/3): SelfSigned(CN=nonexistent.example.com) RESET
+ 127.0.0.1:48327 (2/3): SelfSigned(CN=imaps.gmail.com) RESET
+ 127.0.0.1:48329 (3/3): Signed(CN=imaps.gmail.com, CA=sslcaudit-gremwell-com.pem) RESET
+ 127.0.0.1:48329 (3/3): Signed(CN=imaps.gmail.com, CA=sslcaudit-gremwell-com.pem) RESET
+ 127.0.0.1:48330 DONE

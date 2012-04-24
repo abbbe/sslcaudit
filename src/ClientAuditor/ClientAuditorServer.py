@@ -1,10 +1,14 @@
 import logging
-from SocketServer import TCPServer
+from SocketServer import TCPServer, ThreadingMixIn
 from src.ClientAuditor.ConnectionHandler import ConnectionHandler
+from threading import Thread
+from Queue import Queue
+from src.ClientAuditor.ClientConnection import ClientConnection
+from src.ClientAuditor.ClientHandler import ClientHandler
 
 logger = logging.getLogger('ClientAuditorServer')
 
-class ClientAuditorServer(TCPServer):
+class ClientAuditorServer(ThreadingMixIn, TCPServer):
     '''
     This class extends TCP server to handle incoming connection from clients under test. Each
     client is expected to establish a number of connections to the server.
@@ -14,26 +18,43 @@ class ClientAuditorServer(TCPServer):
     client (defined by implementation of get_session_key() method).
     '''
 
-    def __init__(self, listen_on, auditor_set):
+    def __init__(self, listen_on, auditor_set, res_queue = None):
         # create TCP listener with SO_REUSE_ADDR socket option
         TCPServer.__init__(self, listen_on, ConnectionHandler, bind_and_activate=False)
+        self.daemon_threads = True
         self.allow_reuse_address = True
         self.server_bind()
         self.server_activate()
 
         self.listen_on = listen_on
-        self.sessions = {}
+        self.clients = {}
         self.auditor_set = auditor_set
 
-    def get_session_key(self, sock):
-        '''
-        This function returns a session key for a given socket. A key is used to distinguish
-        between different clients under test. In the current implementation we use client IP
-        address as a key.
-        '''
-        return sock.getpeername()[0]
+        if res_queue == None:
+            self.res_queue = Queue()
+        else:
+            self.res_queue = res_queue
+
+        self.thread = Thread(target=self.run)
+        self.thread.daemon = True
+
+    def finish_request(self, request, client_address):
+        # create new conn object and obtain client id
+        conn = ClientConnection(request, client_address)
+        client_id = conn.get_client_id()
+
+        # find or create a session handler
+        if not self.clients.has_key(client_id):
+            logger.debug("new client %s [id %s]", conn.getpeername(), client_id)
+            self.clients[client_id] = ClientHandler(client_id, self.auditor_set, self.res_queue)
+            # pass the request to the client handler
+        self.clients[client_id].handle(conn)
+
 
     def run(self):
         logger.debug("starting %s on %s using %s", self.__class__.__name__, self.listen_on, self.auditor_set)
         while True:
             self.handle_request()
+
+    def start(self):
+        self.thread.start()
