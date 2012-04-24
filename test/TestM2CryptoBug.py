@@ -27,14 +27,14 @@ class TestM2CryptoBug(unittest.TestCase):
         '''
         same as above, but move key generation code into another method
         '''
-        k = self._gen_key(do_assign = True)
+        k = self._gen_key(do_assign = False)
         self._save(k)
 
     def test_func_assign(self):
         '''
         same as above, but don't do assign pkey
         '''
-        k = self._gen_key(do_assign = False)
+        k = self._gen_key(do_assign = True)
         self._save(k)
 
     def _save(self, k):
