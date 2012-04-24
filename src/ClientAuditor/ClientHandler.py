@@ -17,10 +17,17 @@ class ClientAuditResult(object):
 
 class ClientHandler(object):
     '''
-    Holds information about the progress and the results of an audit of a single client. Gets created on the very first
-    connection from a client, and handles all subsequent connections from the same client.
-    For each connection it fetches a new auditor object from the set and uses it to test that connection.
-    When the set of auditors is exhausted, it pushes
+    Instances of this class hold information about the progress and the results of an audit of a single client.
+    Normally it gets instantiated on the very first connection from a client and same instance handles all subsequent
+    connections from the same client. For each connection it fetches a next auditor object from the auditor set and
+    uses it to test that connection. In the process it sends the following events into results queue:
+        * ClientConnectionAuditResultStart
+    When the set of auditors is exhausted, it pushes XXX.
+
+    Object states:
+        right after initialization: next_auditor = None, done = False
+        after first and subsequent connection: next_auditor = something, done = False
+        after set of auditors is exhausted: next_auditor = None, done = True
     '''
     logger = logging.getLogger('ClientHandler')
 
@@ -29,27 +36,33 @@ class ClientHandler(object):
         self.auditor_set_iterator = auditor_set.__iter__()
         self.result = ClientAuditResult(self.client_id)
         self.res_queue = res_queue
-        self.closed = False
 
-        self.res_queue.put(ClientConnectionAuditResultStart(client_id))
+        self.next_auditor = None
+        self.auditor_count = 0
+        self.done = False
 
     def handle(self, conn):
         '''
         This method is invoked when a new connection arrives.
         '''
-        if self.closed:
+        if self.done:
             self.logger.debug('no more tests for client conn %s', conn)
             return
 
-        # fetching next profile from the profile set
-        try:
-            auditor = self.auditor_set_iterator.next()
-        except StopIteration:
-            self.logger.debug('no more tests for client conn %s', conn)
-            self.close()
-            return
+        if self.next_auditor == None:
+            # this is a very first connection
+            try:
+                self.next_auditor = self.auditor_set_iterator.next()
+                self.auditor_count = self.auditor_count + 1
+                self.res_queue.put(ClientConnectionAuditResultStart(self.client_id))
+            except StopIteration:
+                self.logger.debug('no tests for client conn %s (iterator was empty)', conn)
+                self.res_queue.put(self.result)
+                self.done = True
+                return
 
         # test this client connection
+        auditor = self.next_auditor
         res = auditor.handle(conn)
 
         # log and record the results of the test
@@ -57,12 +70,13 @@ class ClientHandler(object):
         self.result.add(res)
         self.res_queue.put(res)
 
-    def close(self):
-        '''
-        This method is invoked when there are no more auditors left in the set.
-        This method is expected to deliver the result set back to the user of this class.
-        '''
-        if not self.closed:
+        # prefetch next auditor from the iterator, to check if this was the last one
+        try:
+            self.next_auditor = self.auditor_set_iterator.next()
+            self.auditor_count = self.auditor_count + 1
+        except StopIteration:
+            # it was the last auditor in the set
+            self.logger.debug('no more tests for client conn %s', conn)
             self.res_queue.put(ClientConnectionAuditResultEnd(self.client_id))
             self.res_queue.put(self.result)
-            self.closed = True
+            self.done = True

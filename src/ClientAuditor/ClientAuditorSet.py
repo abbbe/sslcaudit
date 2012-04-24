@@ -8,3 +8,6 @@ class ClientAuditorSet(object):
 
     def __iter__(self):
         return self.auditors.__iter__()
+
+    def len(self):
+        return len(self.auditors)

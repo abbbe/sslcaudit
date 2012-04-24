@@ -3,12 +3,13 @@ import unittest, time
 import logging
 from socket import socket
 from src.ClientAuditor.ClientAuditorServer import ClientAuditorServer
-from src.ClientAuditor.ClientConnectionAuditResult import ClientConnectionAuditResultEnd
+from src.ClientAuditor.ClientConnectionAuditResult import ClientConnectionAuditResultEnd, ClientConnectionAuditResultStart, ClientConnectionAuditResult
+from src.ClientAuditor.ClientHandler import ClientAuditResult
 from src.ClientAuditor.Dummy.DummyClientAuditorSet import DummyClientAuditorSet
 
 logging.basicConfig(level=logging.DEBUG)
 logging.getLogger('PlainTcpClient').setLevel(logging.INFO)
-logging.getLogger('TestClientAuditorServer').setLevel(logging.INFO)
+#logging.getLogger('TestClientAuditorServer').setLevel(logging.INFO)
 
 TEST_HOST = 'localhost'
 TEST_PORT = 9999
@@ -64,14 +65,23 @@ class TestClientAuditorServer(unittest.TestCase):
         plain_tcp_client.start()
         self.logger.debug('PlainTCPClient started')
 
-        while True:
+        got_result_start = 0
+        got_result = 0
+        got_result_end = 0
+        got_bulk_result = 0
+        while not (got_result_start == 1 and got_result == auditor_set.len() and got_result_end == 1 and got_bulk_result == 1):
             self.logger.debug('waiting for a result from the queue ...')
             res = server.res_queue.get(timeout=self.GETRESULT_TIMEOUT)
             self.logger.debug('got a result %s', res)
 
-            if isinstance(res, ClientConnectionAuditResultEnd):
-                self.logger.debug('got end-result, exiting')
-                break
+            if isinstance(res, ClientConnectionAuditResultStart):
+                got_result_start = got_result_start + 1
+            elif isinstance(res, ClientConnectionAuditResultEnd):
+                got_result_end = got_result_end + 1
+            elif isinstance(res, ClientConnectionAuditResult):
+                got_result = got_result + 1
+            elif isinstance(res, ClientAuditResult):
+                got_bulk_result = got_bulk_result + 1
 
         plain_tcp_client.stop()
 
