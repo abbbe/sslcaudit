@@ -1,8 +1,8 @@
-from src.ClientAuditor.ClientAuditor import ClientAuditor
+from src.ClientAuditor.ClientConnectionAuditor import ClientConnectionAuditor
 
 DEFAULT_X509_COMMON_NAME = "nonexistent.example.com"
 
-class SelfSignedSSLClientAuditor(ClientAuditor):
+class SelfSignedSSLClientConnectionAuditor(ClientConnectionAuditor):
     def __init__(self, x509_common_name=DEFAULT_X509_COMMON_NAME):
         self.x509_common_name = x509_common_name
 
