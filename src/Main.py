@@ -1,4 +1,4 @@
-import logging
+import logging, sys
 from optparse import OptionParser
 from threading import Thread
 from src.ClientAuditor.ClientAuditorServer import ClientAuditorServer
