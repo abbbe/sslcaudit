@@ -2,6 +2,7 @@ class ClientConnection(object):
     def __init__(self, sock, client_address):
         self.sock = sock
         self.client_address = client_address
+        self.sockname = self.sock.getsockname()
 
     def get_client_id(self):
         '''
@@ -11,4 +12,4 @@ class ClientConnection(object):
         return self.client_address[0]
 
     def __repr__(self):
-        return "%s [%s->%s]" % (self.get_client_id(), self.client_address, self.sock.getsockname())
+        return "%s [%s->%s]" % (self.get_client_id(), self.client_address, self.sockname)
