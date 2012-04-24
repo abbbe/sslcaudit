@@ -22,7 +22,10 @@ class ClientAuditorServer(ThreadingMixIn, TCPServer, Thread):
         TCPServer.__init__(self, listen_on, None, bind_and_activate=False)
         self.daemon_threads = True
         self.allow_reuse_address = True
-        self.server_bind()
+        try:
+            self.server_bind()
+        except Exception as ex:
+            raise Exception('Caught exception while binding to %s: %s' % (listen_on, ex))
         self.server_activate()
 
         # make the listener itself run in the separate thread
