@@ -1,6 +1,6 @@
 import logging
 from exceptions import StopIteration
-from src.ClientAuditor.ClientConnectionAuditResult import ClientConnectionAuditResultStart, ClientConnectionAuditResultEnd
+from src.ClientAuditor.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent
 
 class ClientAuditResult(object):
     '''
@@ -21,7 +21,7 @@ class ClientHandler(object):
     Normally it gets instantiated on the very first connection from a client and same instance handles all subsequent
     connections from the same client. For each connection it fetches a next auditor object from the auditor set and
     uses it to test that connection. In the process it sends the following events into results queue:
-        * ClientConnectionAuditResultStart
+        * ClientAuditStartEvent
     When the set of auditors is exhausted, it pushes XXX.
 
     Object states:
@@ -54,7 +54,7 @@ class ClientHandler(object):
             try:
                 self.next_auditor = self.auditor_set_iterator.next()
                 self.auditor_count = self.auditor_count + 1
-                self.res_queue.put(ClientConnectionAuditResultStart(self.client_id))
+                self.res_queue.put(ClientAuditStartEvent(self.next_auditor, self.client_id))
             except StopIteration:
                 self.logger.debug('no tests for client conn %s (iterator was empty)', conn)
                 self.res_queue.put(self.result)
@@ -62,11 +62,10 @@ class ClientHandler(object):
                 return
 
         # test this client connection
-        auditor = self.next_auditor
-        res = auditor.handle(conn)
+        res = self.next_auditor.handle(conn)
 
         # log and record the results of the test
-        self.logger.debug('testing client conn %s using %s resulted in %s', conn, auditor, res)
+        self.logger.debug('testing client conn %s using %s resulted in %s', conn, self.next_auditor, res)
         self.result.add(res)
         self.res_queue.put(res)
 
@@ -77,6 +76,6 @@ class ClientHandler(object):
         except StopIteration:
             # it was the last auditor in the set
             self.logger.debug('no more tests for client conn %s', conn)
-            self.res_queue.put(ClientConnectionAuditResultEnd(self.client_id))
+            self.res_queue.put(ClientAuditEndEvent(self.next_auditor, self.client_id))
             self.res_queue.put(self.result)
             self.done = True

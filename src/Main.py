@@ -2,6 +2,7 @@ import logging, sys
 from optparse import OptionParser
 from threading import Thread
 from src.ClientAuditor.ClientAuditorServer import ClientAuditorServer
+from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.ClientAuditor.ClientHandler import ClientAuditResult
 from src.ClientAuditor.Dummy.DummyClientAuditorSet import DummyClientAuditorSet
 from src.ClientAuditor.SSL.SSLClientAuditorSet import SSLClientAuditorSet
@@ -10,10 +11,9 @@ DEFAULT_PORT = 8443
 SSLCERT_MODULE_NAME = 'sslcert'
 DUMMY_MODULE_NAME = 'dummy'
 
-logging.basicConfig(level=logging.DEBUG)
-logger = logging.getLogger('Main')
-
 class Main(Thread):
+    logger = logging.getLogger('Main')
+
     def __init__(self, argv):
         Thread.__init__(self, target=self.run)
 
@@ -22,7 +22,7 @@ class Main(Thread):
         parser.add_option("-p", dest="listen_port", default=DEFAULT_PORT, help="Listening port")
         parser.add_option("-m", dest="module", default=SSLCERT_MODULE_NAME, help="Listening port")
         parser.add_option("-s", dest="server", help="Server host:port")
-        parser.add_option("-d", action='store_true', dest="debug", help="Enable debugging")
+        parser.add_option("-d", dest="debug_level", default=0, help="Debug level")
         parser.add_option("-n", dest="nclients", default=1, help="Number of clients to handle before quitting")
         (options, args) = parser.parse_args(argv)
 
@@ -31,10 +31,10 @@ class Main(Thread):
 
         self.options = options
 
-        if self.options.debug:
-            logging.basicConfig(level=logging.DEBUG)
-        else:
-            logging.basicConfig(level=logging.DEBUG) ## XXX INFO
+        logging.getLogger().setLevel(logging.INFO)
+        if self.options.debug_level > 0:
+            logging.getLogger('Main').setLevel(logging.DEBUG)
+            logging.getLogger('ClientAuditorServer').setLevel(logging.DEBUG)
 
         module_args = {}
         if self.options.server != None:
@@ -54,7 +54,8 @@ class Main(Thread):
         Thread.start(self)
 
     def handle_result(self, res):
-        pass
+        if isinstance(res, ClientConnectionAuditResult):
+            print res.client_id, res.auditor, res.details
 
     def run(self):
         '''
@@ -63,7 +64,7 @@ class Main(Thread):
         nresults = 0
         while nresults < self.options.nclients:
             res = self.server.res_queue.get()
-            logger.debug("got result %s", res)
+            self.logger.debug("got result %s", res)
             self.handle_result(res)
 
             if isinstance(res, ClientAuditResult):

@@ -11,5 +11,5 @@ class ClientConnection(object):
         '''
         return self.client_address[0]
 
-    def __repr__(self):
+    def __str__(self):
         return "%s [%s->%s]" % (self.get_client_id(), self.client_address, self.sockname)

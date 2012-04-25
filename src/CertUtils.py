@@ -1,30 +1,30 @@
+from tempfile import NamedTemporaryFile
 import  time
-from M2Crypto import EVP, RSA, X509, ASN1, SSL
+from M2Crypto import X509, ASN1, EVP, RSA, SSL, util
 
 DEFAULT_X509_CN = "nonexistent.gremwell.com"
 DEFAULT_X509_C = "BE"
 DEFAULT_X509_O = "Gremwell bvba"
 
-def dummy_callback():
-    '''
-    This function is used to pass to RSA key generator to prevent it from displaying its ugly progress bar.
-    '''
-    pass
+class CertAndKey(object):
+    def __init__(self, cert, cert_filename, key_filename):
+        self.cert = cert
+        self.cert_filename = cert_filename
+        self.key_filename = key_filename
 
-
-def mk_selfsigned_cert(version, serial_number, not_before, not_after, subj, bits, exts):
+def mk_selfsigned_certnkey(version, serial_number, not_before, not_after, subj, bits, exts):
     '''
     This function generates a self signed certificate with given attributes.
-    It returns the certificate and the private key.
+    It returns the certificate and the private key. Normally used internally only.
     '''
+
     exp = 65537 # hardcoded
-    hash = 'sha1' # hardcoded
+    hash = 'sha1' # XXX unused?
 
     # create a new keypair
+    rsa_keypair = RSA.gen_key(bits, exp, util.no_passphrase_callback)
     public_key = EVP.PKey()
-    rsa_keypair = RSA.gen_key(bits, exp, callback=dummy_callback)
     public_key.assign_rsa(rsa_keypair)
-    rsa_keypair = None #
 
     # create self-signed certificate
     cert = X509.X509()
@@ -39,10 +39,19 @@ def mk_selfsigned_cert(version, serial_number, not_before, not_after, subj, bits
 
     # sign
     cert.sign(public_key, hash)
-    return cert
 
+    cert_file = NamedTemporaryFile(delete=False)
+    cert_file.write(cert.as_text())
+    cert_file.write(cert.as_pem())
+    cert_file.close()
 
-def mk_simple_selfsigned_cert():
+    key_file = NamedTemporaryFile(delete=False)
+    rsa_keypair.save_key(key_file.name, None)
+    key_file.close()
+
+    return CertAndKey(cert, cert_file.name, key_file.name)
+
+def mk_simple_selfsigned_certnkey(cn = DEFAULT_X509_CN, country = DEFAULT_X509_C, org = DEFAULT_X509_O):
     '''
     This function creates a self-signed server certificate with:
      * default common name, organization, and country
@@ -50,9 +59,9 @@ def mk_simple_selfsigned_cert():
     It returns the certificate and the keypair.
     '''
     subj = X509.X509_Name()
-    subj.CN = DEFAULT_X509_CN
-    subj.C = DEFAULT_X509_C
-    subj.O = DEFAULT_X509_O
+    subj.CN = cn
+    subj.C = country
+    subj.O = org
 
     # maximum possible validity time frame
     now = long(time.time())
@@ -72,10 +81,10 @@ def mk_simple_selfsigned_cert():
     #ext = X509.new_extension('nsCertType', 'SSL Server')
     #exts.append(ext)
 
-    return mk_selfsigned_cert(2, 1, not_before, not_after, subj, 1024, exts)
+    return mk_selfsigned_certnkey(2, 1, not_before, not_after, subj, 1024, exts)
 
 
-def mk_selfsigned_replica_cert(orig_cert):
+def mk_selfsigned_replica_certnkey(orig_cert):
     '''
     This function creates a self-signed replica of the given certificate. It returns a tuple of certificate and
     Most of the fields of the original certificates are replicated:
@@ -100,14 +109,14 @@ def mk_selfsigned_replica_cert(orig_cert):
     for i in range(orig_cert.get_ext_count()):
         exts.append(orig_cert.get_ext_at(i))
 
-    return mk_selfsigned_cert(version, serial_number, not_before, not_after, subj, bits, exts)
+    return mk_selfsigned_certnkey(version, serial_number, not_before, not_after, subj, bits, exts)
 
 def grab_server_cert(host, port):
     '''
     This function connects to the specified server and grabs its certificate.
     '''
     # create context
-    ctx = SSL.Context()
+    ctx = SSL.Context() # XXX should we try different protocols here
     ctx.set_allow_unknown_ca(True)
     ctx.set_verify(SSL.verify_none, 0)
 
