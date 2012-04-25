@@ -1,4 +1,5 @@
 import logging
+import src
 
 logging.basicConfig()
 
@@ -7,10 +8,10 @@ import unittest
 from src.ClientAuditor.Dummy.DummyClientAuditorSet import DummyClientAuditorSet
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientAuditEndEvent, ClientAuditStartEvent, ClientConnectionAuditResult, PositiveAuditResult, NegativeAuditResult
 from src.ClientAuditor.ClientHandler import ClientAuditResult
-from src.Main import Main
+from src.Main import Main, SSLCERT_MODULE_NAME, DUMMY_MODULE_NAME
 
-from src.Test.SSLClient import NotVerifyingSSLClient, VerifyingSSLClient
-from src.Test.TCPClient import TCPClient
+from src.Test.SSLHammer import NotVerifyingSSLHammer, VerifyingSSLHammer
+from src.Test.TCPHammer import TCPHammer
 
 TEST_LISTENER_ADDR = 'localhost'
 TEST_LISTENER_BASEPORT = 10000
@@ -66,7 +67,7 @@ class TestMain(unittest.TestCase):
         self.main.handle_result = main__handle_result
 
         # create a client hammering our test listener
-        self.client = TCPClient(peer=(TEST_LISTENER_ADDR, port), nattempts=self.main.auditor_set.len())
+        self.client = TCPHammer(peer=(TEST_LISTENER_ADDR, port), nattempts=self.main.auditor_set.len())
 
         # start server and client
         self.main.start()
@@ -83,13 +84,17 @@ class TestMain(unittest.TestCase):
         self.assertEquals(self.nstray, 0)
 
     def test_sslcert_bad_client(self):
-        self.main_test('sslcert', TCPClient, [NegativeAuditResult])
+        '''
+        When plain TCP client connects, we can't tell
+        '''
+
+        self.main_test(SSLCERT_MODULE_NAME, TCPHammer, [NegativeAuditResult])
 
     def test_sslcert_notverifying_client(self):
-        self.main_test('sslcert', NotVerifyingSSLClient, [PositiveAuditResult])
+        self.main_test(SSLCERT_MODULE_NAME, NotVerifyingSSLHammer, [PositiveAuditResult])
 
     def test_sslcert_verifying_client(self):
-        self.main_test('sslcert', VerifyingSSLClient, [NegativeAuditResult])
+        self.main_test(SSLCERT_MODULE_NAME, VerifyingSSLHammer, [NegativeAuditResult])
 
     def main_test(self, module, client_class, expected_results, debug=0):
         '''

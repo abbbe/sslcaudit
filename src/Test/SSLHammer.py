@@ -1,9 +1,9 @@
 import M2Crypto
-from src.Test.TCPClient import TCPClient
+from src.Test.TCPHammer import TCPHammer
 
-class SSLClient(TCPClient):
+class SSLHammer(TCPHammer):
     def __init__(self, peer, nattempts, verify):
-        TCPClient.__init__(self, peer, nattempts)
+        TCPHammer.__init__(self, peer, nattempts)
         self.verify = verify
 
     def connect_l4(self, sock):
@@ -15,11 +15,11 @@ class SSLClient(TCPClient):
         ssl_conn.connect_ssl()
 
 
-class NotVerifyingSSLClient(SSLClient):
+class NotVerifyingSSLHammer(SSLHammer):
     def __init__(self, peer, nattempts):
-        SSLClient.__init__(self, peer, nattempts, verify=False)
+        SSLHammer.__init__(self, peer, nattempts, verify=False)
 
 
-class VerifyingSSLClient(SSLClient):
+class VerifyingSSLHammer(SSLHammer):
     def __init__(self, peer, nattempts):
-        SSLClient.__init__(self, peer, nattempts, verify=True)
+        SSLHammer.__init__(self, peer, nattempts, verify=True)
