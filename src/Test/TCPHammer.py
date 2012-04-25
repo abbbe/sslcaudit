@@ -13,7 +13,7 @@ class TCPHammer(Thread):
 
     RECONNECT_DELAY = 0.5
 
-    def __init__(self, peer, nattempts, delay=RECONNECT_DELAY):
+    def __init__(self, peer, nattempts):
         Thread.__init__(self, target=self.run)
         self.peer = peer
         self.nattempts = nattempts
