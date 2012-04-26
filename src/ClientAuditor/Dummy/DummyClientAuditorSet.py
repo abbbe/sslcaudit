@@ -3,7 +3,7 @@ from src.ClientAuditor.Dummy.DummyClientAuditor import DummyClientConnectionAudi
 
 class DummyClientAuditorSet(ClientAuditorSet):
     '''
-    This is a dummy profile set, containing only one dummy profile.
+    This is a dummy auditor set, containing only two dummy auditors.
     '''
     def __init__(self, _):
         auditors = [DummyClientConnectionAuditor(False), DummyClientConnectionAuditor(True)]

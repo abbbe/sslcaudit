@@ -1,12 +1,11 @@
 import logging
-import src
+from src.ClientAuditor.SSL import SSLClientAuditorSet
 
 logging.basicConfig()
 
 import unittest
 
-from src.ClientAuditor.Dummy.DummyClientAuditorSet import DummyClientAuditorSet
-from src.ClientAuditor.ClientConnectionAuditEvent import ClientAuditEndEvent, ClientAuditStartEvent, ClientConnectionAuditResult, PositiveAuditResult, NegativeAuditResult
+from src.ClientAuditor.ClientConnectionAuditEvent import ClientAuditEndEvent, ClientAuditStartEvent, ClientConnectionAuditResult
 from src.ClientAuditor.ClientHandler import ClientAuditResult
 from src.Main import Main, SSLCERT_MODULE_NAME, DUMMY_MODULE_NAME
 
@@ -83,17 +82,20 @@ class TestMain(unittest.TestCase):
         self.assertEquals(self.got_bulk_result, 1)
         self.assertEquals(self.nstray, 0)
 
-    def test_sslcert_bad_client(self):
+    def xtest_sslcert_bad_client(self):
         '''
         Plain TCP client has to cause UnexpectedEOF
         '''
-        self.main_test(SSLCERT_MODULE_NAME, TCPHammer, [NegativeAuditResult])
+        self.main_test(SSLCERT_MODULE_NAME, TCPHammer,
+            [ClientConnectionAuditResult.Negative('unexpected eof', SSLClientAuditorSet.UNKNOWN_CA)])
 
     def test_sslcert_notverifying_client(self):
-        self.main_test(SSLCERT_MODULE_NAME, NotVerifyingSSLHammer, [PositiveAuditResult])
+        self.main_test(SSLCERT_MODULE_NAME, NotVerifyingSSLHammer,
+            [ClientConnectionAuditResult.Negative(None, SSLClientAuditorSet.UNKNOWN_CA)])
 
     def test_sslcert_verifying_client(self):
-        self.main_test(SSLCERT_MODULE_NAME, VerifyingSSLHammer, [NegativeAuditResult])
+        self.main_test(SSLCERT_MODULE_NAME, VerifyingSSLHammer,
+            [ClientConnectionAuditResult.Positive(SSLClientAuditorSet.UNKNOWN_CA)])
 
     def main_test(self, module, client_class, expected_results, debug=0):
         '''
@@ -111,7 +113,7 @@ class TestMain(unittest.TestCase):
         def main__handle_result(res):
             self.orig_main__handle_result(res)
             if isinstance(res, ClientConnectionAuditResult):
-                self.actual_results.append(res.__class__)
+                self.actual_results.append(res.res)
         self.main.handle_result = main__handle_result
 
         # create a client hammering the listener

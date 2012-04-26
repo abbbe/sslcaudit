@@ -1,4 +1,4 @@
-from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult, PositiveAuditResult, NegativeAuditResult
+from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.ClientAuditor.ClientConnectionAuditor import  ClientConnectionAuditor
 
 class DummyClientConnectionAuditor(ClientConnectionAuditor):
@@ -11,6 +11,6 @@ class DummyClientConnectionAuditor(ClientConnectionAuditor):
 
     def handle(self, conn):
         if self.dummy_result:
-            return PositiveAuditResult(self, conn.get_client_id(), "kinda vulnerable to MITM")
+            return ClientConnectionAuditResult(self, conn.get_client_id(), 'all ok')
         else:
-            return NegativeAuditResult(self, conn.get_client_id(), "kinda not vulnerable to MITM")
+            return ClientConnectionAuditResult(self, conn.get_client_id(), 'not ok', 'all ok')
