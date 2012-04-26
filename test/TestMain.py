@@ -85,9 +85,8 @@ class TestMain(unittest.TestCase):
 
     def test_sslcert_bad_client(self):
         '''
-        When plain TCP client connects, we can't tell
+        Plain TCP client has to cause UnexpectedEOF
         '''
-
         self.main_test(SSLCERT_MODULE_NAME, TCPHammer, [NegativeAuditResult])
 
     def test_sslcert_notverifying_client(self):

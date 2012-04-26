@@ -1,30 +1,128 @@
-There are several publicly available tools to audit security properties of SSL servers, but there appears to be no tool
-to automate security audit of client side software. The goal of this project is to fill this gap.
+INTRODUCTION
 
-Any distributed client-server system communicating over an untrusted network should be tested for resilience against
-MITM attacks. If handled with care, SSL protocol (for convenience we will use 'SSL' term to refer to both SSL and TLS
-protocols) is secure enough, but often enough software developers misuse the protocol, by mistake or for convenience.
+Security properties and common implementation flaws in SSL/TLS servers are well understood and documented
+[WIKI-TLS, SCANIT-SSL, OWASP-TLS]. There is a testing guide [OWASP-TLS], a rating guide [SSL-RATING],
+and tools to automate the tests, such as [SSL-AUDIT].
 
-Typical security flaws include:
-    1. The client fails to validate server certificate and happily establishes connection to any SSL server.
-    2. The client validates CN of the server certificate, but accepts a self-signed server certificate.
-    3. The client fails to properly validates CA attributes in the chain of trust.
-    4. The client agrees to use protocol version susceptible to version / cipher downgrade attacks.
-    5. The client supports weak ciphers.
+When it comes to client security, things are less advanced. Till recently [SSL-SNIFF] attacking tool was probably the
+most interesting effort in this direction. (We don't consider [SSL-STRIP] which is a social-engineering attack tool).
+A recent Blackhat presentation [BH-SSL-TTRUST] focuses on security issues introduced by SSL-aware proxies, and contains
+a good overview of common implementation flaws. The authors of that presentation have published an online testing
+service [SSL-TEST] for web browsers.
 
-Sslcaudit tool helps to make testing for these flaws easier. To use the tool a pentester needs to convince the client
-under test to establish a series of connection to the listener of sslcaudit. Sslcaudit plays the role of a rogue SSL
-server, trying different configurations of SSL server and records the outcome of the test.
+The goal of this project is to develop a tool for off-line MITM testing of any SSL/TLS clients (not necessary HTTPS),
+suitable for professional use. The latter basically means decent evidence gathering and reporting functionality. Our
+objective is to make security audits of SSL clients (thick clients, mobile devices, appliances, etc) easier.
 
-In sslcaudit 1.x we want to support XXX
+WHAT WE TEST FOR
+
+As far server certificate validation is concerned, we have the following expectations from a secure implementation
+of SSL/TLS client:
+
+ C1. Reject self-signed certificates or not signed by a trusted CA
+ C2. Validate basic constraints of intermediate CAs
+ C3. Only accept server certificate with CN matching an intended destination
+ C4. Do not accept expired and revoked certificates
+ C5. Do not be fooled by NUL-character in CN
+
+In practice failure to implement C1, C2, or C3 is the most dangerous and allows a straightforward MITM attack.
+Testing for or exploitation of C4 has a prerequisite of attacker being able to obtain a legitimate, but expired
+or revoked certificate for the server or intermediate/root CA. Many SSL clients (especially embedded ones) don't
+have reliable clock source nor CRL/OSCP support which means C4-related checks are omitted by design. For R5 one
+needs a valid certificate with NUL-byte in CN, also rather difficult to obtain these days.
+
+Protocol-level security issues which might allow MITM:
+ P1. Do not support SSLv2 (version/cipher downgrade)
+ P2. Do not support SSL and TLS 1.0 (CBC attack)
+ P3. Do not support weak key exchange protocols, low key lengths, low ciphers strengths
+
+P1 leads to theoretical possibility of cipher downgrade attacks. To our knowledge practical exploitation is tricky, no
+free or commercial tool exist (XXX-TBC). P2 is reported to allow for cookie theft in web browsers, and has a prerequisite
+of an attacker being able to inject malicious JavaScript code into victim's browser [BS-BEAST]. As far as P3 is concerned,
+if strong ciphers are supported by the peers, the presence of weak ones is only exploitable via cipher downgrade attack (XXX-TBC).
+
+Other attacks include "SSL 3.0/TLS 1.0 renegotiation attack" [TLS-RENEG], but has no client-visible side effects,
+nothing to test for (XXX-TBC). Another related (but not SSL/TLS-specific) attack is [OSCP-ATTACK], not testing for it.
+
+Our goal for sslcaudit v1.0 is to assess C1-C3. Support for P1-P3 will be provided in v1.1. We will consider adding tests
+for testing C4 and C5 in the future versions.
+
+HOW THE TESTS ARE DONE
+
+Certificate generation options:
+
+  1. A certificate with hardcoded CN (nonexistent.gremwell.com). Can be disabled with --no-default-cn
+  2. A certificate with user-specified CN. To enable use --cn=CN
+  3. Fetch a certificate from user-specified SSL/TLS server and use it as a template. To enable use --server HOST:PORT
+  4. A user-supplied certificate. To enable use --cert=CERTFILE. Corresponding private key must be embedded into the certfile.
+
+Certificate signing options:
+  1. Self-signed. Default. To disable, specify --no-self-signed.
+  2. Signed by user-supplied certificate. Default if certificate is supplied with --cert option. To disable
+  use --no-cert-signed.
+  3. Signed by known good CA. To enable use --good-ca=CERTFILE
+
+The final certificates used for testing will be the product of these two sets of options. The only exception is #4 in
+the first set, which does not get signed at all but used as is.
+
+The outcome of each test can be:
+  * Test Positive: The client has established SSL connection, but it was expected to do so. Gives some assurance that the test setup ok.
+  * Test Error: The client has failed to establish SSL connection, but was supposed to. Indicates something is wrong with the test setup.
+  * Positive: The client has established SSL session. The client is vulnerable to MITM.
+  * Negative: SSL connection has failed with expected exception code. The client is not vulnerable to MITM.
+
+HOW TO USE THE TOOL
+
+To use sslcaudit, a pentester has to convince the client under test to establish a series of connection to the listener
+of sslcaudit. This can be done in number of ways which are outside of the scope of this document. Sslcaudit plays a role
+of a rogue SSL server, trying different certificates and loging the outcome of the tests. The outcome of the test is
+considered to be positive if SSL/TLS connection is fully established.
+
+ -d
+ -p TCPPORT
+ -l IPADDR
 
 Example:
 
- $ sslcaudit -d -p 8443 --server imaps.gmail.com:imaps --mitm-ca sslcaudit-gremwell-com.pem
- Fingerprinting imaps.gmail.com:imaps
- Listening on localhost:8443, SSLClientAuditorSet
- 127.0.0.1:48326 (1/3): SelfSigned(CN=nonexistent.example.com) RESET
- 127.0.0.1:48327 (2/3): SelfSigned(CN=imaps.gmail.com) RESET
- 127.0.0.1:48329 (3/3): Signed(CN=imaps.gmail.com, CA=sslcaudit-gremwell-com.pem) RESET
- 127.0.0.1:48329 (3/3): Signed(CN=imaps.gmail.com, CA=sslcaudit-gremwell-com.pem) RESET
- 127.0.0.1:48330 DONE
+ $ sslcaudit -d -p 8443 -server imaps.gmail.com:imaps --mitm-ca sslcaudit-gremwell-com.pem
+
+FUTURE
+
+ * Support protocol-level tests
+ * Develop SSL Client Rating scheme
+ * Support SSL server-side tests to allow end-to-end analysis of client-server communication
+ * Optionally run same test test several times, to detect random glitches
+ * Embedded HTTP server to automate testing of web browsers
+
+REFERENCES
+
+SSL/TLS security - the server side
+ [WIKI-TLS] http://en.wikipedia.org/wiki/Transport_Layer_Security
+ [SCANIT-SSL] http://www.scanit.be/uploads/ssl%20security%20in%20be%20-%2003-2008.pdf
+ [OWASP-TLS] https://www.owasp.org/index.php/Testing_for_SSL-TLS_%28OWASP-CM-001%29
+ [SSL-RATING] https://www.ssllabs.com/projects/rating-guide/index.html
+ [SSL-AUDIT] http://code.google.com/p/sslaudit/
+ [TLS-RENEG] http://www.g-sec.lu/practicaltls.pdf.
+
+SSL/TLS security - the client side
+ [SSL-SNIFF] http://www.thoughtcrime.org/software/sslsniff/
+ [SSL-STRIP] http://www.thoughtcrime.org/software/sslstrip/
+ [BH-SSL-STRIP] http://www.blackhat.com/presentations/bh-dc-09/Marlinspike/BlackHat-DC-09-Marlinspike-Defeating-SSL.pdf
+ [BH-SSL-TTRUST] https://media.blackhat.com/bh-eu-12/Jarmoc/bh-eu-12-Jarmoc-SSL_TLS_Interception-Slides.pdf
+ [SSL-TTRUST] http://www.secureworks.com/research/threats/transitive-trust/
+ [SSL-TEST] https://ssltest.offenseindepth.com/
+ [BS-BEAST] http://www.schneier.com/blog/archives/2011/09/man-in-the-midd_4.html
+ [OPERA-BEAST] http://my.opera.com/securitygroup/blog/2011/09/28/the-beast-ssl-tls-issue
+ [OSCP-ATTACK] http://www.thoughtcrime.org/papers/ocsp-attack.pdf
+
+IE5 SSL Spoofing vulnerability
+ [IE-SSL-CHAIN] http://www.thoughtcrime.org/ie-ssl-chain.txt
+ [BID-2737] http://www.securityfocus.com/bid/2737
+ [MS01-027] http://technet.microsoft.com/en-us/security/bulletin/ms01-027
+
+Multiple Vendor Invalid X.509 Certificate Chain Vulnerability
+ [BID-5410] http://www.securityfocus.com/bid/5410
+
+Apple iOS Data Security Certificate Chain Validation Security Vulnerability
+ [TWSL2011-007] https://www.trustwave.com/spiderlabs/advisories/TWSL2011-007.txt
+ [CVE-2011-0228] http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-0228

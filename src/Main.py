@@ -20,10 +20,18 @@ class Main(Thread):
         parser = OptionParser(usage="sslcaudit ", version="sslcaudit 0.1")
         parser.add_option("-l", dest="listen_addr", default='0.0.0.0', help="Listening port")
         parser.add_option("-p", dest="listen_port", default=DEFAULT_PORT, help="Listening port")
-        parser.add_option("-m", dest="module", default=SSLCERT_MODULE_NAME, help="Listening port")
-        parser.add_option("-s", dest="server", help="Server host:port")
+        parser.add_option("-m", dest="module", default=SSLCERT_MODULE_NAME, help="Audit module (sslcert by default)")
         parser.add_option("-d", dest="debug_level", default=0, help="Debug level")
         parser.add_option("-n", dest="nclients", default=1, help="Number of clients to handle before quitting")
+
+        parser.add_option("--no-default-cn", action="store_true", dest="no_default_cn", help=("Do not use default CN(%s)" % ('XXX')))
+        parser.add_option("--cn", dest="cn", help="")
+        parser.add_option("--server", dest="server", help="HOST:PORT to fetch the certificate from")
+        parser.add_option("--usercert", dest="usercert_file", help="A file with user-supplied certificate and private key")
+        parser.add_option("--no-self-signed", dest="no_self_signed", help="Don't try self-signed certificates")
+        parser.add_option("--no-usercert-signed", dest="no_usercert_signed", help="Do not sign server certificates with user-supplied one")
+        parser.add_option("--good-cacert", dest="good_cacert_file", help="A file with cert/key for known good CA, useful for testing sslcaudit itself")
+
         (options, args) = parser.parse_args(argv)
 
         if len(args) > 0:

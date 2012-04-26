@@ -14,16 +14,34 @@ class ClientConnectionAuditResult(ClientConnectionAuditEvent):
         ClientConnectionAuditEvent.__init__(self, auditor, client_id)
         self.details = details
 
+# ----------------------------------------------------------------------------------
 
 class PositiveAuditResult(ClientConnectionAuditResult):
-    def __init__(self, auditor, client_id, details):
-        ClientConnectionAuditResult.__init__(self, auditor, client_id, details)
+    '''
+    The client has established SSL session. The client is vulnerable to MITM.
+    '''
 
 
 class NegativeAuditResult(ClientConnectionAuditResult):
-    def __init__(self, auditor, client_id, details):
-        ClientConnectionAuditResult.__init__(self, auditor, client_id, details)
+    '''
+    SSL connection has failed with expected exception code. The client is not vulnerable to MITM.
+    '''
 
+
+class TestPositiveAuditResult(ClientConnectionAuditResult):
+    '''
+    The client has established SSL connection, but it was expected to do so.
+    Gives some assurance that the test setup ok.
+    '''
+
+
+class TestErrorAuditResult(ClientConnectionAuditResult):
+    '''
+    The client has failed to establish SSL connection, but was supposed to.
+    Indicates something is wrong with the test setup.
+    '''
+
+# ----------------------------------------------------------------------------------
 
 class ClientAuditStartEvent(ClientConnectionAuditEvent):
     pass
