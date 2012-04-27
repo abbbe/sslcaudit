@@ -6,10 +6,6 @@ class ClientConnectionAuditEvent(object):
     def __eq__(self, other):
         return self.__dict__ == other.__dict__
 
-    def __str__(self):
-        return str(self.__dict__)
-
-
 class ClientConnectionAuditResult(ClientConnectionAuditEvent):
     '''
     This is a base class for audit results returned by ClientConnectionAuditor.handle() method.
@@ -19,6 +15,9 @@ class ClientConnectionAuditResult(ClientConnectionAuditEvent):
     def __init__(self, auditor_id, client_id, audit_res):
         ClientConnectionAuditEvent.__init__(self, auditor_id, client_id)
         self.audit_res = audit_res
+
+    def __str__(self):
+        return "%s %s %s" % (self.client_id, self.auditor_id, self.audit_res)
 
 
 class AuditResult(object):
