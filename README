@@ -135,3 +135,8 @@ Multiple Vendor Invalid X.509 Certificate Chain Vulnerability
 Apple iOS Data Security Certificate Chain Validation Security Vulnerability
  [TWSL2011-007] https://www.trustwave.com/spiderlabs/advisories/TWSL2011-007.txt
  [CVE-2011-0228] http://cve.mitre.org/cgi-bin/cvename.cgi?name=CVE-2011-0228
+
+CONTACTS
+
+The tool is written by Alexandre Bezroutchko, abb@gremwell.com. Released under GPL terms.
+
