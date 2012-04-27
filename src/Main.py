@@ -11,7 +11,7 @@ from src.ClientAuditor.ClientAuditorServer import ClientAuditorServer
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.ClientAuditor.ClientHandler import ClientAuditResult
 from src.ClientAuditor.Dummy.DummyClientAuditorSet import DummyClientAuditorSet
-from src.ClientAuditor.SSL.SSLClientAuditorSet import SSLClientAuditorSet, DEFAULT_X509_SELFSIGNED_CERT_CN
+from src.ClientAuditor.SSL.SSLClientAuditorSet import SSLClientAuditorSet, DEFAULT_CN
 
 DEFAULT_PORT = 8443
 SSLCERT_MODULE_NAME = 'sslcert'
@@ -32,7 +32,7 @@ class Main(Thread):
         parser.add_option("-N", dest="test_name", help="User-specified name of the test")
 
         parser.add_option("--no-default-cn", action="store_true", default=False, dest="no_default_cn",
-            help=("Do not use default CN (%s)" % (DEFAULT_X509_SELFSIGNED_CERT_CN)))
+            help=("Do not use default CN (%s)" % (DEFAULT_CN)))
         parser.add_option("--cn", dest="cn",
             help="Use specified CN")
         parser.add_option("--server", dest="server",

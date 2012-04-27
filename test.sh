@@ -1,5 +1,5 @@
 #!/bin/sh -x
 
 for m in TestMainDummy TestMainSSL ; do
-	env PYTHONPATH="`dirname \"$0\"`" python test/$m.py -v
+	env PYTHONPATH="`dirname \"$0\"`" python test/$m.py
 done

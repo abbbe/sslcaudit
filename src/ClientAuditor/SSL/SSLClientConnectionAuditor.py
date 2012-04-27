@@ -28,16 +28,16 @@ class SSLClientConnectionAuditor(ClientConnectionAuditor):
             ssl_conn.setup_ssl()
             ssl_conn.accept_ssl()
 
-            actual_failure = None
+            actual_res = None
         except Exception as ex:
-            actual_failure = ex.message
+            actual_res = ex.message
 
         # report the result
-        if actual_failure == self.expect_failure:
+        if actual_res == self.expect_failure:
             # the test does not fail or fails as expected
             return ClientConnectionAuditResult(self.name, conn.get_client_id(),
-                PositiveAuditResult(actual_failure))
+                PositiveAuditResult(actual_res))
         else:
             # the test fails not like expected or does not fail while it was expected to
             return ClientConnectionAuditResult(self.name, conn.get_client_id(),
-                NegativeAuditResult(actual_failure, self.expect_failure))
+                NegativeAuditResult(actual_res, self.expect_failure))

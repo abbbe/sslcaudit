@@ -7,7 +7,7 @@ from src.CertFactory import CertFactory
 from src.ClientAuditor.ClientAuditorSet import ClientAuditorSet
 from src.ClientAuditor.SSL.SSLClientConnectionAuditor import SSLClientConnectionAuditor
 
-DEFAULT_X509_SELFSIGNED_CERT_CN = 'nonexistent.gremwell.com'
+DEFAULT_CN = 'nonexistent.gremwell.com'
 
 UNKNOWN_CA = 'tlsv1 alert unknown ca'
 UNEXPECTED_EOF = 'unexpected eof'
@@ -37,7 +37,6 @@ class SSLClientAuditorSet(ClientAuditorSet):
 
     def init_usercert(self):
         if self.options.cert_file != None:
-            description = 'user-supplied certificate'
             # expected to fail with invalid CA error
             certnkey = self.cert_factory.load_certnkey('huh', self.options.cert_file)
             expect_failure = "CN mismatch"
@@ -88,7 +87,7 @@ class SSLClientAuditorSet(ClientAuditorSet):
         '''
         if not self.options.no_default_cn:
             self._init_signedtests(
-                certname=('default_cn', signedby), cn=DEFAULT_X509_SELFSIGNED_CERT_CN, cacert_file=cacert_file,
+                certname=('default_cn', signedby), cn=DEFAULT_CN, cacert_file=cacert_file,
                 expect_cn_ok=False, expect_trust_ok=expect_trust_ok)
 
         if self.options.cn != None:
