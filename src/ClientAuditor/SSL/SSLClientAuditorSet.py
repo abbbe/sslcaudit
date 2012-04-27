@@ -25,11 +25,21 @@ class SSLClientAuditorSet(ClientAuditorSet):
             self.server_cert = None
 
         self.auditors = []
+        self.init_usercert()
         self.init_self_signed()
         self.init_usercert_signed()
         self.init_goodca_signed()
 
         ClientAuditorSet.__init__(self, self.auditors)
+
+    def init_usercert(self):
+        if self.options.cert_file != None:
+            description = 'user-supplied certificate'
+            # expected to fail with invalid CA error
+            certnkey = self.cert_factory.load_certnkey(self.name + '/usercert', self.options.cert_file)
+            expect_failure = "CN mismatch"
+            auditor = SSLClientConnectionAuditor('usercert', description, self.proto, certnkey, expect_failure=expect_failure)
+            self.auditors.append(auditor)
 
     def init_self_signed(self):
         '''

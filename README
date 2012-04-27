@@ -47,25 +47,31 @@ nothing to test for (XXX-TBC). Another related (but not SSL/TLS-specific) attack
 Our goal for sslcaudit v1.0 is to assess C1-C3. Support for P1-P3 will be provided in v1.1. We will consider adding tests
 for testing C4 and C5 in the future versions.
 
-HOW THE TESTS ARE DONE
+TEST CERTIFICATES
 
-Certificate generation options:
+Sslcaudit tries a user-supplied certificate, if provided with --cert=CERTFILE. A chain of certificates and an
+unprotected key must be supplied along with certificates.
 
-  1. A certificate with hardcoded CN (nonexistent.gremwell.com). Can be disabled with --no-default-cn
-  2. A certificate with user-specified CN. To enable use --cn=CN
-  3*. Fetch a certificate from user-specified SSL/TLS server and use it as a template. To enable use --server HOST:PORT
-  4. A user-supplied certificate. To enable use --cert=CERTFILE. Corresponding private key must be embedded into the certfile.
+Sslcaudit automatically generates certificates with the following properties:
+
+  1. With hardcoded CN (nonexistent.gremwell.com). Can be disabled with --no-default-cn
+  2. With user-specified CN. To enable use --cn=CN
+  3*. Matching attributes of a certificate fetched from from user-specified SSL/TLS server.
+  To enable use --server HOST:PORT
 
 *) will be in v1.1
 
-Certificate signing options:
-  1. Self-signed. Default. To disable, specify --no-self-signed.
-  2. Signed by user-supplied certificate. Default if certificate is supplied with --cert option. To disable
-  use --no-cert-signed.
-  3. Signed by known good CA. To enable use --good-ca=CERTFILE
+Each certificate will be signed in the following ways:
+
+  1. Self-signed. To disable, specify --no-self-signed.
+  2. Signed by user-supplied certificate. Default if certificate is supplied with --cert option. The certificate
+     is expected to be valid but NOT good for CA purposes. This is used to test handling of basicConstraints.
+     To disable use --no-cert-signed.
+  3. Signed by known good CA. To enable use --good-ca=CERTFILE. The certificate is expected to be trusted by the client.
+     This is used for test purposes.
 
 The final certificates used for testing will be the product of these two sets of options. The only exception is #4 in
-the first set, which does not get signed at all but used as is.
+the first set, meaning user-supplied certificate does not get signed but used as is.
 
 The outcome of each test can be:
   * Test Positive: The client has established SSL connection, but it was expected to do so. Gives some assurance that the test setup ok.

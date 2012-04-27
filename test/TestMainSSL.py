@@ -2,7 +2,6 @@ import logging
 from unittest.case import TestCase
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult, NegativeAuditResult, PositiveAuditResult
 from src.ClientAuditor.SSL import SSLClientAuditorSet
-from src.ClientAuditor.SSL.SSLClientAuditorSet import DEFAULT_X509_SELFSIGNED_CERT_CN
 from src.Main import SSLCERT_MODULE_NAME, Main
 from src.Test import TestConfig
 from src.Test.SSLHammer import NotVerifyingSSLHammer, VerifyingSSLHammer
@@ -30,14 +29,14 @@ class TestMainSSL(TestCase):
             [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
                 NegativeAuditResult(SSLClientAuditorSet.OK, SSLClientAuditorSet.UNKNOWN_CA))])
 
-#    def test_cn_verifying_client1(self):
-#        '''
-#        A client which only verifies CN, but not the chain of trust will ?
-#        Must return CN_MISMATCH
-#        '''
-#        self._main_test('cn_verifying1', SSLCERT_MODULE_NAME, CNVerifyingSSLHammer(DEFAULT_X509_SELFSIGNED_CERT_CN),
-#            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
-#                PositiveAuditResult(SSLClientAuditorSet.UNKNOWN_CA))])
+    #    def test_cn_verifying_client1(self):
+    #        '''
+    #        A client which only verifies CN, but not the chain of trust will ?
+    #        Must return CN_MISMATCH
+    #        '''
+    #        self._main_test('cn_verifying1', SSLCERT_MODULE_NAME, CNVerifyingSSLHammer(DEFAULT_X509_SELFSIGNED_CERT_CN),
+    #            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
+    #                PositiveAuditResult(SSLClientAuditorSet.UNKNOWN_CA))])
 
     def test_verifying_client(self):
         '''
@@ -50,37 +49,73 @@ class TestMainSSL(TestCase):
 
     # ------------------------------------------------------------------------------------
 
+    def test_notverifying_client__vs__usercert(self):
+        ''' A client which verifies nothing is expected to have no problem '''
+        r__def_cn_selfsigned = ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
+            NegativeAuditResult(SSLClientAuditorSet.UNKNOWN_CA, SSLClientAuditorSet.UNKNOWN_CA))
+
+        r__usercert = ClientConnectionAuditResult('usercert', '127.0.0.1',
+            NegativeAuditResult(SSLClientAuditorSet.UNKNOWN_CA, SSLClientAuditorSet.UNKNOWN_CA))
+
+#        self._main_test('notverifying',
+#            [], NotVerifyingSSLHammer(),
+#            [r__def_cn_selfsigned])
+#
+##        self._main_test('notverifying__vs__usercert',
+##            ['--cert', 'test/sslcaudit-test.gremwell.com-key.pem'], NotVerifyingSSLHammer(),
+##            [r__def_cn_selfsigned, r__usercert])
+
+
+    def test_verifying_client__vs__good(self):
+        '''
+        A client which properly verifies the certificate reports UNKNOWN_CA
+        '''
+        self._main_test('verifying_all__vs__good',
+            SSLCERT_MODULE_NAME,
+            VerifyingSSLHammer(TestConfig.SSL_CLIENT_EXPECTED_CN),
+            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
+                PositiveAuditResult(SSLClientAuditorSet.UNKNOWN_CA))])
+
+
+    # ------------------------------------------------------------------------------------
     def setUp(self):
         self.main = None
 
     def tearDown(self):
         if self.main != None: self.main.stop()
 
-    def _main_test(self, test_name, module, hammer, expected_results, debug=0):
+    def _main_test(self, test_name, args, hammer, expected_results, debug=0):
         '''
         This is a main worker function. It allocates external resources and launches threads,
         to make sure they are freed this function was to be called exactly once per test method,
         to allow tearDown() method to cleanup properly.
         '''
-        self._main_test_init(test_name, module, hammer, debug)
+        self._main_test_init(test_name, args, hammer, debug)
         self._main_test_do(expected_results)
 
-    def _main_test_init(self, test_name, module, ssl_hammer, debug=0):
+    def _main_test_init(self, test_name, args, ssl_hammer, debug=0):
         # allocate port
         port = TestConfig.get_next_listener_port()
 
         # create main, the target of the test
-        self.main = Main(['-d', debug, '-m', module, '-l', TestConfig.TEST_LISTENER_ADDR, '-N', test_name, '-p', port])
+        main_args = ['-d', debug, '-l', TestConfig.TEST_LISTENER_ADDR, '-N', test_name, '-p', port]
+        if isinstance(args, basestring):
+            main_args.extend(['-m', args]) # for backward compatibility
+        else:
+            main_args.extend(args)
+        self.main = Main(main_args)
 
         # collect classes of observed audit results
         self.actual_results = []
         self.orig_main__handle_result = self.main.handle_result
+
         def main__handle_result(res):
             self.orig_main__handle_result(res)
             if isinstance(res, ClientConnectionAuditResult):
                 self.actual_results.append(res)
             else:
                 pass # ignore events print res
+
         self.main.handle_result = main__handle_result
 
         # create a client hammering the listener
