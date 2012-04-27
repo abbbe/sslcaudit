@@ -1,7 +1,13 @@
 class ClientConnectionAuditEvent(object):
-    def __init__(self, auditor, client_id):
-        self.auditor = auditor
+    def __init__(self, auditor_id, client_id):
+        self.auditor_id = auditor_id
         self.client_id = client_id
+
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
+
+    def __str__(self):
+        return str(self.__dict__)
 
 
 class ClientConnectionAuditResult(ClientConnectionAuditEvent):
@@ -9,39 +15,41 @@ class ClientConnectionAuditResult(ClientConnectionAuditEvent):
     This is a base class for audit results returned by ClientConnectionAuditor.handle() method.
     It contains the results of the audit of a single connection.
     '''
-    class Positive(object):
-        '''
-        The outcome of the test is as expected.
-        '''
-        def __init__(self, actual):
-            self.actual = actual
 
-        def __eq__(self, other):
-            return (self.__class__ == other.__class__) and (self.actual == other.actual)
+    def __init__(self, auditor_id, client_id, audit_res):
+        ClientConnectionAuditEvent.__init__(self, auditor_id, client_id)
+        self.audit_res = audit_res
 
-        def __str__(self):
-            return "+ got '%s'" % (self.actual)
 
-    class Negative(object):
-        '''
-        The outcome of the test is as expected.
-        '''
-        def __init__(self, actual, expected):
-            self.actual = actual
-            self.expected = expected
+class AuditResult(object):
+    def __eq__(self, other):
+        return self.__dict__ == other.__dict__
 
-        def __eq__(self, other):
-            return (self.__class__ == other.__class__) and (self.actual == other.actual) and (self.expected == other.expected)
 
-        def __str__(self):
-            return "- got '%s' expected '%s'" % (self.actual, self.expected)
+class PositiveAuditResult(AuditResult):
+    '''
+    The outcome of the test is as expected.
+    '''
 
-    def __init__(self, auditor, client_id, actual, expected=None):
-        ClientConnectionAuditEvent.__init__(self, auditor, client_id)
-        if expected == None:
-            self.res = self.Positive(actual)
-        else:
-            self.res = self.Negative(actual, expected)
+    def __init__(self, actual):
+        self.actual = actual
+
+    def __repr__(self):
+        return "+ got '%s'" % (self.actual)
+
+
+class NegativeAuditResult(AuditResult):
+    '''
+    The outcome of the test is as expected.
+    '''
+
+    def __init__(self, actual, expected):
+        self.actual = actual
+        self.expected = expected
+
+    def __repr__(self):
+        return "- got '%s' expected '%s'" % (self.actual, self.expected)
+
 
 # ----------------------------------------------------------------------------------
 

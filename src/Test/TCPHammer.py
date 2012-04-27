@@ -13,7 +13,7 @@ class TCPHammer(Thread):
 
     RECONNECT_DELAY = 0.5
 
-    def __init__(self, peer, nattempts):
+    def __init__(self, peer, nattempts=-1):
         Thread.__init__(self, target=self.run)
         self.peer = peer
         self.nattempts = nattempts
@@ -22,10 +22,9 @@ class TCPHammer(Thread):
 
     def run(self):
         self.logger.debug("running %s", self)
-        for _ in range(self.nattempts):
-            if self.should_stop:
-                break
 
+        i = 0
+        while (self.nattempts == -1 or i < self.nattempts) and not self.should_stop:
             # connect to the peer, do something, disconnect
             try:
                 self.logger.debug("connecting to %s", self.peer)
@@ -40,6 +39,8 @@ class TCPHammer(Thread):
 
             # wait a little while before repeating
             time.sleep(self.RECONNECT_DELAY)
+
+            i += 1
         self.logger.debug("exiting %s", self)
 
     def connect_l4(self, sock):

@@ -3,6 +3,9 @@ class ClientConnectionAuditor(object):
     Base class for a client connection auditor. It has to contain information needed by handle() method
     to perform some specific tests of a single client connection.
     '''
+    def __init__(self, name):
+        self.name = name
+
 
     def handle(self, conn):
         '''

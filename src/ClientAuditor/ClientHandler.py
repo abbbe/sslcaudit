@@ -61,7 +61,7 @@ class ClientHandler(object):
                 self.done = True
                 return
 
-        # test this client connection
+        # audit this client connection
         res = self.next_auditor.handle(conn)
 
         # log and record the results of the test

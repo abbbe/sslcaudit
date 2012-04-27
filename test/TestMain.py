@@ -1,11 +1,12 @@
 import logging
+from src.ClientAuditor.ClientConnectionAuditor import ClientConnectionAuditor
 from src.ClientAuditor.SSL import SSLClientAuditorSet
 
 logging.basicConfig()
 
 import unittest
 
-from src.ClientAuditor.ClientConnectionAuditEvent import ClientAuditEndEvent, ClientAuditStartEvent, ClientConnectionAuditResult
+from src.ClientAuditor.ClientConnectionAuditEvent import ClientAuditEndEvent, ClientAuditStartEvent, ClientConnectionAuditResult, NegativeAuditResult, PositiveAuditResult
 from src.ClientAuditor.ClientHandler import ClientAuditResult
 from src.Main import Main, SSLCERT_MODULE_NAME, DUMMY_MODULE_NAME
 
@@ -29,8 +30,9 @@ class TestMain(unittest.TestCase):
     This tests Main class, the whole application
     '''
     logger = logging.getLogger('TestMain')
+    MAIN_JOIN_TIMEOUT = 5
 
-    def test_dummy(self):
+    def xtest_dummy(self):
         '''
         This test establishes a bunch of plain TCP connections against dummy auditor.
         The dummy auditor just acknowledges the fact of connection happening.
@@ -61,19 +63,23 @@ class TestMain(unittest.TestCase):
         # allocate port
         port = get_next_listener_port()
 
+        # create a client hammering our test listener
+        self.hammer = TCPHammer(peer=(TEST_LISTENER_ADDR, port))
+
         # create main, the target of the test
         self.main = Main(['-m', 'dummy', '-l', TEST_LISTENER_ADDR, '-p', port])
         self.main.handle_result = main__handle_result
 
-        # create a client hammering our test listener
-        self.client = TCPHammer(peer=(TEST_LISTENER_ADDR, port), nattempts=self.main.auditor_set.len())
+        # tell the hammer how many attempts to make exactly
+        self.hammer.nattempts = self.main.auditor_set.len()
 
         # start server and client
         self.main.start()
-        self.client.start()
-        self.main.join(timeout=5)
+        self.hammer.start()
 
-        self.client.stop()
+        self.main.join(timeout=5)
+        self.hammer.stop()
+        self.main.stop()
 
         # make sure we have received expected number of results
         self.assertEquals(self.got_result_start, 1)
@@ -82,22 +88,46 @@ class TestMain(unittest.TestCase):
         self.assertEquals(self.got_bulk_result, 1)
         self.assertEquals(self.nstray, 0)
 
-    def xtest_sslcert_bad_client(self):
+    def test_sslcert_bad_client(self):
         '''
-        Plain TCP client has to cause UnexpectedEOF
+        Plain TCP client causes unexpected UNEXPECTED_EOF instead of UNKNOWN_CA
         '''
-        self.main_test(SSLCERT_MODULE_NAME, TCPHammer,
-            [ClientConnectionAuditResult.Negative('unexpected eof', SSLClientAuditorSet.UNKNOWN_CA)])
+        self._main_test(SSLCERT_MODULE_NAME, TCPHammer,
+            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
+                NegativeAuditResult(SSLClientAuditorSet.UNEXPECTED_EOF, SSLClientAuditorSet.UNKNOWN_CA))])
 
     def test_sslcert_notverifying_client(self):
-        self.main_test(SSLCERT_MODULE_NAME, NotVerifyingSSLHammer,
-            [ClientConnectionAuditResult.Negative(None, SSLClientAuditorSet.UNKNOWN_CA)])
+        '''
+        A client which fails to verify the chain of trust reports no error
+        '''
+        self._main_test(SSLCERT_MODULE_NAME, NotVerifyingSSLHammer,
+            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
+                NegativeAuditResult(SSLClientAuditorSet.OK, SSLClientAuditorSet.UNKNOWN_CA))])
+
+    def test_sslcert_cn_verifying_client(self):
+        '''
+        A client which only verifies CN will report OK
+        '''
+        self._main_test(SSLCERT_MODULE_NAME, VerifyingSSLHammer,
+            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1', PositiveAuditResult(SSLClientAuditorSet.UNKNOWN_CA))])
 
     def test_sslcert_verifying_client(self):
-        self.main_test(SSLCERT_MODULE_NAME, VerifyingSSLHammer,
-            [ClientConnectionAuditResult.Positive(SSLClientAuditorSet.UNKNOWN_CA)])
+        '''
+        A client which properly verifies the certificate reports UNKNOWN_CA
+        '''
+        self._main_test(SSLCERT_MODULE_NAME, VerifyingSSLHammer,
+            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1', PositiveAuditResult(SSLClientAuditorSet.UNKNOWN_CA))])
 
-    def main_test(self, module, client_class, expected_results, debug=0):
+    def _main_test(self, module, hammer_class, expected_results, debug=0):
+        '''
+        This is a main worker function. It allocates external resources and launches threads,
+        to make sure they are freed this function was to be called exactly once per test method,
+        to allow tearDown() method to cleanup properly.
+        '''
+        self._main_test_init(module, hammer_class, debug)
+        self._main_test_do(expected_results)
+
+    def _main_test_init(self, module, hammer_class, debug=0):
         '''
         Abstract tester function.
         '''
@@ -113,24 +143,43 @@ class TestMain(unittest.TestCase):
         def main__handle_result(res):
             self.orig_main__handle_result(res)
             if isinstance(res, ClientConnectionAuditResult):
-                self.actual_results.append(res.res)
+                self.actual_results.append(res)
+            else:
+                pass # ignore events print res
         self.main.handle_result = main__handle_result
 
         # create a client hammering the listener
-        if client_class != None:
-            self.client = client_class(peer=(TEST_LISTENER_ADDR, port), nattempts=self.main.auditor_set.len())
+        if hammer_class != None:
+            self.hammer = hammer_class(peer=(TEST_LISTENER_ADDR, port), nattempts=self.main.auditor_set.len())
         else:
-            self.client = None
+            self.hammer = None
 
-        # run the server and the client
+    def _main_test_do(self, expected_results):
+        # run the server
         self.main.start()
-        if client_class != None:
-            self.client.start()
-        self.main.join(timeout=5)
-        if client_class != None:
-            self.client.stop()
+
+        # start the hammer if any
+        if self.hammer != None:    self.hammer.start()
+
+        # wait for main to finish its job
+        try:
+            self.main.join(timeout=self.MAIN_JOIN_TIMEOUT)
+            # on timeout throws exception, which we let propagate after we shut the hammer and the main thread
+
+        finally:
+            # stop the hammer if any
+            if self.hammer != None:    self.hammer.stop()
+
+            # stop the server
+            self.main.stop()
 
         self.assertEquals(expected_results, self.actual_results)
+
+    def setUp(self):
+        self.main = None
+
+    def tearDown(self):
+        if self.main != None: self.main.stop()
 
 if __name__ == '__main__':
     unittest.main()

@@ -7,6 +7,7 @@ class DummyClientConnectionAuditor(ClientConnectionAuditor):
     '''
 
     def __init__(self, dummy_result):
+        ClientConnectionAuditor.__init__(self, dummy_result)
         self.dummy_result = dummy_result
 
     def handle(self, conn):

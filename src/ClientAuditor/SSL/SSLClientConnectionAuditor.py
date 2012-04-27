@@ -1,12 +1,17 @@
 import M2Crypto
-from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult, PositiveAuditResult, NegativeAuditResult
 from src.ClientAuditor.ClientConnectionAuditor import ClientConnectionAuditor
 
 class SSLClientConnectionAuditor(ClientConnectionAuditor):
-    def __init__(self, proto, certnkey, expect_failure):
+    def __init__(self, name, descr, proto, certnkey, expect_failure):
+        ClientConnectionAuditor.__init__(self, name)
+        self.descr = descr
         self.proto = proto
         self.certnkey = certnkey
         self.expect_failure = expect_failure
+
+    def __str__(self):
+        return "%s(%r, %r, %r)", str((self.name, self.descr, self.proto, self.certnkey.name, self.expect_failure))
 
     def handle(self, conn):
         ctx = M2Crypto.SSL.Context(self.proto)
@@ -25,7 +30,9 @@ class SSLClientConnectionAuditor(ClientConnectionAuditor):
         # report the result
         if actual_failure == self.expect_failure:
             # the test does not fail or fails as expected
-            return ClientConnectionAuditResult(self, conn.get_client_id(), actual_failure)
+            return ClientConnectionAuditResult(self.name, conn.get_client_id(),
+                PositiveAuditResult(actual_failure))
         else:
             # the test fails not like expected or does not fail while it was expected to
-            return ClientConnectionAuditResult(self, conn.get_client_id(), actual_failure, self.expect_failure)
+            return ClientConnectionAuditResult(self.name, conn.get_client_id(),
+                NegativeAuditResult(actual_failure, self.expect_failure))

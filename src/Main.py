@@ -1,3 +1,4 @@
+from Queue import Empty
 import logging, sys
 from optparse import OptionParser
 from threading import Thread
@@ -53,17 +54,25 @@ class Main(Thread):
             logging.getLogger('ClientAuditorServer').setLevel(logging.DEBUG)
 
         if self.options.module == SSLCERT_MODULE_NAME:
-            self.auditor_set = SSLClientAuditorSet(self.options)
+            self.auditor_set = SSLClientAuditorSet(SSLCERT_MODULE_NAME, self.options)
         elif self.options.module == DUMMY_MODULE_NAME:
             self.auditor_set = DummyClientAuditorSet(self.options)
         else:
             raise Exception("auditor module must be specified")
 
         self.server = ClientAuditorServer((self.options.listen_addr, self.options.listen_port), self.auditor_set)
+        self.queue_read_timeout = 0.1
 
     def start(self):
+        self.do_stop = False
         self.server.start()
         Thread.start(self)
+
+    def stop(self):
+        # signal the thread to stop
+        self.do_stop = True
+        # free up server resources
+        #self.server.socket.close()
 
     def handle_result(self, res):
         if isinstance(res, ClientConnectionAuditResult):
@@ -74,13 +83,19 @@ class Main(Thread):
         Main loop function. Will run until the desired number of clients is handled.
         '''
         nresults = 0
-        while nresults < self.options.nclients:
-            res = self.server.res_queue.get()
-            self.logger.debug("got result %s", res)
-            self.handle_result(res)
+        # loop until get all desired results, quit if stopped
+        while nresults < self.options.nclients and not self.do_stop:
+            try:
+                # wait for a message blocking for short intervals, check stop flag frequently
+                res = self.server.res_queue.get(True, self.queue_read_timeout)
+                self.logger.debug("got result %s", res)
+                self.handle_result(res)
 
-            if isinstance(res, ClientAuditResult):
-                nresults = nresults + 1
+                if isinstance(res, ClientAuditResult):
+                    nresults = nresults + 1
+            except Empty:
+                pass
+
 
 if __name__ == "__main__":
     main = Main(sys.argv[1:])
