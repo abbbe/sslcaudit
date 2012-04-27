@@ -53,8 +53,10 @@ Certificate generation options:
 
   1. A certificate with hardcoded CN (nonexistent.gremwell.com). Can be disabled with --no-default-cn
   2. A certificate with user-specified CN. To enable use --cn=CN
-  3. Fetch a certificate from user-specified SSL/TLS server and use it as a template. To enable use --server HOST:PORT
+  3*. Fetch a certificate from user-specified SSL/TLS server and use it as a template. To enable use --server HOST:PORT
   4. A user-supplied certificate. To enable use --cert=CERTFILE. Corresponding private key must be embedded into the certfile.
+
+*) will be in v1.1
 
 Certificate signing options:
   1. Self-signed. Default. To disable, specify --no-self-signed.
@@ -70,6 +72,7 @@ The outcome of each test can be:
   * Test Error: The client has failed to establish SSL connection, but was supposed to. Indicates something is wrong with the test setup.
   * Positive: The client has established SSL session. The client is vulnerable to MITM.
   * Negative: SSL connection has failed with expected exception code. The client is not vulnerable to MITM.
+  * Collect data sent by the client, check if it closes the connection soon after SSL handshake
 
 HOW TO USE THE TOOL
 
