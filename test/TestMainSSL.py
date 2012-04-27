@@ -1,5 +1,9 @@
-import logging
-from unittest.case import TestCase
+''' ----------------------------------------------------------------------
+SSLCAUDIT - a tool for automatingsecurity audit of SSL clients
+Released under terms of GPLv3, see COPYING.TXT
+Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+---------------------------------------------------------------------- '''
+import logging, unittest
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult, NegativeAuditResult, PositiveAuditResult
 from src.ClientAuditor.SSL import SSLClientAuditorSet
 from src.ClientAuditor.SSL.SSLClientAuditorSet import UNEXPECTED_EOF, UNKNOWN_CA, OK
@@ -8,7 +12,7 @@ from src.Test import TestConfig
 from src.Test.SSLHammer import NotVerifyingSSLHammer, VerifyingSSLHammer
 from src.Test.TCPHammer import TCPHammer
 
-class TestMainSSL(TestCase):
+class TestMainSSL(unittest.TestCase):
     '''
     Unittests for SSL.
     '''
@@ -126,4 +130,7 @@ class TestMainSSL(TestCase):
             self.main.stop()
 
         self.assertEquals(expected_results, self.actual_results)
+
+if __name__ == '__main__':
+        unittest.main()
 

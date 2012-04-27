@@ -1,3 +1,8 @@
+''' ----------------------------------------------------------------------
+SSLCAUDIT - a tool for automatingsecurity audit of SSL clients
+Released under terms of GPLv3, see COPYING.TXT
+Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+---------------------------------------------------------------------- '''
 import M2Crypto
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult, PositiveAuditResult, NegativeAuditResult
 from src.ClientAuditor.ClientConnectionAuditor import ClientConnectionAuditor

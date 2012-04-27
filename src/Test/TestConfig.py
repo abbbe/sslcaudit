@@ -1,3 +1,8 @@
+''' ----------------------------------------------------------------------
+SSLCAUDIT - a tool for automatingsecurity audit of SSL clients
+Released under terms of GPLv3, see COPYING.TXT
+Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+---------------------------------------------------------------------- '''
 TEST_LISTENER_ADDR = 'localhost'
 TEST_LISTENER_BASEPORT = 10000
 

@@ -1,3 +1,8 @@
+''' ----------------------------------------------------------------------
+SSLCAUDIT - a tool for automatingsecurity audit of SSL clients
+Released under terms of GPLv3, see COPYING.TXT
+Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+---------------------------------------------------------------------- '''
 import logging
 import unittest
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientConnectionAuditResult
@@ -68,3 +73,7 @@ class TestMainDummy(unittest.TestCase):
         self.assertEquals(self.got_result_end, 1)
         self.assertEquals(self.got_bulk_result, 1)
         self.assertEquals(self.nstray, 0)
+
+if __name__ == '__main__':
+        unittest.main()
+

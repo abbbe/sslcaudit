@@ -1,3 +1,8 @@
+''' ----------------------------------------------------------------------
+SSLCAUDIT - a tool for automatingsecurity audit of SSL clients
+Released under terms of GPLv3, see COPYING.TXT
+Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+---------------------------------------------------------------------- '''
 class ClientConnection(object):
     def __init__(self, sock, client_address):
         self.sock = sock

@@ -7,6 +7,8 @@
 # ----------------------------------------------------------------------------
 
 # After execution of "./prepend.sh F1 F2" file F2 will contain F2 + F1"
+# Example:
+#  find . -name \*.py | xargs -n1 -IF ./prepend_file.sh F COPYING.HEADER
 
 [ $# -eq 2 ]
 

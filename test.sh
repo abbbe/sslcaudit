@@ -1,3 +1,5 @@
 #!/bin/sh -x
 
-env PYTHONPATH="`dirname \"$0\"`" python test/TestMain.py -v
+for m in TestMainDummy TestMainSSL ; do
+	env PYTHONPATH="`dirname \"$0\"`" python test/$m.py -v
+done
