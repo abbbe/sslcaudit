@@ -45,14 +45,14 @@ class TestMainDummy(unittest.TestCase):
         port = get_next_listener_port()
 
         # create a client hammering our test listener
-        self.hammer = TCPHammer(peer=(TEST_LISTENER_ADDR, port))
+        self.hammer = TCPHammer()
 
         # create main, the target of the test
         self.main = Main(['-m', 'dummy', '-l', TEST_LISTENER_ADDR, '-p', port])
         self.main.handle_result = main__handle_result
 
         # tell the hammer how many attempts to make exactly
-        self.hammer.nattempts = self.main.auditor_set.len()
+        self.hammer.init_tcp((TEST_LISTENER_ADDR, port), self.main.auditor_set.len())
 
         # start server and client
         self.main.start()
