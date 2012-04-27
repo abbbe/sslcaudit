@@ -8,10 +8,9 @@ from src.ClientAuditor.ClientAuditorSet import ClientAuditorSet
 from src.ClientAuditor.SSL.SSLClientConnectionAuditor import SSLClientConnectionAuditor
 
 DEFAULT_CN = 'nonexistent.gremwell.com'
-
 UNKNOWN_CA = 'tlsv1 alert unknown ca'
 UNEXPECTED_EOF = 'unexpected eof'
-OK = None
+CONNECTED = 'connected'
 
 class SSLClientAuditorSet(ClientAuditorSet):
     def __init__(self, name, options):
@@ -29,27 +28,27 @@ class SSLClientAuditorSet(ClientAuditorSet):
             self.server_cert = None
 
         self.auditors = []
-        self.init_usercert()
+#        self.init_usercert()
         self.init_self_signed()
-        self.init_goodca_signed()
+#        self.init_goodca_signed()
 
         ClientAuditorSet.__init__(self, self.auditors)
 
-    def init_usercert(self):
-        if self.options.cert_file != None:
-            # expected to fail with invalid CA error
-            certnkey = self.cert_factory.load_certnkey('huh', self.options.cert_file)
-            expect_failure = "CN mismatch"
-            auditor = SSLClientConnectionAuditor('usercert', 'zzz', self.proto, certnkey,
-                expect_failure=expect_failure)
-            self.auditors.append(auditor)
+#    def init_usercert(self):
+#        if self.options.cert_file != None:
+#            # expected to fail with invalid CA error
+#            certnkey = self.cert_factory.load_certnkey('huh', self.options.cert_file)
+#            expect_failure = "CN mismatch"
+#            auditor = SSLClientConnectionAuditor('usercert', 'zzz', self.proto, certnkey,
+#                expect_failure=expect_failure)
+#            self.auditors.append(auditor)
 
     def init_self_signed(self):
         '''
         This method initializes auditors using self-signed certificates
         '''
         if not self.options.no_self_signed:
-            self._init_signed('self', cacert_file=None, expect_trust_ok=False)
+            self._init_signed(ca_certnkey=None)
 
 #    def init_usercert_signed(self):
 #        '''
@@ -62,38 +61,23 @@ class SSLClientAuditorSet(ClientAuditorSet):
         '''
         This method initializes auditors using certificates signed by known good CA
         '''
-        if self.options.good_cacert_file != None:
-            self._init_signed('goodca', cacert_file=self.options.good_cacert_file, expect_trust=True)
+        if self.options.user_ca_certnkey != None:
+            self._init_signed(ca_certnkey=self.options.user_ca_certnkey)
 
-    def _init_signedtests(self, certname, cn, cacert_file, expect_cn_ok, expect_trust_ok):
-        if cacert_file != None and expect_trust_ok:
-            ## certificate signed by a trusted CA expected to produce CN mismatch error
-            if expect_cn_ok:
-                expect_failure = None
-            else:
-                expect_failure = "CN mismatch"
-        else:
-            ## self signed certificates or ones signed by untrusted CA expected to produce CA error
-            expect_failure = UNKNOWN_CA
-
-        certnkey = self.cert_factory.new_certnkey(certname, cn, cacert_file)
-        auditor = SSLClientConnectionAuditor(certname, 'yyy', self.proto, certnkey,
-            expect_failure=expect_failure)
-        self.auditors.append(auditor)
-
-    def _init_signed(self, signedby, cacert_file, expect_trust_ok):
+    def _init_signed(self, ca_certnkey):
         '''
         This method initializes auditors using signed certificates: self signed or by a CA.
         '''
         if not self.options.no_default_cn:
-            self._init_signedtests(
-                certname=('default_cn', signedby), cn=DEFAULT_CN, cacert_file=cacert_file,
-                expect_cn_ok=False, expect_trust_ok=expect_trust_ok)
+            self._init_signedtests(DEFAULT_CN, ca_certnkey)
 
         if self.options.cn != None:
-            self._init_signedtests(
-                certname=('user_cn', signedby), cn=self.options.cn, cacert_file=cacert_file,
-                expect_cn_ok=True, expect_trust_ok=expect_trust_ok)
+            self._init_signedtests(self.options.cn, ca_certnkey)
+
+    def _init_signedtests(self, cn, ca_certnkey):
+        certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey)
+        auditor = SSLClientConnectionAuditor(self.proto, certnkey)
+        self.auditors.append(auditor)
 
 #            certnkey = self.cert_factory.new_certnkey('default_cn/selfsigned', self.options.cn, cacert_file)
 #            if cacert_file != None and expect_trust:

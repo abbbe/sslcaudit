@@ -69,6 +69,8 @@ class Main(Thread):
         self.server = ClientAuditorServer((self.options.listen_addr, self.options.listen_port), self.auditor_set)
         self.queue_read_timeout = 0.1
 
+        print "# %s" % self.options.test_name
+
     def start(self):
         self.do_stop = False
         self.server.start()
@@ -81,7 +83,7 @@ class Main(Thread):
 
     def handle_result(self, res):
         if isinstance(res, ClientConnectionAuditResult):
-            print "%-10s %-48s %-32s %s" % (res.client_id, self.options.test_name, res.auditor_id, res.audit_res)
+            print "%s" % (res)
 
     def run(self):
         '''

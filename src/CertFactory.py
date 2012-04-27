@@ -18,20 +18,23 @@ class CertAndKey(object):
         self.cert_filename = cert_filename
         self.key_filename = key_filename
 
+    def __repr__(self):
+        return "CertAndKey%s" % self.__dict__
+
     def __str__(self):
-        return name
+        return str(self.name)
 
 class CertFactory(object):
     def grab_server_cert(self, server):
         raise NotImplemented()
 
-    def new_certnkey(self, name, cn, cacert_file):
-        if cacert_file != None:
+    def new_certnkey(self, cn, ca_certnkey):
+        if ca_certnkey != None:
             raise NotImplemented()
         else:
-            return self.mk_simple_selfsigned_certnkey(name, cn, DEFAULT_X509_C, DEFAULT_X509_O)
+            return self.mk_simple_selfsigned_certnkey(cn, DEFAULT_X509_C, DEFAULT_X509_O)
 
-    def mk_simple_selfsigned_certnkey(self, name, cn, country, org):
+    def mk_simple_selfsigned_certnkey(self, cn, country, org):
         '''
         This function creates a self-signed server certificate with:
          * default common name, organization, and country
@@ -61,9 +64,9 @@ class CertFactory(object):
         #ext = X509.new_extension('nsCertType', 'SSL Server')
         #exts.append(ext)
 
-        return self._mk_selfsigned_certnkey(name, 2, 1, not_before, not_after, subj, 1024, exts)
+        return self._mk_selfsigned_certnkey(2, 1, not_before, not_after, subj, 1024, exts)
 
-    def _mk_selfsigned_certnkey(self, name, version, serial_number, not_before, not_after, subj, bits, exts):
+    def _mk_selfsigned_certnkey(self, version, serial_number, not_before, not_after, subj, bits, exts):
         '''
         This function generates a self signed certificate with given attributes.
         It returns the certificate and the private key. Normally used internally only.
@@ -102,4 +105,4 @@ class CertFactory(object):
 
         # XXX arrange for temporary files removal
 
-        return CertAndKey(name, cert, cert_file.name, key_file.name)
+        return CertAndKey((subj.CN, 'SELF'), cert, cert_file.name, key_file.name)
