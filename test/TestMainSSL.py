@@ -2,6 +2,7 @@ import logging
 from unittest.case import TestCase
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult, NegativeAuditResult, PositiveAuditResult
 from src.ClientAuditor.SSL import SSLClientAuditorSet
+from src.ClientAuditor.SSL.SSLClientAuditorSet import UNEXPECTED_EOF, UNKNOWN_CA, OK
 from src.Main import SSLCERT_MODULE_NAME, Main
 from src.Test import TestConfig
 from src.Test.SSLHammer import NotVerifyingSSLHammer, VerifyingSSLHammer
@@ -15,61 +16,48 @@ class TestMainSSL(TestCase):
 
     def test_bad_client(self):
         ''' Plain TCP client causes unexpected UNEXPECTED_EOF instead of UNKNOWN_CA '''
-        self._main_test([], TCPHammer(),
-            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
-                NegativeAuditResult(SSLClientAuditorSet.UNEXPECTED_EOF, SSLClientAuditorSet.UNKNOWN_CA))])
+        self._main_test(['--cn', "dummy"], TCPHammer(),
+            [
+                ClientConnectionAuditResult(('default_cn', 'self'), '127.0.0.1', NegativeAuditResult(UNEXPECTED_EOF, UNKNOWN_CA)),
+                ClientConnectionAuditResult(('user_cn', 'self'), '127.0.0.1', NegativeAuditResult(UNEXPECTED_EOF, UNKNOWN_CA))
+            ])
 
     def test_notverifying_client(self):
         ''' A client which fails to verify the chain of trust reports no error '''
-        self._main_test([], NotVerifyingSSLHammer(),
-            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
-                NegativeAuditResult(SSLClientAuditorSet.OK, SSLClientAuditorSet.UNKNOWN_CA))])
+        self._main_test(['--cn', "dummy"], NotVerifyingSSLHammer(),
+            [
+                ClientConnectionAuditResult(('default_cn', 'self'), '127.0.0.1', NegativeAuditResult(OK, UNKNOWN_CA)),
+                ClientConnectionAuditResult(('user_cn', 'self'), '127.0.0.1', NegativeAuditResult(OK, UNKNOWN_CA))
+            ])
 
-    #    def test_cn_verifying_client1(self):
-    #        '''
-    #        A client which only verifies CN, but not the chain of trust will ?
-    #        Must return CN_MISMATCH
-    #        '''
-    #        self._main_test('cn_verifying1', SSLCERT_MODULE_NAME, CNVerifyingSSLHammer(DEFAULT_X509_SELFSIGNED_CERT_CN),
-    #            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
-    #                PositiveAuditResult(SSLClientAuditorSet.UNKNOWN_CA))])
-
-    def test_verifying_client(self):
-        '''
-        A client which properly verifies the certificate reports UNKNOWN_CA
-        '''
-        self._main_test([], VerifyingSSLHammer(TestConfig.SSL_CLIENT_EXPECTED_CN),
-            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
-                PositiveAuditResult(SSLClientAuditorSet.UNKNOWN_CA))])
-
-
-    # ------------------------------------------------------------------------------------
-
-    def test_notverifying_client__vs__usercert(self):
-        ''' A client which verifies nothing is expected to have no problem '''
-        r__def_cn_selfsigned = ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
-            NegativeAuditResult(SSLClientAuditorSet.UNKNOWN_CA, SSLClientAuditorSet.UNKNOWN_CA))
-
-        r__usercert = ClientConnectionAuditResult('usercert', '127.0.0.1',
-            NegativeAuditResult(SSLClientAuditorSet.UNKNOWN_CA, SSLClientAuditorSet.UNKNOWN_CA))
-
-#        self._main_test('notverifying',
-#            [], NotVerifyingSSLHammer(),
-#            [r__def_cn_selfsigned])
+#    def test_verifying_client(self):
+#        '''
+#        A client which properly verifies the certificate reports UNKNOWN_CA
+#        '''
+#        self._main_test([], VerifyingSSLHammer(TestConfig.SSL_CLIENT_EXPECTED_CN),
+#            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
+#                PositiveAuditResult(UNKNOWN_CA))])
 #
-##        self._main_test('notverifying__vs__usercert',
-##            ['--cert', 'test/sslcaudit-test.gremwell.com-key.pem'], NotVerifyingSSLHammer(),
-##            [r__def_cn_selfsigned, r__usercert])
-
-
-    def test_verifying_client__vs__good(self):
-        '''
-        A client which properly verifies the certificate reports UNKNOWN_CA
-        '''
-        self._main_test([], VerifyingSSLHammer(TestConfig.SSL_CLIENT_EXPECTED_CN),
-            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
-                PositiveAuditResult(SSLClientAuditorSet.UNKNOWN_CA))])
-
+#    #    def test_cn_verifying_client1(self):
+#    #        '''
+#    #        A client which only verifies CN, but not the chain of trust will ?
+#    #        Must return CN_MISMATCH
+#    #        '''
+#    #        self._main_test('cn_verifying1', SSLCERT_MODULE_NAME, CNVerifyingSSLHammer(DEFAULT_X509_SELFSIGNED_CERT_CN),
+#    #            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
+#    #                PositiveAuditResult(SSLClientAuditorSet.UNKNOWN_CA))])
+#
+#
+#    # ------------------------------------------------------------------------------------
+#
+#    def xtest_verifying_client__vs__good(self):
+#        '''
+#        A client which properly verifies the certificate reports UNKNOWN_CA
+#        '''
+#        self._main_test([], VerifyingSSLHammer(TestConfig.SSL_CLIENT_EXPECTED_CN),
+#            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
+#                PositiveAuditResult(SSLClientAuditorSet.UNKNOWN_CA))])
+#
 
     # ------------------------------------------------------------------------------------
     def setUp(self):
@@ -92,7 +80,8 @@ class TestMainSSL(TestCase):
         port = TestConfig.get_next_listener_port()
 
         # create main, the target of the test
-        main_args = ['-l', TestConfig.TEST_LISTENER_ADDR, '-N', hammer, '-p', port]
+        test_name = "%s %s" % (args, hammer)
+        main_args = ['-l', TestConfig.TEST_LISTENER_ADDR, '-N', test_name, '-p', port]
         if isinstance(args, basestring):
             main_args.extend(['-m', args]) # for backward compatibility
         else:

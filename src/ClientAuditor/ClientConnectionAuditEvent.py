@@ -16,10 +16,12 @@ class ClientConnectionAuditResult(ClientConnectionAuditEvent):
         ClientConnectionAuditEvent.__init__(self, auditor_id, client_id)
         self.audit_res = audit_res
 
+    def __repr__(self):
+        return self.__dict__.__str__()
 
 class AuditResult(object):
     def __eq__(self, other):
-        return self.__dict__ == other.__dict__
+        return self.__class__ == other.__class__ and self.__dict__ == other.__dict__
 
 
 class PositiveAuditResult(AuditResult):
@@ -45,6 +47,18 @@ class NegativeAuditResult(AuditResult):
 
     def __repr__(self):
         return "- got '%s' expected '%s'" % (self.actual, self.expected)
+
+class TestFailureAuditResult(AuditResult):
+    '''
+    The outcome of the test suggests inconsistent test results.
+    '''
+
+    def __init__(self, actual, expected):
+        self.actual = actual
+        self.expected = expected
+
+    def __repr__(self):
+        return "! got '%s' expected '%s'" % (self.actual, self.expected)
 
 
 # ----------------------------------------------------------------------------------

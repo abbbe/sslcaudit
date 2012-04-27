@@ -9,7 +9,6 @@ UNEXPECTED_EOF = 'unexpected eof'
 OK = None
 
 class SSLClientAuditorSet(ClientAuditorSet):
-
     def __init__(self, name, options):
         self.name = name
         self.options = options
@@ -27,7 +26,6 @@ class SSLClientAuditorSet(ClientAuditorSet):
         self.auditors = []
         self.init_usercert()
         self.init_self_signed()
-        self.init_usercert_signed()
         self.init_goodca_signed()
 
         ClientAuditorSet.__init__(self, self.auditors)
@@ -36,9 +34,10 @@ class SSLClientAuditorSet(ClientAuditorSet):
         if self.options.cert_file != None:
             description = 'user-supplied certificate'
             # expected to fail with invalid CA error
-            certnkey = self.cert_factory.load_certnkey(self.name + '/usercert', self.options.cert_file)
+            certnkey = self.cert_factory.load_certnkey('huh', self.options.cert_file)
             expect_failure = "CN mismatch"
-            auditor = SSLClientConnectionAuditor('usercert', description, self.proto, certnkey, expect_failure=expect_failure)
+            auditor = SSLClientConnectionAuditor('usercert', 'zzz', self.proto, certnkey,
+                expect_failure=expect_failure)
             self.auditors.append(auditor)
 
     def init_self_signed(self):
@@ -46,61 +45,71 @@ class SSLClientAuditorSet(ClientAuditorSet):
         This method initializes auditors using self-signed certificates
         '''
         if not self.options.no_self_signed:
-            self._init_signed('/self_signed', cacert_file=None, expect_trust=False)
+            self._init_signed('self', cacert_file=None, expect_trust_ok=False)
 
-    def init_usercert_signed(self):
-        '''
-        This method initializes auditors using certificates signed by user-specified cert
-        '''
-        if self.options.cert_file != None:
-            self._init_signed('/usercert_signed', cacert_file=self.options.cert_file, expect_trust=False)
+#    def init_usercert_signed(self):
+#        '''
+#        This method initializes auditors using certificates signed by user-specified cert
+#        '''
+#        if self.options.cert_file != None:
+#            self._init_signed('usercert', cacert_file=self.options.cert_file, expect_trust=False)
 
     def init_goodca_signed(self):
         '''
         This method initializes auditors using certificates signed by known good CA
         '''
         if self.options.good_cacert_file != None:
-            self._init_signed('/goodca_signed', cacert_file=self.options.good_cacert_file, expect_trust=True)
+            self._init_signed('goodca', cacert_file=self.options.good_cacert_file, expect_trust=True)
 
-    def _init_signed(self, subname, cacert_file, expect_trust):
+    def _init_signedtests(self, certname, cn, cacert_file, expect_cn_ok, expect_trust_ok):
+        if cacert_file != None and expect_trust_ok:
+            ## certificate signed by a trusted CA expected to produce CN mismatch error
+            if expect_cn_ok:
+                expect_failure = None
+            else:
+                expect_failure = "CN mismatch"
+        else:
+            ## self signed certificates or ones signed by untrusted CA expected to produce CA error
+            expect_failure = UNKNOWN_CA
+
+        certnkey = self.cert_factory.new_certnkey(certname, cn, cacert_file)
+        auditor = SSLClientConnectionAuditor(certname, 'yyy', self.proto, certnkey,
+            expect_failure=expect_failure)
+        self.auditors.append(auditor)
+
+    def _init_signed(self, signedby, cacert_file, expect_trust_ok):
         '''
         This method initializes auditors using signed certificates: self signed or by a CA.
         '''
         if not self.options.no_default_cn:
-            description = 'automatically generated certificate, with default CN, selfsigned'
-            # expected to fail with invalid CA error
-            certnkey = self.cert_factory.new_certnkey(self.name + subname, DEFAULT_X509_SELFSIGNED_CERT_CN, cacert_file=cacert_file)
-            if cacert_file != None and expect_trust:
-                ## certificate signed by a trusted CA expected to produce CN mismatch error
-                expect_failure = "CN mismatch"
-            else:
-                ## self signed certificates or ones signed by untrusted CA expected to produce CA error
-                expect_failure = UNKNOWN_CA
-            auditor = SSLClientConnectionAuditor('def_cn' + subname, description, self.proto, certnkey, expect_failure=expect_failure)
-            self.auditors.append(auditor)
+            self._init_signedtests(
+                certname=('default_cn', signedby), cn=DEFAULT_X509_SELFSIGNED_CERT_CN, cacert_file=cacert_file,
+                expect_cn_ok=False, expect_trust_ok=expect_trust_ok)
 
         if self.options.cn != None:
-            # automatically generated certificate, with user-supplied CN, selfsigned
-            # expected to fail with invalid CA error
-            certnkey = self.cert_factory.new_certnkey(cn = self.options.cn, cacert_file=cacert_file)
-            if cacert_file != None and expect_trust:
-                ## assuming user has provided sensible CN, a certificate signed by a trusted CA expected to produce no error
-                expect_failure = None
-            else:
-                ## self signed certificates or ones signed by untrusted CA expected to produce CA error
-                expect_failure = UNKNOWN_CA
-            auditor = SSLClientConnectionAuditor(self.proto, certnkey, expect_failure=expect_failure)
-            self.auditors.append(auditor)
+            self._init_signedtests(
+                certname=('user_cn', signedby), cn=self.options.cn, cacert_file=cacert_file,
+                expect_cn_ok=True, expect_trust_ok=expect_trust_ok)
 
-        if self.server_cert != None:
-            # automatically generated certificate, replicated after a user-specified server cert, selfsigned
-            certnkey = self.cert_factory.new_certnkey(proto_cert = self.server_cert, cacert_file=cacert_file)
-            if cacert_file != None and expect_trust:
-                ## assuming user has pointed to a sensible server, a certificate signed by a trusted CA expected to produce no error
-                expect_failure = None
-            else:
-                ## self signed certificates or ones signed by untrusted CA expected to produce CA error
-                expect_failure = UNKNOWN_CA
-            auditor = SSLClientConnectionAuditor(self.proto, certnkey, expect_failure=expect_failure)
-            self.auditors.append(auditor)
-
+#            certnkey = self.cert_factory.new_certnkey('default_cn/selfsigned', self.options.cn, cacert_file)
+#            if cacert_file != None and expect_trust:
+#                ## assuming user has provided sensible CN, a certificate signed by a trusted CA expected to produce no error
+#                expect_failure = None
+#            else:
+#                ## self signed certificates or ones signed by untrusted CA expected to produce CA error
+#                expect_failure = UNKNOWN_CA
+#            auditor = SSLClientConnectionAuditor(self.proto, certnkey, expect_failure=expect_failure)
+#            self.auditors.append(auditor)
+#
+#        if self.server_cert != None:
+#            # automatically generated certificate, replicated after a user-specified server cert, selfsigned
+#            certnkey = self.cert_factory.new_certnkey(proto_cert=self.server_cert, cacert_file)
+#            if cacert_file != None and expect_trust:
+#                ## assuming user has pointed to a sensible server, a certificate signed by a trusted CA expected to produce no error
+#                expect_failure = None
+#            else:
+#                ## self signed certificates or ones signed by untrusted CA expected to produce CA error
+#                expect_failure = UNKNOWN_CA
+#            auditor = SSLClientConnectionAuditor(self.proto, certnkey, expect_failure=expect_failure)
+#            self.auditors.append(auditor)
+#
