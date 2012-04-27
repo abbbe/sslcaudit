@@ -1,4 +1,4 @@
-from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult, PositiveAuditResult, NegativeAuditResult
 from src.ClientAuditor.ClientConnectionAuditor import  ClientConnectionAuditor
 
 class DummyClientConnectionAuditor(ClientConnectionAuditor):
@@ -12,6 +12,6 @@ class DummyClientConnectionAuditor(ClientConnectionAuditor):
 
     def handle(self, conn):
         if self.dummy_result:
-            return ClientConnectionAuditResult(self, conn.get_client_id(), 'all ok')
+            return ClientConnectionAuditResult(self, conn.get_client_id(), PositiveAuditResult('all ok'))
         else:
-            return ClientConnectionAuditResult(self, conn.get_client_id(), 'not ok', 'all ok')
+            return ClientConnectionAuditResult(self, conn.get_client_id(), NegativeAuditResult('not ok', 'all ok'))
