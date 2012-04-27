@@ -2,8 +2,8 @@ import M2Crypto
 from src.Test.TCPHammer import TCPHammer
 
 class SSLHammer(TCPHammer):
-    def __init__(self, verify):
-        TCPHammer.__init__(self)
+    def __init__(self, name, verify):
+        TCPHammer.__init__(self, name)
         self.verify = verify
 
     def connect_l4(self, sock):
@@ -28,23 +28,16 @@ class NotVerifyingSSLHammer(SSLHammer):
     This client completely ignores the content of server certificate.
     '''
     def __init__(self):
-        SSLHammer.__init__(self, verify=False)
+        SSLHammer.__init__(self, name='NotVerifyingSSLHammer', verify=False)
 
-
-class VerifyingSSLHammer(SSLHammer):
-    '''
-    This client does proper verification of server certificate.
-    '''
-    def __init__(self):
-        SSLHammer.__init__(self, verify=True)
 
 class VerifyingSSLHammer(SSLHammer):
     '''
     This client only matches CN
     '''
     def __init__(self, cn):
-        SSLHammer.__init__(self, verify=True)
         self.cn = cn
+        SSLHammer.__init__(self, name='VerifyingSSLHammer(cn=%s)' % (self.cn), verify=True)
 
         self.init_ssl(M2Crypto.SSL.verify_peer | M2Crypto.SSL.verify_fail_if_no_peer_cert, 10, self.verify_callback)
 

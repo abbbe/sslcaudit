@@ -76,7 +76,7 @@ class Main(Thread):
 
     def handle_result(self, res):
         if isinstance(res, ClientConnectionAuditResult):
-            print "%-16s %-32s %-32s %s" % (res.client_id, self.options.test_name, res.auditor_id, res.audit_res)
+            print "%-10s %-48s %-32s %s" % (res.client_id, self.options.test_name, res.auditor_id, res.audit_res)
 
     def run(self):
         '''
