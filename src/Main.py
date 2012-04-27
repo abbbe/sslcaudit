@@ -23,7 +23,8 @@ class Main(Thread):
         parser.add_option("-p", dest="listen_port", default=DEFAULT_PORT, help="Listening port")
         parser.add_option("-m", dest="module", default=SSLCERT_MODULE_NAME, help="Audit module (sslcert by default)")
         parser.add_option("-d", dest="debug_level", default=0, help="Debug level")
-        parser.add_option("-n", dest="nclients", default=1, help="Number of clients to handle before quitting")
+        parser.add_option("-c", dest="nclients", default=1, help="Number of clients to handle before quitting")
+        parser.add_option("-N", dest="test_name", help="User-specified name of the test")
 
         parser.add_option("--no-default-cn", action="store_true", default=False, dest="no_default_cn",
             help=("Do not use default CN (%s)" % (DEFAULT_X509_SELFSIGNED_CERT_CN)))
@@ -71,12 +72,11 @@ class Main(Thread):
     def stop(self):
         # signal the thread to stop
         self.do_stop = True
-        # free up server resources
-        #self.server.socket.close()
+
 
     def handle_result(self, res):
         if isinstance(res, ClientConnectionAuditResult):
-            print res
+            print "%-16s %-32s %-32s %s" % (res.client_id, self.options.test_name, res.auditor_id, res.audit_res)
 
     def run(self):
         '''

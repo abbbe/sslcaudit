@@ -16,9 +16,6 @@ class ClientConnectionAuditResult(ClientConnectionAuditEvent):
         ClientConnectionAuditEvent.__init__(self, auditor_id, client_id)
         self.audit_res = audit_res
 
-    def __str__(self):
-        return "%s %s %s" % (self.client_id, self.auditor_id, self.audit_res)
-
 
 class AuditResult(object):
     def __eq__(self, other):

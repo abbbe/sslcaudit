@@ -92,7 +92,7 @@ class TestMain(unittest.TestCase):
         '''
         Plain TCP client causes unexpected UNEXPECTED_EOF instead of UNKNOWN_CA
         '''
-        self._main_test(SSLCERT_MODULE_NAME, TCPHammer,
+        self._main_test("sslcert_bad_client", SSLCERT_MODULE_NAME, TCPHammer,
             [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
                 NegativeAuditResult(SSLClientAuditorSet.UNEXPECTED_EOF, SSLClientAuditorSet.UNKNOWN_CA))])
 
@@ -100,7 +100,7 @@ class TestMain(unittest.TestCase):
         '''
         A client which fails to verify the chain of trust reports no error
         '''
-        self._main_test(SSLCERT_MODULE_NAME, NotVerifyingSSLHammer,
+        self._main_test('sslcert_notverifying_client ', SSLCERT_MODULE_NAME, NotVerifyingSSLHammer,
             [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
                 NegativeAuditResult(SSLClientAuditorSet.OK, SSLClientAuditorSet.UNKNOWN_CA))])
 
@@ -108,34 +108,31 @@ class TestMain(unittest.TestCase):
         '''
         A client which only verifies CN will report OK
         '''
-        self._main_test(SSLCERT_MODULE_NAME, VerifyingSSLHammer,
+        self._main_test('sslcert_cn_verifying_client', SSLCERT_MODULE_NAME, VerifyingSSLHammer,
             [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1', PositiveAuditResult(SSLClientAuditorSet.UNKNOWN_CA))])
 
     def test_sslcert_verifying_client(self):
         '''
         A client which properly verifies the certificate reports UNKNOWN_CA
         '''
-        self._main_test(SSLCERT_MODULE_NAME, VerifyingSSLHammer,
+        self._main_test('sslcert_verifying_client', SSLCERT_MODULE_NAME, VerifyingSSLHammer,
             [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1', PositiveAuditResult(SSLClientAuditorSet.UNKNOWN_CA))])
 
-    def _main_test(self, module, hammer_class, expected_results, debug=0):
+    def _main_test(self, test_name, module, hammer_class, expected_results, debug=0):
         '''
         This is a main worker function. It allocates external resources and launches threads,
         to make sure they are freed this function was to be called exactly once per test method,
         to allow tearDown() method to cleanup properly.
         '''
-        self._main_test_init(module, hammer_class, debug)
+        self._main_test_init(test_name, module, hammer_class, debug)
         self._main_test_do(expected_results)
 
-    def _main_test_init(self, module, hammer_class, debug=0):
-        '''
-        Abstract tester function.
-        '''
+    def _main_test_init(self, test_name, module, hammer_class, debug=0):
         # allocate port
         port = get_next_listener_port()
 
         # create main, the target of the test
-        self.main = Main(['-d', debug, '-m', module, '-l', TEST_LISTENER_ADDR, '-p', port])
+        self.main = Main(['-d', debug, '-m', module, '-l', TEST_LISTENER_ADDR, '-N', test_name, '-p', port])
 
         # collect classes of observed audit results
         self.actual_results = []
