@@ -30,14 +30,14 @@ class TestMainSSL(TestCase):
                 ClientConnectionAuditResult(('user_cn', 'self'), '127.0.0.1', NegativeAuditResult(OK, UNKNOWN_CA))
             ])
 
-#    def test_verifying_client(self):
-#        '''
-#        A client which properly verifies the certificate reports UNKNOWN_CA
-#        '''
-#        self._main_test([], VerifyingSSLHammer(TestConfig.SSL_CLIENT_EXPECTED_CN),
-#            [ClientConnectionAuditResult('def_cn/self_signed', '127.0.0.1',
-#                PositiveAuditResult(UNKNOWN_CA))])
-#
+    def test_verifying_client(self):
+        ''' A client which properly verifies the certificate reports UNKNOWN_CA '''
+        self._main_test(['--cn', "dummy"], VerifyingSSLHammer(TestConfig.SSL_CLIENT_EXPECTED_CN),
+            [
+                ClientConnectionAuditResult(('default_cn', 'self'), '127.0.0.1', PositiveAuditResult(UNKNOWN_CA)),
+                ClientConnectionAuditResult(('user_cn', 'self'), '127.0.0.1', PositiveAuditResult(UNKNOWN_CA))
+            ])
+
 #    #    def test_cn_verifying_client1(self):
 #    #        '''
 #    #        A client which only verifies CN, but not the chain of trust will ?
