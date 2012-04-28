@@ -97,7 +97,7 @@ class SSLClientAuditorSet(ClientAuditorSet):
             self.auditors.append(auditor)
 
     def _init_signedtests(self, cn, ca_certnkey):
-        certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey)
+        certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=ca_certnkey)
         auditor = SSLClientConnectionAuditor(self.proto, certnkey)
         self.auditors.append(auditor)
 

@@ -19,7 +19,7 @@ class TestM2CryptoBug(unittest.TestCase):
         '''
         pk = EVP.PKey()
         k = RSA.gen_key(1024, 65537, util.no_passphrase_callback)
-        pk.assign_rsa(k)
+        pk.assign_rsa(k, capture=False)
         self._save(k)
 
     def _gen_key(self, do_assign):
@@ -27,7 +27,7 @@ class TestM2CryptoBug(unittest.TestCase):
         k = RSA.gen_key(1024, 65537, util.no_passphrase_callback)
         if do_assign:
             # apparently, this operation breaks save_key later ok
-            pk.assign_rsa(k)
+            pk.assign_rsa(k, capture=False)
         return k
 
     def test_func_noassign(self):

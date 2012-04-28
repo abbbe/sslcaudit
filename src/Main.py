@@ -32,8 +32,6 @@ class Main(Thread):
         parser.add_option("-c", dest="nclients", default=1, help="Number of clients to handle before quitting")
         parser.add_option("-N", dest="test_name", help="User-specified name of the test")
 
-        parser.add_option("--no-default-cn", action="store_true", default=False, dest="no_default_cn",
-            help=("Do not use default CN (%s)" % (DEFAULT_CN)))
         parser.add_option("--user-cn", dest="user_cn",
             help="Use specified CN")
         parser.add_option("--server", dest="server",
@@ -42,15 +40,17 @@ class Main(Thread):
             help="A file with user-supplied certificate")
         parser.add_option("--user-key", dest="user_key_file",
             help="A file with user-supplied key")
-
-        parser.add_option("--no-self-signed", action="store_true", default=False, dest="no_self_signed",
-            help="Don't try self-signed certificates")
-        parser.add_option("--no-cert-signed", action="store_true", default=False, dest="no_cert_signed",
-            help="Do not sign server certificates with user-supplied one")
         parser.add_option("--user-ca-cert", dest="user_ca_cert_file",
             help="A file with a cert for CA, useful for testing sslcaudit itself")
         parser.add_option("--user-ca-key", dest="user_ca_key_file",
             help="A file with a key for CA, useful for testing sslcaudit itself")
+
+        parser.add_option("--no-default-cn", action="store_true", default=False, dest="no_default_cn",
+            help=("Do not use default CN (%s)" % (DEFAULT_CN)))
+        parser.add_option("--no-self-signed", action="store_true", default=False, dest="no_self_signed",
+            help="Don't try self-signed certificates")
+        parser.add_option("--no-user-cert-signed", action="store_true", default=False, dest="no_user_cert_signed",
+            help="Do not sign server certificates with user-supplied one")
 
         (options, args) = parser.parse_args(argv)
 

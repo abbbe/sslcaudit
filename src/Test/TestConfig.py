@@ -8,7 +8,7 @@ import os
 
 TEST_MAIN_JOIN_TIMEOUT = 5
 
-TEST_USER_CN = 'nonexistent2.gremwell.com'
+TEST_USER_CN = 'user-cn.nonexistent.gremwell.com'
 
 TEST_SERVER_HOST = 'gmail.google.com'
 TEST_SERVER_PORT = 443
