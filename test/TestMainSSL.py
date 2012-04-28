@@ -16,14 +16,6 @@ from src.Test.TestConfig import *
 
 SELF = 'SELF' # XXX to be moved away
 
-TEST_USER_CERT_CN = 'sslcaudit-test.gremwell.com'
-TEST_USER_CERT_FILE = 'test/sslcaudit-test.gremwell.com-cert.pem'
-TEST_USER_KEY_FILE = 'test/sslcaudit-test.gremwell.com-key.pem'
-
-TEST_USER_CA_CN = 'sslcaudit-test'
-TEST_USER_CA_CERT_FILE = 'test/sslcaudit-test-cacert.pem'
-TEST_USER_CA_KEY_FILE = 'test/sslcaudit-test-cakey.pem'
-
 class ExpectedSSLClientConnectionAuditResult(object):
     def __init__(self, cert_name, client_id, res):
         self.cert_name = cert_name
