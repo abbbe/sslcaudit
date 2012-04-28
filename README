@@ -99,6 +99,8 @@ FUTURE FEATURES
  Support SSL server-side tests to allow end-to-end analysis of client-server communication
  Optionally run same test test several times, to detect random glitches
  Embedded HTTP server to automate testing of web browsers
+ Allow certificate and private key to be specified in a single file
+ Support password-protected private keys
 
 REFERENCES
 
