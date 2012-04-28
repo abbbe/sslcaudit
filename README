@@ -8,11 +8,11 @@ When it comes to client security, things are less advanced. Till recently [SSL-S
 most interesting effort in this direction. (We don't consider [SSL-STRIP] which is a social-engineering attack tool).
 A recent Blackhat presentation [BH-SSL-TTRUST] focuses on security issues introduced by SSL-aware proxies, and contains
 a good overview of common implementation flaws. The authors of that presentation have published an online testing
-service [SSL-TEST] for web browsers.
+service [SSL-TEST] suitable for testing web browsers.
 
-The goal of this project is to develop a tool for off-line MITM testing of any SSL/TLS clients (not necessary HTTPS),
+The goal of this project, sslcaudit, is to develop a tool for off-line MITM testing of any SSL/TLS clients (not necessary HTTPS),
 suitable for professional use. The latter basically means decent evidence gathering and reporting functionality. Our
-objective is to make security audits of SSL clients (thick clients, mobile devices, appliances, etc) easier.
+objective is to make security audits of SSL clients (thick clients, mobile devices, appliances, etc) less labour-intensive.
 
 WHAT WE TEST FOR
 
@@ -37,7 +37,7 @@ Protocol-level security issues which might allow MITM:
  P3. Do not support weak key exchange protocols, low key lengths, low ciphers strengths
 
 P1 leads to theoretical possibility of cipher downgrade attacks. To our knowledge practical exploitation is tricky, no
-free or commercial tool exist (XXX-TBC). P2 is reported to allow for cookie theft in web browsers, and has a prerequisite
+free or commercial tool exist (XXX-TBC). P2 was demonstrated to allow cookie theft in web browsers, and has a prerequisite
 of an attacker being able to inject malicious JavaScript code into victim's browser [BS-BEAST]. As far as P3 is concerned,
 if strong ciphers are supported by the peers, the presence of weak ones is only exploitable via cipher downgrade attack (XXX-TBC).
 
@@ -55,19 +55,17 @@ unprotected key must be supplied along with certificates.
 Sslcaudit automatically generates certificates with the following properties:
 
   1. With hardcoded CN (nonexistent.gremwell.com). Can be disabled with --no-default-cn
-  2. With user-specified CN. To enable use --cn=CN
-  3*. Matching attributes of a certificate fetched from from user-specified SSL/TLS server.
+  2. With user-specified CN. To enable use --user-cn=
+  3. Matching attributes of a certificate fetched from from user-specified SSL/TLS server.
   To enable use --server HOST:PORT
-
-*) will be in v1.1
 
 Each certificate will be signed in the following ways:
 
   1. Self-signed. To disable, specify --no-self-signed.
-  2. Signed by user-supplied certificate. Default if certificate is supplied with --cert option. The certificate
-     is expected to be valid but NOT good for CA purposes. This is used to test handling of basicConstraints.
-     To disable use --no-cert-signed.
-  3. Signed by known good CA. To enable use --good-ca=CERTFILE. The certificate is expected to be trusted by the client.
+  2. Signed by user-supplied certificate. Default if certificate is supplied with --user-cert= and --user-key= options.
+     The certificate should be valid but NOT good for CA purposes. This is used to test handling of basicConstraints.
+     To disable use --no-user-cert-signed.
+  3. Signed by known good CA. To enable use --user-ca-cert= and --user-ca-key=. The certificate is expected to be trusted by the client.
      This is used for test purposes.
 
 The final certificates used for testing will be the product of these two sets of options. The only exception is #4 in

@@ -49,18 +49,18 @@ class SSLClientAuditorSet(ClientAuditorSet):
 
         self.init_user_cert()
         self.init_self_signed()
-        self.init_userca_signed()
+        self.init_user_cert_signed()
+        self.init_user_ca_signed()
 
         ClientAuditorSet.__init__(self, self.auditors)
 
     def init_user_cert(self):
+        '''
+        This method initializes an auditor using user-supplied certificate as is
+        '''
         if self.user_certnkey != None:
-            # create an auditor using user-supplied certificate as is
             auditor = SSLClientConnectionAuditor(self.proto, self.user_certnkey)
             self.auditors.append(auditor)
-
-            # create a set of auditors using user-supplied certificate as CA
-            self._init_signed(ca_certnkey=self.user_certnkey)
 
     def init_self_signed(self):
         '''
@@ -69,7 +69,14 @@ class SSLClientAuditorSet(ClientAuditorSet):
         if not self.options.no_self_signed:
             self._init_signed(ca_certnkey=None)
 
-    def init_userca_signed(self):
+    def init_user_cert_signed(self):
+        '''
+        This method initializes auditors using user-supplied certificate as CA
+        '''
+        if self.user_certnkey != None:
+            self._init_signed(ca_certnkey=self.user_certnkey)
+
+    def init_user_ca_signed(self):
         '''
         This method initializes auditors using certificates signed by known good CA
         '''
@@ -87,7 +94,7 @@ class SSLClientAuditorSet(ClientAuditorSet):
             self._init_signedtests(self.options.user_cn, ca_certnkey)
 
         if self.server_x509_cert != None:
-            # automatically generated certificate, replicated after a user-specified server cert, selfsigned
+            # automatically generated certificate, replicated after server cert, selfsigned
             if ca_certnkey == None:
                 certnkey = self.cert_factory.mk_selfsigned_replica_certnkey(self.server_x509_cert)
             else:

@@ -92,7 +92,7 @@ class CertFactory(object):
         #ext = X509.new_extension('nsCertType', 'SSL Server')
         #exts.append(ext)
 
-        return self._mk_selfsigned_certnkey(2, 1, not_before, not_after, subj, 1024, exts)
+        return self._mk_signed_certnkey(2, 1, not_before, not_after, subj, 1024, exts)
 
     def _mk_simple_signed_certnkey(self, cn, country, org, ca_certnkey):
         '''
@@ -114,7 +114,7 @@ class CertFactory(object):
 
         # build a list of extensions
         exts = []
-        return self._mk_selfsigned_certnkey(2, 1, not_before, not_after, subj, 1024, exts, ca_certnkey)
+        return self._mk_signed_certnkey(2, 1, not_before, not_after, subj, 1024, exts, ca_certnkey)
 
     def mk_selfsigned_replica_certnkey(self, orig_cert):
         '''
@@ -145,9 +145,9 @@ class CertFactory(object):
         for i in range(orig_cert.get_ext_count()):
             exts.append(orig_cert.get_ext_at(i))
 
-        return self._mk_selfsigned_certnkey(version, serial_number, not_before, not_after, subj, bits, exts)
+        return self._mk_signed_certnkey(version, serial_number, not_before, not_after, subj, bits, exts)
 
-    def _mk_selfsigned_certnkey(self, version, serial_number, not_before, not_after, subj, bits, exts, ca_certnkey=None):
+    def _mk_signed_certnkey(self, version, serial_number, not_before, not_after, subj, bits, exts, ca_certnkey=None):
         '''
         This function generates a self signed certificate with given attributes.
         It returns the certificate and the private key. Normally used internally only.
