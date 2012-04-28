@@ -5,9 +5,12 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 import M2Crypto
-from ovs.reconnect import CONNECT
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.ClientAuditor.ClientConnectionAuditor import ClientConnectionAuditor
+
+UNKNOWN_CA = 'tlsv1 alert unknown ca'
+UNEXPECTED_EOF = 'unexpected eof'
+CONNECTED = 'connected'
 
 class SSLClientConnectionAuditor(ClientConnectionAuditor):
     def __init__(self, proto, certnkey):
@@ -28,7 +31,7 @@ class SSLClientConnectionAuditor(ClientConnectionAuditor):
             ssl_conn.setup_ssl()
             ssl_conn.accept_ssl()
 
-            res = CONNECT
+            res = CONNECTED
         except Exception as ex:
             res = ex.message
 

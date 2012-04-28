@@ -10,9 +10,11 @@ from tempfile import NamedTemporaryFile
 from M2Crypto import X509, ASN1, RSA, EVP, util, SSL
 import time
 
-DEFAULT_X509_CN = "nonexistent.gremwell.com"
-DEFAULT_X509_C = "BE"
-DEFAULT_X509_O = "Gremwell bvba"
+DEFAULT_X509_CN = 'nonexistent.gremwell.com'
+DEFAULT_X509_C = 'BE'
+DEFAULT_X509_O = 'Gremwell bvba'
+
+SELFSIGNED = 'SELF'
 
 class CertAndKey(object):
     '''
@@ -114,7 +116,7 @@ class CertFactory(object):
 
         # XXX arrange for evidence preservation
 
-        return CertAndKey((subj.CN, 'SELF'), cert, cert_file.name, key_file.name)
+        return CertAndKey((subj.CN, SELFSIGNED), cert, cert_file.name, key_file.name)
 
     def mk_selfsigned_replica_certnkey(self, orig_cert):
         '''

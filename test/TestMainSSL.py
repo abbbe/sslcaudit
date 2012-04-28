@@ -5,16 +5,15 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 import logging, unittest
-from ovs.reconnect import CONNECT
+from src.CertFactory import SELFSIGNED
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.ClientAuditor.SSL.SSLClientAuditorSet import UNEXPECTED_EOF, UNKNOWN_CA, DEFAULT_CN
+from src.ClientAuditor.SSL.SSLClientAuditorSet import DEFAULT_CN
+from src.ClientAuditor.SSL.SSLClientConnectionAuditor import CONNECTED, UNEXPECTED_EOF, UNKNOWN_CA
 from src.Main import Main
 from src.Test import TestConfig
 from src.Test.SSLHammer import NotVerifyingSSLHammer, VerifyingSSLHammer
 from src.Test.TCPHammer import TCPHammer
 from src.Test.TestConfig import *
-
-SELF = 'SELF' # XXX to be moved away
 
 class ExpectedSSLClientConnectionAuditResult(object):
     def __init__(self, cert_name, client_id, res):
@@ -54,8 +53,8 @@ class TestMainSSL(unittest.TestCase):
             ],
             TCPHammer(),
             [
-                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELF), '127.0.0.1', UNEXPECTED_EOF),
-                ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, SELF), '127.0.0.1', UNEXPECTED_EOF),
+                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELFSIGNED), '127.0.0.1', UNEXPECTED_EOF),
+                ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, SELFSIGNED), '127.0.0.1', UNEXPECTED_EOF),
                 ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, TEST_USER_CA_CN), '127.0.0.1', UNEXPECTED_EOF),
                 ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, TEST_USER_CA_CN), '127.0.0.1', UNEXPECTED_EOF)
             ])
@@ -69,8 +68,8 @@ class TestMainSSL(unittest.TestCase):
             ],
             TCPHammer(),
             [
-                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELF), '127.0.0.1', UNEXPECTED_EOF),
-                ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, SELF), '127.0.0.1', UNEXPECTED_EOF),
+                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELFSIGNED), '127.0.0.1', UNEXPECTED_EOF),
+                ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, SELFSIGNED), '127.0.0.1', UNEXPECTED_EOF),
                 ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, TEST_USER_CERT_CN), '127.0.0.1', UNEXPECTED_EOF),
                 ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, TEST_USER_CERT_CN), '127.0.0.1', UNEXPECTED_EOF)
             ])
@@ -84,9 +83,9 @@ class TestMainSSL(unittest.TestCase):
             ],
             NotVerifyingSSLHammer(),
             [
-                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELF), '127.0.0.1', CONNECT),
-                ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, SELF), '127.0.0.1', CONNECT),
-                ExpectedSSLClientConnectionAuditResult((TEST_SERVER_CN, SELF), '127.0.0.1', CONNECT)
+                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELFSIGNED), '127.0.0.1', CONNECTED),
+                ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, SELFSIGNED), '127.0.0.1', CONNECTED),
+                ExpectedSSLClientConnectionAuditResult((TEST_SERVER_CN, SELFSIGNED), '127.0.0.1', CONNECTED)
             ])
 
     def test_verifying_client(self):
@@ -98,9 +97,9 @@ class TestMainSSL(unittest.TestCase):
             ],
             VerifyingSSLHammer(TEST_USER_CN),
             [
-                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELF), '127.0.0.1', UNKNOWN_CA),
-                ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, SELF), '127.0.0.1', UNKNOWN_CA),
-                ExpectedSSLClientConnectionAuditResult((TEST_SERVER_CN, SELF), '127.0.0.1', UNKNOWN_CA)
+                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELFSIGNED), '127.0.0.1', UNKNOWN_CA),
+                ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, SELFSIGNED), '127.0.0.1', UNKNOWN_CA),
+                ExpectedSSLClientConnectionAuditResult((TEST_SERVER_CN, SELFSIGNED), '127.0.0.1', UNKNOWN_CA)
             ])
 
     # ------------------------------------------------------------------------------------

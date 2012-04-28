@@ -9,9 +9,6 @@ from src.ClientAuditor.ClientAuditorSet import ClientAuditorSet
 from src.ClientAuditor.SSL.SSLClientConnectionAuditor import SSLClientConnectionAuditor
 
 DEFAULT_CN = 'nonexistent.gremwell.com'
-UNKNOWN_CA = 'tlsv1 alert unknown ca'
-UNEXPECTED_EOF = 'unexpected eof'
-CONNECTED = 'connected'
 
 class SSLClientAuditorSet(ClientAuditorSet):
     def __init__(self, name, options):
