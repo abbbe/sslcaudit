@@ -92,15 +92,13 @@ Other options: XXX
  -p TCPPORT
  -l IPADDR
 
-FUTURE
+FUTURE FEATURES
 
- * Resolve server name (now IP address is required)
- * Support IPv6 properly
- * Support protocol-level tests
- * Develop SSL Client Rating scheme
- * Support SSL server-side tests to allow end-to-end analysis of client-server communication
- * Optionally run same test test several times, to detect random glitches
- * Embedded HTTP server to automate testing of web browsers
+ Support protocol-level tests
+ Develop SSL Client Rating scheme
+ Support SSL server-side tests to allow end-to-end analysis of client-server communication
+ Optionally run same test test several times, to detect random glitches
+ Embedded HTTP server to automate testing of web browsers
 
 REFERENCES
 
