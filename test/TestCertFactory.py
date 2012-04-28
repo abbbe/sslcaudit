@@ -3,6 +3,7 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
+
 import unittest
 from src.CertFactory import *
 from src.Test.TestConfig import *
@@ -33,5 +34,5 @@ class TestCertFactory(unittest.TestCase):
 
 
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()
 

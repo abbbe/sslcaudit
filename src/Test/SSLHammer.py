@@ -3,6 +3,7 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
+
 import M2Crypto
 from src.Test.TCPHammer import TCPHammer
 
@@ -32,6 +33,7 @@ class NotVerifyingSSLHammer(SSLHammer):
     '''
     This client completely ignores the content of server certificate.
     '''
+
     def __init__(self):
         SSLHammer.__init__(self, name='NotVerifyingSSLHammer', verify=False)
 
@@ -40,6 +42,7 @@ class VerifyingSSLHammer(SSLHammer):
     '''
     This client only matches CN
     '''
+
     def __init__(self, cn):
         self.cn = cn
         SSLHammer.__init__(self, name='VerifyingSSLHammer(cn=%s)' % (self.cn), verify=True)
@@ -47,4 +50,4 @@ class VerifyingSSLHammer(SSLHammer):
         self.init_ssl(M2Crypto.SSL.verify_peer | M2Crypto.SSL.verify_fail_if_no_peer_cert, 10, self.verify_callback)
 
     def verify_callback(self):
-            pass
+        pass

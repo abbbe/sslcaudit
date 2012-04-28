@@ -3,11 +3,13 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
+
 class ClientConnectionAuditor(object):
     '''
     Base class for a client connection auditor. It has to contain information needed by handle() method
     to perform some specific tests of a single client connection.
     '''
+
     def __init__(self, name):
         self.name = name
 

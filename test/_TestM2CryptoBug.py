@@ -3,6 +3,7 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
+
 import unittest
 from tempfile import NamedTemporaryFile
 from M2Crypto import RSA, EVP, util
@@ -11,6 +12,7 @@ class TestM2CryptoBug(unittest.TestCase):
     '''
     This unittest reproduces segfault in RSA.save_key()
     '''
+
     def test_plain(self):
         '''
         generate keypair and save it
@@ -32,14 +34,14 @@ class TestM2CryptoBug(unittest.TestCase):
         '''
         same as above, but move key generation code into another method
         '''
-        k = self._gen_key(do_assign = False)
+        k = self._gen_key(do_assign=False)
         self._save(k)
 
     def test_func_assign(self):
         '''
         same as above, but don't do assign pkey
         '''
-        k = self._gen_key(do_assign = True)
+        k = self._gen_key(do_assign=True)
         self._save(k)
 
     def _save(self, k):
@@ -47,4 +49,4 @@ class TestM2CryptoBug(unittest.TestCase):
         k.save_key(f.name, None)
 
 if __name__ == '__main__':
-        unittest.main()
+    unittest.main()
