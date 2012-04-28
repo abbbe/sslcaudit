@@ -178,8 +178,10 @@ class CertFactory(object):
         # sign
         if ca_certnkey != None:
             cert.sign(ca_certnkey.pkey, hash)
+            signedby = ca_certnkey.name
         else:
             cert.sign(pkey, hash)
+            signedby = SELFSIGNED
 
         cert_file = NamedTemporaryFile(delete=False)
         cert_file.write(cert.as_text())
@@ -192,7 +194,7 @@ class CertFactory(object):
 
         # XXX arrange for evidence preservation
 
-        return CertAndKey((subj.CN, SELFSIGNED), cert_file.name, key_file.name, cert, pkey)
+        return CertAndKey((subj.CN, signedby), cert_file.name, key_file.name, cert, pkey)
 
     def grab_server_x509_cert(self, server):
         '''

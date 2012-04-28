@@ -34,7 +34,7 @@ class ExpectedSSLClientConnectionAuditResult(object):
         return audit_res.res == self.res
 
     def __str__(self):
-        return "%s %s %s" % (self.cert_name, self.client_id, self.res)
+        return "ECCAR(%s, %s, %s)" % (self.cert_name, self.client_id, self.res)
 
 
 class TestMainSSL(unittest.TestCase):
@@ -167,17 +167,21 @@ class TestMainSSL(unittest.TestCase):
             # stop the server
             self.main.stop()
 
-        if expected_results != self.actual_results:
-            if len(expected_results) != len(self.actual_results):
-                print "* length mismatch len(er)=%d, len(ar)=%d" % (len(expected_results), len(self.actual_results))
-                for er in expected_results: print "er=%s" % er
-                for ar in self.actual_results: print "ar=%s" % ar
-            else:
-                for i in range(len(expected_results)):
-                    er = expected_results[i]
-                    ar = self.actual_results[i]
-                    if not er.matches(ar):
-                        print "* mismatch\n\ter=%s\n\tar=%s" % (er, ar)
+        # check if the actual results match expected ones
+        if len(expected_results) != len(self.actual_results):
+            mismatch = True
+            print "! length mismatch len(er)=%d, len(ar)=%d" % (len(expected_results), len(self.actual_results))
+            for er in expected_results: print "er=%s" % er
+            for ar in self.actual_results: print "ar=%s" % ar
+        else:
+            mismatch = False
+            for i in range(len(expected_results)):
+                er = expected_results[i]
+                ar = self.actual_results[i]
+                if not er.matches(ar):
+                    print "! mismatch\n\ter=%s\n\tar=%s" % (er, ar)
+                    mismatch = True
+        self.assertFalse(mismatch)
 
 if __name__ == '__main__':
     unittest.main()
