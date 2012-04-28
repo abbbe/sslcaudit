@@ -3,8 +3,10 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
+import socket
+
 from tempfile import NamedTemporaryFile
-from M2Crypto import X509, ASN1, RSA, EVP, util
+from M2Crypto import X509, ASN1, RSA, EVP, util, SSL
 import time
 
 DEFAULT_X509_CN = "nonexistent.gremwell.com"
@@ -25,12 +27,9 @@ class CertAndKey(object):
         return str(self.name)
 
 class CertFactory(object):
-    def grab_server_cert(self, server):
-        raise NotImplemented()
-
     def new_certnkey(self, cn, ca_certnkey):
         if ca_certnkey != None:
-            raise NotImplemented()
+            raise NotImplemented() # XXX really need to implement this one
         else:
             return self.mk_simple_selfsigned_certnkey(cn, DEFAULT_X509_C, DEFAULT_X509_O)
 
@@ -103,6 +102,75 @@ class CertFactory(object):
         rsa_keypair.save_key(key_file.name, None)
         key_file.close()
 
-        # XXX arrange for temporary files removal
+        # XXX arrange for evidence preservation
 
         return CertAndKey((subj.CN, 'SELF'), cert, cert_file.name, key_file.name)
+
+    def mk_selfsigned_replica_certnkey(self, orig_cert):
+        '''
+        This function creates a self-signed replica of the given certificate. It returns a tuple of certificate and
+        Most of the fields of the original certificates are replicated:
+         * key length
+         * subject
+         * validity dates
+         * serial number
+         * version
+         * extensions
+        Couple parameters don't get replicated (because I don't know where to find them in M2Crypto.X509 object):
+         * public key exponent which is fixed to 65537,
+         * signature algorithm which is fixed to sha1WithRSAEncryption.
+        '''
+        public_key = orig_cert.get_pubkey()
+        bits = public_key.get_rsa().__len__()
+        subj = orig_cert.get_subject()
+        not_after = orig_cert.get_not_after()
+        not_before = orig_cert.get_not_before()
+        serial_number = orig_cert.get_serial_number()
+        version = orig_cert.get_version()
+        exts = []
+        for i in range(orig_cert.get_ext_count()):
+            exts.append(orig_cert.get_ext_at(i))
+
+        return self._mk_selfsigned_certnkey(version, serial_number, not_before, not_after, subj, bits, exts)
+
+    def grab_server_x509_cert(self, host, port):
+        '''
+        This function connects to the specified server and grabs its certificate.
+        '''
+        # create context
+        ctx = SSL.Context() # XXX should we try different protocols here
+        ctx.set_allow_unknown_ca(True)
+        ctx.set_verify(SSL.verify_none, 0)
+
+        # socket
+        sock = socket.create_connection((host, port))
+
+        # establish connection
+        sslsock = SSL.Connection(ctx, sock=sock)
+        sslsock.set_post_connection_check_callback(None)
+        sslsock.setup_ssl()
+        sslsock.set_connect_state()
+        sslsock.connect_ssl()
+
+        # grab server certificate and shut the connection
+        server_cert = sslsock.get_peer_cert()
+        sslsock.close()
+
+        return server_cert
+
+#    def grab_server_x509_cert(self, host, port):
+#        '''
+#        This is another way to do the same
+#        '''
+#        import ssl
+#        cert_pem = ssl.get_server_certificate((host, port))
+#        return X509.load_cert_string(cert_pem, X509.FORMAT_PEM)
+#
+
+    def load_certnkey_files(self, cert_file, key_file):
+	'''
+	This function loads the content of the certificate file
+	and initalizes pathes to the certificate and the key.
+	'''
+        x509_cert = X509.load_cert(cert_file)
+        return CertAndKey(x509_cert.get_subject().CN, x509_cert, cert_file, key_file)

@@ -17,31 +17,47 @@ class SSLClientAuditorSet(ClientAuditorSet):
         self.name = name
         self.options = options
 
-        self.proto = 'sslv23'
+        self.proto = 'sslv23' # XXX
         self.cert_factory = CertFactory()
 
+        # handle --server= option
         if self.options.server != None:
-            # fetch a certificate from user-specified server
-            # cache the certificate, may be reused later on
-            self.server_cert = self.cert_factory.grab_server_cert(self.options.server)
+            # fetch X.509 certificate from user-specified server
+            (host, port) = self.options.server.split(':')
+            self.server_x509_cert = self.cert_factory.grab_server_x509_cert(host, int(port))
         else:
-            self.server_cert = None
+            self.server_x509_cert = None
+
+        # handle --user-cert= and --user-key= options
+        if (self.options.user_cert_file != None) and (self.options.user_key_file != None):
+            self.user_certnkey = self.cert_factory.load_certnkey_files(
+                self.options.user_cert_file, self.options.user_key_file)
+        else:
+            self.user_certnkey = None
+
+        # handle --user-ca-cert= and --user-ca-key= options
+        if (self.options.user_ca_cert_file != None) and (self.options.user_ca_key_file != None):
+            self.user_ca_certnkey = self.cert_factory.load_certnkey_files(
+                self.options.user_ca_cert_file, self.options.user_ca_key_file)
+        else:
+            self.user_ca_certnkey = None
 
         self.auditors = []
-#        self.init_usercert()
+
+        self.init_user_cert()
         self.init_self_signed()
-#        self.init_goodca_signed()
+        self.init_userca_signed()
 
         ClientAuditorSet.__init__(self, self.auditors)
 
-#    def init_usercert(self):
-#        if self.options.cert_file != None:
-#            # expected to fail with invalid CA error
-#            certnkey = self.cert_factory.load_certnkey('huh', self.options.cert_file)
-#            expect_failure = "CN mismatch"
-#            auditor = SSLClientConnectionAuditor('usercert', 'zzz', self.proto, certnkey,
-#                expect_failure=expect_failure)
-#            self.auditors.append(auditor)
+    def init_user_cert(self):
+        if self.user_certnkey != None:
+            # create an auditor using user-supplied certificate as is
+            auditor = SSLClientConnectionAuditor(self.proto, self.user_certnkey)
+            self.auditors.append(auditor)
+
+            # create a set of auditors using user-supplied certificate as CA
+            self._init_signed(ca_certnkey=self.user_certnkey)
 
     def init_self_signed(self):
         '''
@@ -50,19 +66,12 @@ class SSLClientAuditorSet(ClientAuditorSet):
         if not self.options.no_self_signed:
             self._init_signed(ca_certnkey=None)
 
-#    def init_usercert_signed(self):
-#        '''
-#        This method initializes auditors using certificates signed by user-specified cert
-#        '''
-#        if self.options.cert_file != None:
-#            self._init_signed('usercert', cacert_file=self.options.cert_file, expect_trust=False)
-
-    def init_goodca_signed(self):
+    def init_userca_signed(self):
         '''
         This method initializes auditors using certificates signed by known good CA
         '''
-        if self.options.user_ca_certnkey != None:
-            self._init_signed(ca_certnkey=self.options.user_ca_certnkey)
+        if self.user_ca_certnkey != None:
+            self._init_signed(ca_certnkey=self.user_ca_certnkey)
 
     def _init_signed(self, ca_certnkey):
         '''
@@ -71,33 +80,21 @@ class SSLClientAuditorSet(ClientAuditorSet):
         if not self.options.no_default_cn:
             self._init_signedtests(DEFAULT_CN, ca_certnkey)
 
-        if self.options.cn != None:
-            self._init_signedtests(self.options.cn, ca_certnkey)
+        if self.options.user_cn != None:
+            self._init_signedtests(self.options.user_cn, ca_certnkey)
+
+        if self.server_x509_cert != None:
+            # automatically generated certificate, replicated after a user-specified server cert, selfsigned
+            if ca_certnkey == None:
+                certnkey = self.cert_factory.mk_selfsigned_replica_certnkey(self.server_x509_cert)
+            else:
+                raise NotImplemented()
+
+            auditor = SSLClientConnectionAuditor(self.proto, certnkey)
+            self.auditors.append(auditor)
 
     def _init_signedtests(self, cn, ca_certnkey):
         certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey)
         auditor = SSLClientConnectionAuditor(self.proto, certnkey)
         self.auditors.append(auditor)
 
-#            certnkey = self.cert_factory.new_certnkey('default_cn/selfsigned', self.options.cn, cacert_file)
-#            if cacert_file != None and expect_trust:
-#                ## assuming user has provided sensible CN, a certificate signed by a trusted CA expected to produce no error
-#                expect_failure = None
-#            else:
-#                ## self signed certificates or ones signed by untrusted CA expected to produce CA error
-#                expect_failure = UNKNOWN_CA
-#            auditor = SSLClientConnectionAuditor(self.proto, certnkey, expect_failure=expect_failure)
-#            self.auditors.append(auditor)
-#
-#        if self.server_cert != None:
-#            # automatically generated certificate, replicated after a user-specified server cert, selfsigned
-#            certnkey = self.cert_factory.new_certnkey(proto_cert=self.server_cert, cacert_file)
-#            if cacert_file != None and expect_trust:
-#                ## assuming user has pointed to a sensible server, a certificate signed by a trusted CA expected to produce no error
-#                expect_failure = None
-#            else:
-#                ## self signed certificates or ones signed by untrusted CA expected to produce CA error
-#                expect_failure = UNKNOWN_CA
-#            auditor = SSLClientConnectionAuditor(self.proto, certnkey, expect_failure=expect_failure)
-#            self.auditors.append(auditor)
-#

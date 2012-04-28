@@ -87,16 +87,15 @@ of sslcaudit. This can be done in number of ways which are outside of the scope 
 of a rogue SSL server, trying different certificates and loging the outcome of the tests. The outcome of the test is
 considered to be positive if SSL/TLS connection is fully established.
 
+Other options: XXX
  -d
  -p TCPPORT
  -l IPADDR
 
-Example:
-
- $ sslcaudit -d -p 8443 -server imaps.gmail.com:imaps --mitm-ca sslcaudit-gremwell-com.pem
-
 FUTURE
 
+ * Resolve server name (now IP address is required)
+ * Support IPv6 properly
  * Support protocol-level tests
  * Develop SSL Client Rating scheme
  * Support SSL server-side tests to allow end-to-end analysis of client-server communication
