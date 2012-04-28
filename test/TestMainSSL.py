@@ -3,6 +3,7 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
+
 import logging, unittest
 from ovs.reconnect import CONNECT
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
@@ -11,12 +12,9 @@ from src.Main import Main
 from src.Test import TestConfig
 from src.Test.SSLHammer import NotVerifyingSSLHammer, VerifyingSSLHammer
 from src.Test.TCPHammer import TCPHammer
+from src.Test.TestConfig import *
 
-TEST_USER_CN = 'nonexistent2.gremwell.com'
-TEST_SERVER = 'gmail.google.com:443'
-TEST_SERVER_CN = '*.google.com'
-
-SELF = 'SELF' # to be moved away
+SELF = 'SELF' # XXX to be moved away
 
 TEST_USER_CERT_CN = 'sslcaudit-test.gremwell.com'
 TEST_USER_CERT_FILE = 'test/sslcaudit-test.gremwell.com-cert.pem'
@@ -106,7 +104,7 @@ class TestMainSSL(unittest.TestCase):
                 '--user-cn', TEST_USER_CN,
                 '--server', TEST_SERVER
             ],
-            VerifyingSSLHammer(TestConfig.SSL_CLIENT_EXPECTED_CN),
+            VerifyingSSLHammer(TEST_USER_CN),
             [
                 ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELF), '127.0.0.1', UNKNOWN_CA),
                 ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, SELF), '127.0.0.1', UNKNOWN_CA),
@@ -169,7 +167,7 @@ class TestMainSSL(unittest.TestCase):
 
         # wait for main to finish its job
         try:
-            self.main.join(timeout=TestConfig.MAIN_JOIN_TIMEOUT)
+            self.main.join(timeout=TestConfig.TEST_MAIN_JOIN_TIMEOUT)
             # on timeout throws exception, which we let propagate after we shut the hammer and the main thread
 
         finally:

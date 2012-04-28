@@ -154,6 +154,11 @@ class CertFactory(object):
         ctx.set_verify(SSL.verify_none, 0)
 
         # socket
+        if isinstance(server, basestring):
+            # not a tuple, expect HOST:PORT formatted string
+            (host, port) = server.split(':')
+            server = (host, int(port))
+
         sock = socket.create_connection(server)
 
         # establish connection

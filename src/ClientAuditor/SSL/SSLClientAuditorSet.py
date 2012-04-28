@@ -23,22 +23,27 @@ class SSLClientAuditorSet(ClientAuditorSet):
         # handle --server= option
         if self.options.server != None:
             # fetch X.509 certificate from user-specified server
-            (host, port) = self.options.server.split(':')
-            self.server_x509_cert = self.cert_factory.grab_server_x509_cert(host, int(port))
+            self.server_x509_cert = self.cert_factory.grab_server_x509_cert(self.options.server)
         else:
             self.server_x509_cert = None
 
         # handle --user-cert= and --user-key= options
         if (self.options.user_cert_file != None) and (self.options.user_key_file != None):
-            self.user_certnkey = self.cert_factory.load_certnkey_files(
-                self.options.user_cert_file, self.options.user_key_file)
+            try:
+                self.user_certnkey = self.cert_factory.load_certnkey_files(
+                    self.options.user_cert_file, self.options.user_key_file)
+            except IOError as ex:
+                raise IOError(ex)
         else:
             self.user_certnkey = None
 
         # handle --user-ca-cert= and --user-ca-key= options
         if (self.options.user_ca_cert_file != None) and (self.options.user_ca_key_file != None):
-            self.user_ca_certnkey = self.cert_factory.load_certnkey_files(
-                self.options.user_ca_cert_file, self.options.user_ca_key_file)
+            try:
+                self.user_ca_certnkey = self.cert_factory.load_certnkey_files(
+                    self.options.user_ca_cert_file, self.options.user_ca_key_file)
+            except IOError as ex:
+                raise IOError(ex)
         else:
             self.user_ca_certnkey = None
 
