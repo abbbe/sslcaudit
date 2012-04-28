@@ -3,6 +3,7 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
+
 import socket
 
 from tempfile import NamedTemporaryFile
@@ -14,6 +15,14 @@ DEFAULT_X509_C = "BE"
 DEFAULT_X509_O = "Gremwell bvba"
 
 class CertAndKey(object):
+    '''
+    This class holds:
+     * object name
+     * X509 certificate object
+     * path to the cert file
+     * path to the key file
+    '''
+
     def __init__(self, name, cert, cert_filename, key_filename):
         self.name = name
         self.cert = cert
@@ -25,6 +34,7 @@ class CertAndKey(object):
 
     def __str__(self):
         return str(self.name)
+
 
 class CertFactory(object):
     def new_certnkey(self, cn, ca_certnkey):
@@ -133,9 +143,10 @@ class CertFactory(object):
 
         return self._mk_selfsigned_certnkey(version, serial_number, not_before, not_after, subj, bits, exts)
 
-    def grab_server_x509_cert(self, host, port):
+    def grab_server_x509_cert(self, server):
         '''
         This function connects to the specified server and grabs its certificate.
+        Expects (server, port) tuple as input.
         '''
         # create context
         ctx = SSL.Context() # XXX should we try different protocols here
@@ -143,7 +154,7 @@ class CertFactory(object):
         ctx.set_verify(SSL.verify_none, 0)
 
         # socket
-        sock = socket.create_connection((host, port))
+        sock = socket.create_connection(server)
 
         # establish connection
         sslsock = SSL.Connection(ctx, sock=sock)
@@ -158,19 +169,19 @@ class CertFactory(object):
 
         return server_cert
 
-#    def grab_server_x509_cert(self, host, port):
-#        '''
-#        This is another way to do the same
-#        '''
-#        import ssl
-#        cert_pem = ssl.get_server_certificate((host, port))
-#        return X509.load_cert_string(cert_pem, X509.FORMAT_PEM)
-#
+    #    def grab_server_x509_cert(self, host, port):
+    #        '''
+    #        This is another way to do the same
+    #        '''
+    #        import ssl
+    #        cert_pem = ssl.get_server_certificate((host, port))
+    #        return X509.load_cert_string(cert_pem, X509.FORMAT_PEM)
+    #
 
     def load_certnkey_files(self, cert_file, key_file):
-	'''
-	This function loads the content of the certificate file
-	and initalizes pathes to the certificate and the key.
-	'''
+        '''
+        This function loads the content of the certificate file
+        and initalizes pathes to the certificate and the key.
+	    '''
         x509_cert = X509.load_cert(cert_file)
         return CertAndKey(x509_cert.get_subject().CN, x509_cert, cert_file, key_file)
