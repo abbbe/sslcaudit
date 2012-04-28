@@ -184,6 +184,7 @@ class TestMainSSL(unittest.TestCase):
             if not er.matches(ar):
                 print "* mismatch er=%s, ar=%s" % (er, ar)
 
+
 if __name__ == '__main__':
     unittest.main()
 

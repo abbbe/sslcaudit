@@ -74,6 +74,7 @@ class TestMainDummy(unittest.TestCase):
         self.assertEquals(self.got_bulk_result, 1)
         self.assertEquals(self.nstray, 0)
 
+
 if __name__ == '__main__':
         unittest.main()
 

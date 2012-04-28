@@ -30,3 +30,8 @@ class TestCertFactory(unittest.TestCase):
         server_cert = self.cert_factory.grab_server_x509_cert((TEST_SERVER_HOST, TEST_SERVER_PORT))
         ss_replica_certnkey = self.cert_factory.mk_selfsigned_replica_certnkey(server_cert)
         self.assertEqual(server_cert.get_subject().as_text(), ss_replica_certnkey.cert.get_subject().as_text())
+
+
+if __name__ == '__main__':
+        unittest.main()
+
