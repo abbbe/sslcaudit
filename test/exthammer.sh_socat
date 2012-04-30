@@ -1,0 +1,17 @@
+#!/bin/sh -e
+
+[ $# -eq 4 ] || exit 1
+
+host=$1
+port=$2
+cipher=$3
+verify=$4
+
+if
+	socat EXEC:"date" OPENSSL:$host:$port,cipher=$cipher,verify=$verify 2>&1 | grep -q "Connection refused$"
+then
+	false
+else
+	true
+fi
+
