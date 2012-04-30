@@ -25,7 +25,7 @@ class Main(Thread):
     def __init__(self, argv):
         Thread.__init__(self, target=self.run)
 
-        parser = OptionParser(usage="sslcaudit ", version="sslcaudit 1.0rc1")
+        parser = OptionParser(usage="sslcaudit [OPTIONS]", version="sslcaudit 1.0rc1")
         parser.add_option("-l", dest="listen_addr", default='0.0.0.0', help="Listening port")
         parser.add_option("-p", dest="listen_port", default=DEFAULT_PORT, help="Listening port")
         parser.add_option("-m", dest="module", default=SSLCERT_MODULE_NAME, help="Audit module (sslcert by default)")
