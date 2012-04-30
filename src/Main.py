@@ -27,7 +27,7 @@ class Main(Thread):
 
         parser = OptionParser(usage="sslcaudit [OPTIONS]", version="sslcaudit 1.0rc1")
         parser.add_option("-l", dest="listen_addr", default='0.0.0.0', help="Listening port")
-        parser.add_option("-p", dest="listen_port", default=DEFAULT_PORT, help="Listening port")
+        parser.add_option("-p", dest="listen_port", default=DEFAULT_PORT, type='int', help="Listening port")
         parser.add_option("-m", dest="module", default=SSLCERT_MODULE_NAME, help="Audit module (sslcert by default)")
         parser.add_option("-d", dest="debug_level", default=0, help="Debug level")
         parser.add_option("-c", dest="nclients", default=1, help="Number of clients to handle before quitting")
