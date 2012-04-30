@@ -1,4 +1,4 @@
-#!/bin/sh -x
+#!/bin/sh
 
 # ----------------------------------------------------------------------
 # SSLCAUDIT - a tool for automating security audit of SSL clients

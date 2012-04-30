@@ -4,4 +4,4 @@ I am tired of messing around with openssl and socat and what a tool which makes
 security audits of SSL clients (thick clients, mobile devices, appliances, etc)
 less labor-intensive.
 
-See doc/ folder for more information.
+See doc/ folder for more information or run 'sslcaudit -h' option.
