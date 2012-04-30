@@ -1,6 +1,6 @@
 The goal of sslcaudit project is to develop a tool for off-line MITM testing
 of any SSL/TLS clients (not necessary HTTPS), suitable for professional use.
-I am tired of messing around with openssl and socat and what a tool which makes
+I am tired of messing around with openssl and socat and want a tool which makes
 security audits of SSL clients (thick clients, mobile devices, appliances, etc)
 less labor-intensive.
 
