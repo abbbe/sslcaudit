@@ -1,0 +1,5 @@
+merge -p option into -l
+handle ipv6 addresses properly (in -s as well)
+
+change -P into -p
+
