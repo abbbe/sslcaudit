@@ -17,6 +17,7 @@ from src.ClientAuditor.SSL.SSLClientAuditorSet import SSLClientAuditorSet, DEFAU
 DEFAULT_PORT = 8443
 SSLCERT_MODULE_NAME = 'sslcert'
 DUMMY_MODULE_NAME = 'dummy'
+DEFAULT_TEST_NAME = 'untitled'
 
 class Main(Thread):
     logger = logging.getLogger('Main')
@@ -59,6 +60,9 @@ class Main(Thread):
 
         self.options = options
 
+	if self.options.test_name == None:
+		self.options.test_name = DEFAULT_TEST_NAME
+
         logging.getLogger().setLevel(logging.INFO)
         if self.options.debug_level > 0:
             logging.getLogger('Main').setLevel(logging.DEBUG)
@@ -83,7 +87,6 @@ class Main(Thread):
         # signal the thread to stop
         self.do_stop = True
 
-
     def handle_result(self, res):
         if isinstance(res, ClientConnectionAuditResult):
             print "%s" % (res)
@@ -92,7 +95,7 @@ class Main(Thread):
         '''
         Main loop function. Will run until the desired number of clients is handled.
         '''
-        print "# %s" % self.options.test_name
+        print "# test name: %s" % self.options.test_name
 
         nresults = 0
         # loop until get all desired results, quit if stopped
