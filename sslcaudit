@@ -1,4 +1,4 @@
-#!/bin/sh
+#!/usr/bin/env python
 
 # ----------------------------------------------------------------------
 # SSLCAUDIT - a tool for automating security audit of SSL clients
@@ -6,4 +6,15 @@
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
 
-env PYTHONPATH="`dirname \"$0\"`" python src/Main.py $*
+import sys
+from src.Main import Main
+
+def main(argv):
+	main = Main(argv[1:])
+	main.start()
+	main.join()
+	return 0
+
+if __name__ == "__main__":
+	sys.exit(main(sys.argv))
+

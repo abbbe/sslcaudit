@@ -111,7 +111,4 @@ class Main(Thread):
         # print an empty line after all
         print
 
-if __name__ == "__main__":
-    main = Main(sys.argv[1:])
-    main.start()
-    main.join()
+
