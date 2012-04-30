@@ -1,7 +1,23 @@
+INTRODUCTION
+
 The goal of sslcaudit project is to develop a tool for off-line MITM testing
 of any SSL/TLS clients (not necessary HTTPS), suitable for professional use.
 I am tired of messing around with openssl and socat and want a tool which makes
 security audits of SSL clients (thick clients, mobile devices, appliances, etc)
 less labor-intensive.
 
-See doc/ folder for more information or run 'sslcaudit -h' option.
+INSTALLATION
+
+There is no procedure for installation yet. Just
+
+* grab the tarball from https://github.com/grwl/sslcaudit/downloads and unpack
+* cd into the top level directory and run './sslcaudit -h'
+
+MORE INFORMATION
+
+See doc/ folder for more information or run 'sslcaudit -h'.
+
+LICENSING
+
+GPLv3, see COPYING
+
