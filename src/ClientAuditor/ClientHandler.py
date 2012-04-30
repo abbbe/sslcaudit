@@ -71,6 +71,7 @@ class ClientHandler(object):
         res = self.next_auditor.handle(conn)
 
         # log and record the results of the test
+        #self.logger.debug('testing client conn %s using %s resulted in %s', conn, self.next_auditor, res)
         self.logger.debug('testing client conn %s using %s resulted in %s', conn, self.next_auditor, res)
         self.result.add(res)
         self.res_queue.put(res)

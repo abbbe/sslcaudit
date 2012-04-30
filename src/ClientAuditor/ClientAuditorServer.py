@@ -11,7 +11,7 @@ from Queue import Queue
 from src.ClientAuditor.ClientConnection import ClientConnection
 from src.ClientAuditor.ClientHandler import ClientHandler
 
-logger = logging.getLogger('ClientAuditorServer')
+logger = logging.getLogger('ClientAuditorTCPServer')
 
 class ClientAuditorTCPServer(ThreadingMixIn, TCPServer):
     '''

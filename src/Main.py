@@ -14,24 +14,27 @@ from src.ClientAuditor.ClientHandler import ClientAuditResult
 from src.ClientAuditor.Dummy.DummyClientAuditorSet import DummyClientAuditorSet
 from src.ClientAuditor.SSL.SSLClientAuditorSet import SSLClientAuditorSet, DEFAULT_CN
 
-DEFAULT_PORT = 8443
+DEFAULT_HOST = '0.0.0.0'
+DEFAULT_PORT = '8443'
 SSLCERT_MODULE_NAME = 'sslcert'
 DUMMY_MODULE_NAME = 'dummy'
 DEFAULT_TEST_NAME = 'untitled'
 
+logger = logging.getLogger('Main')
+PROG_NAME = 'sslcaudit'
+PROG_VERSION = '1.0rc1'
+
 class Main(Thread):
-    logger = logging.getLogger('Main')
 
     def __init__(self, argv):
         Thread.__init__(self, target=self.run)
 
-        parser = OptionParser(usage="sslcaudit [OPTIONS]", version="sslcaudit 1.0rc1")
-        parser.add_option("-l", dest="listen_addr", default='0.0.0.0', help="Listening port")
-        parser.add_option("-p", dest="listen_port", default=DEFAULT_PORT, type='int', help="Listening port")
+        parser = OptionParser(usage=('%s [OPTIONS]' % PROG_NAME), version=("%s %s" % (PROG_NAME, PROG_VERSION)))
+        parser.add_option("-l", dest="listen_on", default='0.0.0.0:8443', help="Listening [HOST:]PORT")
         parser.add_option("-m", dest="module", default=SSLCERT_MODULE_NAME, help="Audit module (sslcert by default)")
         parser.add_option("-d", dest="debug_level", default=0, help="Debug level")
         parser.add_option("-c", dest="nclients", default=1, help="Number of clients to handle before quitting")
-        parser.add_option("-N", dest="test_name", help="User-specified name of the test")
+        #parser.add_option("-N", dest="test_name", help="User-specified name of the test")
 
         parser.add_option("--user-cn", dest="user_cn",
             help="Use specified CN")
@@ -53,29 +56,40 @@ class Main(Thread):
         parser.add_option("--no-user-cert-signed", action="store_true", default=False, dest="no_user_cert_signed",
             help="Do not sign server certificates with user-supplied one")
 
+        args = []
         (options, args) = parser.parse_args(argv)
-
-        if len(args) > 0:
-            parser.error("too many arguments")
 
         self.options = options
 
-	if self.options.test_name == None:
-		self.options.test_name = DEFAULT_TEST_NAME
-
-        logging.getLogger().setLevel(logging.INFO)
         if self.options.debug_level > 0:
-            logging.getLogger('Main').setLevel(logging.DEBUG)
-            logging.getLogger('ClientAuditorServer').setLevel(logging.DEBUG)
+            logging.getLogger().setLevel(logging.DEBUG)
 
         if self.options.module == SSLCERT_MODULE_NAME:
-            self.auditor_set = SSLClientAuditorSet(SSLCERT_MODULE_NAME, self.options)
+            self.auditor_set = SSLClientAuditorSet(self.options)
         elif self.options.module == DUMMY_MODULE_NAME:
             self.auditor_set = DummyClientAuditorSet(self.options)
         else:
+            # XXX
             raise Exception("auditor module must be specified")
 
-        self.server = ClientAuditorServer((self.options.listen_addr, self.options.listen_port), self.auditor_set)
+        listen_on_parts = self.options.listen_on.split(':')
+        if len(listen_on_parts) == 1:
+            # convert "PORT" string to (DEFAULT_HOST, POST) tuple
+            listen_on = (DEFAULT_HOST, int(listen_on_parts[0]))
+        elif len(listen_on_parts) == 2:
+            # convert "HOST:PORT" string to (HOST, PORT) tuple
+            listen_on = (listen_on_parts[0], int(listen_on_parts[1]))
+        else:
+            # XXX
+            raise Exception("invalid value for -l parameter '%s'" % self.options.listen_on.split(':'))
+
+	# unparsed command line goes into test name
+        if len(args) > 0:
+            options.test_name = str(args)
+	else:
+            options.test_name = DEFAULT_TEST_NAME
+
+        self.server = ClientAuditorServer(listen_on, self.auditor_set)
         self.queue_read_timeout = 0.1
 
     def start(self):
@@ -89,13 +103,12 @@ class Main(Thread):
 
     def handle_result(self, res):
         if isinstance(res, ClientConnectionAuditResult):
-            print "%s" % (res)
+            print res
 
     def run(self):
         '''
         Main loop function. Will run until the desired number of clients is handled.
         '''
-        print "# test name: %s" % self.options.test_name
 
         nresults = 0
         # loop until get all desired results, quit if stopped
@@ -103,15 +116,12 @@ class Main(Thread):
             try:
                 # wait for a message blocking for short intervals, check stop flag frequently
                 res = self.server.res_queue.get(True, self.queue_read_timeout)
-                self.logger.debug("got result %s", res)
+                logger.debug("got result %s", res)
                 self.handle_result(res)
 
                 if isinstance(res, ClientAuditResult):
                     nresults = nresults + 1
             except Empty:
                 pass
-
-        # print an empty line after all
-        print
 
 

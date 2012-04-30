@@ -7,5 +7,5 @@
 # ----------------------------------------------------------------------
 
 for f in test/Test*.py ; do
-	env PYTHONPATH="`dirname \"$0\"`" python $f
+	env PYTHONPATH="`dirname \"$0\"`" python $f $*
 done

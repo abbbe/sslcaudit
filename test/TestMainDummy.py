@@ -54,7 +54,7 @@ class TestMainDummy(unittest.TestCase):
         self.hammer = TCPHammer()
 
         # create main, the target of the test
-        self.main = Main(['-m', 'dummy', '-l', TEST_LISTENER_ADDR, '-p', port])
+        self.main = Main(['-m', 'dummy', '-l', ("%s:%d" % (TEST_LISTENER_ADDR, port))])
         self.main.handle_result = main__handle_result
 
         # tell the hammer how many attempts to make exactly

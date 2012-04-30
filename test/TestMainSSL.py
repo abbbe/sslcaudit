@@ -15,6 +15,8 @@ from src.Test.SSLHammer import NotVerifyingSSLHammer, VerifyingSSLHammer
 from src.Test.TCPHammer import TCPHammer
 from src.Test.TestConfig import *
 
+TEST_DEBUG = 0
+
 class ExpectedSSLClientConnectionAuditResult(object):
     def __init__(self, cert_name, client_id, res):
         self.cert_name = cert_name
@@ -47,6 +49,7 @@ class TestMainSSL(unittest.TestCase):
         ''' Plain TCP client causes unexpected UNEXPECTED_EOF instead of UNKNOWN_CA '''
         self._main_test(
             [
+        		'-d', TEST_DEBUG,
                 '--user-cn', TEST_USER_CN,
                 '--user-ca-cert', TEST_USER_CA_CERT_FILE,
                 '--user-ca-key', TEST_USER_CA_KEY_FILE
@@ -123,11 +126,8 @@ class TestMainSSL(unittest.TestCase):
 
         # create main, the target of the test
         test_name = "%s %s" % (hammer, args)
-        main_args = ['-l', TestConfig.TEST_LISTENER_ADDR, '-N', test_name, '-p', port]
-        if isinstance(args, basestring):
-            main_args.extend(['-m', args]) # for backward compatibility
-        else:
-            main_args.extend(args)
+        main_args = ['-l', '%s:%d' % (TestConfig.TEST_LISTENER_ADDR, port)]
+        main_args.extend(args)
         self.main = Main(main_args)
 
         # collect classes of observed audit results
@@ -184,5 +184,6 @@ class TestMainSSL(unittest.TestCase):
         self.assertFalse(mismatch)
 
 if __name__ == '__main__':
-    unittest.main()
+	logging.basicConfig()
+	unittest.main()
 

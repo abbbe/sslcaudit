@@ -42,4 +42,5 @@ class SSLClientConnectionAuditor(ClientConnectionAuditor):
         return "SSLClientConnectionAuditor%s" % self.__dict__
 
     def __str__(self):
-        return self.certnkey.name
+        return str(self.certnkey.name)
+

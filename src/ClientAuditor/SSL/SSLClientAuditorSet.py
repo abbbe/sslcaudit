@@ -11,8 +11,7 @@ from src.ClientAuditor.SSL.SSLClientConnectionAuditor import SSLClientConnection
 DEFAULT_CN = 'nonexistent.gremwell.com'
 
 class SSLClientAuditorSet(ClientAuditorSet):
-    def __init__(self, name, options):
-        self.name = name
+    def __init__(self, options):
         self.options = options
 
         self.proto = 'sslv23' # XXX

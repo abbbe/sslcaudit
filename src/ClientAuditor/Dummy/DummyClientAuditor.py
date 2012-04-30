@@ -17,4 +17,4 @@ class DummyClientConnectionAuditor(ClientConnectionAuditor):
         self.dummy_result = dummy_result
 
     def handle(self, conn):
-        return ClientConnectionAuditResult(self, conn.get_client_id(), self.dummy_result)
+        return ClientConnectionAuditResult(self, conn, self.dummy_result)

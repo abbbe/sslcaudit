@@ -15,24 +15,26 @@ ciphers='HIGH MEDIUM LOW EXPORT56 EXPORT40 NULL'
 methods='SSLv2 SSLv3 TLSv1'
 verify='0 1'
 
-sslcaudit=./sslcaudit
+sslcaudit="./sslcaudit -d 1"
 test_host='localhost'
 test_port='8443'
 
-wait_on_prefail=.25
-max_nprefailures=12
-wait_on_postfail=.25
-max_npostfailures=2
-
-outf=`mktemp`
+wait_on_prefail=.1
+max_nprefailures=10
+wait_on_postfail=.1
+max_npostfailures=15 # XXX
 
 do_test() {
-	local method=$1
-	local cipher=$2
-	local verify=$3
+	local hammer=$1
+	local method=$2
+	local cipher=$3
+	local verify=$4
+
+	outf=`mktemp`
 
 	# start sslcaudit in background
-	$sslcaudit -N "$mode $cipher $verify" -l $test_host -p $test_port &
+	sslcaudit_errf="$outf.sslcaudit"
+	$sslcaudit -l $test_host:$test_port -- $hammer $cipher $verify 2> "$sslcaudit_errf" &
 	sslcaudit_pid=$!
 
 	# start hammering
@@ -41,30 +43,31 @@ do_test() {
 	nprefailures=0
 	nconnected=0
 	npostfailures=0
+
+	echo "START" >> $hammer_outf
 	while true ; do
-		if ${0}_$mode $test_host $test_port $cipher $verify >> $hammer_outf 2>&1 ; then
+		if ${0}_$hammer $test_host $test_port $cipher $verify >> $hammer_outf 2>&1 ; then
+			echo "# CONNECTED" >> $hammer_outf
 			if [ $npostfailures -gt 0 ] ; then
 				# connect after a postfailure? wierd
 				echo "ERROR: connect after npostfailures=$npostfailures"
-				cat $hammer_outf
-				exit 1 
 			else
-				# connected
 				nconnected=`expr $nconnected + 1`
 			fi
 		else
 			if [ $nconnected -eq 0 ] ; then
-				# prefailure
+				echo "# PREFAILURE" >> $hammer_outf
 				nprefailures=`expr $nprefailures + 1`
 				if [ $nprefailures -ge $max_nprefailures ] ; then
 					echo "ERROR: nprefailures=$nprefailures > 3"
 					cat $hammer_outf
+					wait $sslcaudit_pid
 					exit 1
 				fi
 
 				sleep $wait_on_prefail
 			else
-				# postfailure
+				echo "# POSTFAILURE" >> $hammer_outf
 				npostfailures=`expr $npostfailures + 1`
 				[ $npostfailures -ge $max_npostfailures ] && break
 
@@ -78,13 +81,14 @@ do_test() {
 }
 
 do_tests() {
+	local hammer=$1
 	local method
 	for method in $methods ; do
 		local cipher
 		for cipher_str in $ciphers ; do
 			local verify
 			for verify in 0 1 ; do
-				do_test $method $cipher_str $verify
+				do_test $hammer $method $cipher_str $verify
 			done
 		done
 	done
@@ -92,10 +96,9 @@ do_tests() {
 
 # -----------------------------------------------------------------
 
-[ $# -eq 1 ] || exit
+#[ $# -eq 1 ] || exit
+#local hammer=$1
 
-local mode=$1
-
-do_tests $mode
+do_tests socat
 
 exit 0

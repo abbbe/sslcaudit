@@ -7,11 +7,23 @@ port=$2
 cipher=$3
 verify=$4
 
-if
-	socat EXEC:"date" OPENSSL:$host:$port,cipher=$cipher,verify=$verify 2>&1 | grep -q "Connection refused$"
-then
-	false
+socat_errf=`mktemp --suffix .socat`
+
+socat EXEC:'date' OPENSSL:$host:$port,cipher=$cipher,verify=$verify 2> "$socat_errf" > /dev/null || true
+
+if [ -s "$socat_errf" ] ; then
+	# there is something on stderr
+	if grep 'Connection refused$' "$socat_errf" ; then
+		# there is connrefused
+		false
+	else
+		# connrefused not found
+		cat "$socat_errf"
+		true
+	fi
 else
+	# errfile is empty
 	true
 fi
 
+rm "$socat_errf"
