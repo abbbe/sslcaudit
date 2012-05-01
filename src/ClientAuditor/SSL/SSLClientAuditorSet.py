@@ -97,9 +97,9 @@ class SSLClientAuditorSet(ClientAuditorSet):
         if self.server_x509_cert != None:
             # automatically generated certificate, replicated after server cert, selfsigned
             if ca_certnkey == None:
-                certnkey = self.cert_factory.mk_selfsigned_replica_certnkey(self.server_x509_cert)
+                certnkey = self.cert_factory.mk_signed_replica_certnkey(self.server_x509_cert)
             else:
-                raise NotImplemented()
+                certnkey = self.cert_factory.mk_signed_replica_certnkey(self.server_x509_cert, ca_certnkey)
 
             auditor = SSLClientConnectionAuditor(self.proto, certnkey)
             self.auditors.append(auditor)

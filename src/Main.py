@@ -18,7 +18,6 @@ logger = logging.getLogger('Main')
 
 DEFAULT_HOST = '0.0.0.0'
 DEFAULT_PORT = '8443'
-DEFAULT_TEST_NAME = 'untitled'
 
 PROG_NAME = 'sslcaudit'
 PROG_VERSION = '1.0rc1'
@@ -86,9 +85,6 @@ class Main(Thread):
             # XXX
             raise Exception("invalid value for -l parameter '%s'" % self.options.listen_on.split(':'))
 
-        if self.options.test_name == None:
-            self.options.test_name = DEFAULT_TEST_NAME
-
         # unparsed command line goes into test name
         if len(args) > 0:
             raise Exception("unexpected arguments: %s" % args)
@@ -113,8 +109,8 @@ class Main(Thread):
             if self.options.test_name != None:
                 fields.append('%-25s' % str(self.options.test_name))
             client_address = '%s:%d' % (res.conn.client_address)
-            fields.append('%-22s' % client_address)
-            fields.append('%-70s' % str(res.auditor.name))
+            fields.append('%-16s' % client_address)
+            fields.append('%-60s' % str(res.auditor.name))
             fields.append(str(res.res))
             print OUTPUT_FIELD_SEPARATOR.join(fields)
 

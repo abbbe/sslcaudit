@@ -116,9 +116,9 @@ class CertFactory(object):
         exts = []
         return self._mk_signed_certnkey(2, 1, not_before, not_after, subj, 1024, exts, ca_certnkey)
 
-    def mk_selfsigned_replica_certnkey(self, orig_cert):
+    def mk_signed_replica_certnkey(self, orig_cert, ca_certnkey=None):
         '''
-        This function creates a self-signed replica of the given certificate. It returns a tuple of certificate and
+        This function creates a signed or self-signed replica of the given certificate. It returns a tuple of certificate and
         Most of the fields of the original certificates are replicated:
          * key length
          * subject
@@ -145,7 +145,7 @@ class CertFactory(object):
         for i in range(orig_cert.get_ext_count()):
             exts.append(orig_cert.get_ext_at(i))
 
-        return self._mk_signed_certnkey(version, serial_number, not_before, not_after, subj, bits, exts)
+        return self._mk_signed_certnkey(version, serial_number, not_before, not_after, subj, bits, exts, ca_certnkey)
 
     def _mk_signed_certnkey(self, version, serial_number, not_before, not_after, subj, bits, exts, ca_certnkey=None):
         '''
@@ -226,15 +226,6 @@ class CertFactory(object):
         sslsock.close()
 
         return server_cert
-
-    #    def grab_server_x509_cert(self, host, port):
-    #        '''
-    #        This is another way to do the same
-    #        '''
-    #        import ssl
-    #        cert_pem = ssl.get_server_certificate((host, port))
-    #        return X509.load_cert_string(cert_pem, X509.FORMAT_PEM)
-    #
 
     def load_certnkey_files(self, cert_file, key_file):
         '''
