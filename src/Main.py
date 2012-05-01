@@ -83,10 +83,10 @@ class Main(Thread):
             # XXX
             raise Exception("invalid value for -l parameter '%s'" % self.options.listen_on.split(':'))
 
-	# unparsed command line goes into test name
+        # unparsed command line goes into test name
         if len(args) > 0:
             options.test_name = str(args)
-	else:
+        else:
             options.test_name = DEFAULT_TEST_NAME
 
         self.server = ClientAuditorServer(listen_on, self.auditor_set)
@@ -103,7 +103,7 @@ class Main(Thread):
 
     def handle_result(self, res):
         if isinstance(res, ClientConnectionAuditResult):
-            print res
+            print "%s %s" % (self.options.test_name, res)
 
     def run(self):
         '''

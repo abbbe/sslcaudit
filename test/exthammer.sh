@@ -21,8 +21,9 @@ test_port='8443'
 
 wait_on_prefail=.1
 max_nprefailures=10
+max_nconnected=10
 wait_on_postfail=.1
-max_npostfailures=15 # XXX
+max_npostfailures=2
 
 do_test() {
 	local hammer=$1
@@ -51,18 +52,26 @@ do_test() {
 			if [ $npostfailures -gt 0 ] ; then
 				# connect after a postfailure? wierd
 				echo "ERROR: connect after npostfailures=$npostfailures"
+				#cat $hammer_outf
+				kill $sslcaudit_pid
+				break
 			else
 				nconnected=`expr $nconnected + 1`
+				if [ $nconnected -ge $max_nconnected ] ; then
+					echo "ERROR: excessive nconnected=$nconnected"
+					kill $sslcaudit_pid
+					break
+				fi
 			fi
 		else
 			if [ $nconnected -eq 0 ] ; then
 				echo "# PREFAILURE" >> $hammer_outf
 				nprefailures=`expr $nprefailures + 1`
 				if [ $nprefailures -ge $max_nprefailures ] ; then
-					echo "ERROR: nprefailures=$nprefailures > 3"
-					cat $hammer_outf
-					wait $sslcaudit_pid
-					exit 1
+					echo "ERROR: excessive nprefailures=$nprefailures"
+					#cat $hammer_outf
+					kill $sslcaudit_pid
+					break
 				fi
 
 				sleep $wait_on_prefail
@@ -76,8 +85,8 @@ do_test() {
 		fi
 	done
 
-	# let sslcaudit die
-	wait $sslcaudit_pid
+	# let sslcaudit die, don't care if it is unwell
+	wait $sslcaudit_pid || true
 }
 
 do_tests() {
