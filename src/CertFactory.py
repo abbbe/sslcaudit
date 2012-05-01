@@ -80,7 +80,7 @@ class CertFactory(object):
         not_before = ASN1.ASN1_UTCTIME()
         not_before.set_time(0)
         not_after = ASN1.ASN1_UTCTIME()
-        not_after.set_time(2 ** 31)
+        not_after.set_time(2 ** 31 - 1)
 
         # build a list of extensions
         #X509v3 Basic Constraints: CA:FALSE
