@@ -41,13 +41,13 @@ class ClientAuditorServer(Thread):
     client.
     '''
 
-    def __init__(self, listen_on, auditor_set, res_queue=None):
+    def __init__(self, listen_on, auditor_sets, res_queue=None):
         Thread.__init__(self, target=self.run)
         self.daemon = True
 
         self.listen_on = listen_on
         self.clients = {}
-        self.auditor_set = auditor_set
+        self.auditor_sets = auditor_sets
 
         if res_queue == None:
             self.res_queue = Queue()
@@ -67,13 +67,13 @@ class ClientAuditorServer(Thread):
         # find or create a session handler
         if not self.clients.has_key(client_id):
             logger.debug('new client %s [id %s]', conn, client_id)
-            self.clients[client_id] = ClientHandler(client_id, self.auditor_set, self.res_queue)
+            self.clients[client_id] = ClientHandler(client_id, self.auditor_sets, self.res_queue)
             # pass the request to the client handler
 
         # handle the request
         self.clients[client_id].handle(conn)
 
     def run(self):
-        logger.debug('running %s, listen_on %s, auditor_set %s', self, self.listen_on, self.auditor_set)
+        logger.debug('running %s, listen_on %s, auditor_set %s', self, self.listen_on, self.auditor_sets)
         self.tcp_server.serve_forever()
 

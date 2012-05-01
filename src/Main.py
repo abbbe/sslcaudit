@@ -18,8 +18,6 @@ logger = logging.getLogger('Main')
 
 DEFAULT_HOST = '0.0.0.0'
 DEFAULT_PORT = '8443'
-SSLCERT_MODULE_NAME = 'sslcert'
-DUMMY_MODULE_NAME = 'dummy'
 DEFAULT_TEST_NAME = 'untitled'
 
 PROG_NAME = 'sslcaudit'
@@ -34,7 +32,7 @@ class Main(Thread):
 
         parser = OptionParser(usage=('%s [OPTIONS]' % PROG_NAME), version=("%s %s" % (PROG_NAME, PROG_VERSION)))
         parser.add_option("-l", dest="listen_on", default='0.0.0.0:8443', help="Listening [HOST:]PORT")
-        parser.add_option("-m", dest="module", default=SSLCERT_MODULE_NAME, help="Audit module (sslcert by default)")
+        parser.add_option("-m", dest="module", help="Audit module (by default - all)")
         parser.add_option("-d", dest="debug_level", default=0, help="Debug level")
         parser.add_option("-c", dest="nclients", default=1, help="Number of clients to handle before quitting")
         parser.add_option("-N", dest="test_name", help="User-specified name of the test")
@@ -67,13 +65,15 @@ class Main(Thread):
         if self.options.debug_level > 0:
             logging.getLogger().setLevel(logging.DEBUG)
 
-        if self.options.module == SSLCERT_MODULE_NAME:
-            self.auditor_set = SSLClientAuditorSet(self.options)
-        elif self.options.module == DUMMY_MODULE_NAME:
-            self.auditor_set = DummyClientAuditorSet(self.options)
-        else:
-            # XXX
-            raise Exception("auditor module must be specified")
+        self.auditor_sets = []
+        if self.options.module == None or self.options.module == SSLClientAuditorSet.MODULE_ID:
+            self.auditor_sets.append(SSLClientAuditorSet(self.options))
+
+        #if self.options.module == None or self.options.module == DummyClientAuditorSet.MODULE_ID:
+        #    self.auditor_sets.append(DummyClientAuditorSet(self.options))
+
+        if len(self.auditor_sets) == 0:
+            raise RuntimeError("auditor set is empty")
 
         listen_on_parts = self.options.listen_on.split(':')
         if len(listen_on_parts) == 1:
@@ -93,7 +93,7 @@ class Main(Thread):
         if len(args) > 0:
             raise Exception("unexpected arguments: %s" % args)
 
-        self.server = ClientAuditorServer(listen_on, self.auditor_set)
+        self.server = ClientAuditorServer(listen_on, self.auditor_sets)
         self.queue_read_timeout = 0.1
 
     def start(self):
@@ -117,6 +117,7 @@ class Main(Thread):
             fields.append('%-70s' % str(res.auditor.name))
             fields.append(str(res.res))
             print OUTPUT_FIELD_SEPARATOR.join(fields)
+
     def run(self):
         '''
         Main loop function. Will run until the desired number of clients is handled.

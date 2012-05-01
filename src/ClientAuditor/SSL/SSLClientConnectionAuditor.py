@@ -12,13 +12,14 @@ UNKNOWN_CA = 'tlsv1 alert unknown ca'
 UNEXPECTED_EOF = 'unexpected eof'
 CONNECTED = 'connected'
 
-MODULE_ID='sslcert'
+MODULE_ID = 'sslcert' # XXX duplication
 
 class SSLClientConnectionAuditor(ClientConnectionAuditor):
     def __init__(self, proto, certnkey):
         self.proto = proto
         self.certnkey = certnkey
-        ClientConnectionAuditor.__init__(self, '%s(%s)' % (MODULE_ID, self.certnkey.name))
+        name = '%s(%s)' % (MODULE_ID, self.certnkey.name)
+        ClientConnectionAuditor.__init__(self, name)
 
     def handle(self, conn):
         ctx = M2Crypto.SSL.Context(self.proto)
@@ -39,7 +40,4 @@ class SSLClientConnectionAuditor(ClientConnectionAuditor):
 
     def __repr__(self):
         return "SSLClientConnectionAuditor%s" % self.__dict__
-
-    def __str__(self):
-        return name
 

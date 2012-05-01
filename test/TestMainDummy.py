@@ -58,7 +58,7 @@ class TestMainDummy(unittest.TestCase):
         self.main.handle_result = main__handle_result
 
         # tell the hammer how many attempts to make exactly
-        self.hammer.init_tcp((TEST_LISTENER_ADDR, port), self.main.auditor_set.len())
+        self.hammer.init_tcp((TEST_LISTENER_ADDR, port), self.main.auditor_sets.len())
 
         # start server and client
         self.main.start()
@@ -70,7 +70,7 @@ class TestMainDummy(unittest.TestCase):
 
         # make sure we have received expected number of results
         self.assertEquals(self.got_result_start, 1)
-        self.assertEquals(self.got_result, self.main.auditor_set.len())
+        self.assertEquals(self.got_result, self.main.auditor_sets.len())
         self.assertEquals(self.got_result_end, 1)
         self.assertEquals(self.got_bulk_result, 1)
         self.assertEquals(self.nstray, 0)

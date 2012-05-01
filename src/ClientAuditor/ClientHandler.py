@@ -4,7 +4,7 @@ Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
-import logging
+import logging, itertools
 from exceptions import StopIteration
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent
 
@@ -37,9 +37,9 @@ class ClientHandler(object):
     '''
     logger = logging.getLogger('ClientHandler')
 
-    def __init__(self, client_id, auditor_set, res_queue):
+    def __init__(self, client_id, auditor_sets, res_queue):
         self.client_id = client_id
-        self.auditor_set_iterator = auditor_set.__iter__()
+        self.auditor_iterator = itertools.chain.from_iterable(auditor_sets.__iter__())
         self.result = ClientAuditResult(self.client_id)
         self.res_queue = res_queue
 
@@ -58,7 +58,7 @@ class ClientHandler(object):
         if self.next_auditor == None:
             # this is a very first connection
             try:
-                self.next_auditor = self.auditor_set_iterator.next()
+                self.next_auditor = self.auditor_iterator.next()
                 self.auditor_count = self.auditor_count + 1
                 self.res_queue.put(ClientAuditStartEvent(self.next_auditor, self.client_id))
             except StopIteration:
@@ -78,7 +78,7 @@ class ClientHandler(object):
 
         # prefetch next auditor from the iterator, to check if this was the last one
         try:
-            self.next_auditor = self.auditor_set_iterator.next()
+            self.next_auditor = self.auditor_iterator.next()
             self.auditor_count = self.auditor_count + 1
         except StopIteration:
             # it was the last auditor in the set

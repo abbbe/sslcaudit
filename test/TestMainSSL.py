@@ -18,8 +18,9 @@ from src.Test.TestConfig import *
 TEST_DEBUG = 0
 
 class ExpectedSSLClientConnectionAuditResult(object):
-    def __init__(self, cert_name, client_id, res):
-        self.cert_name = cert_name
+
+    def __init__(self, auditor_name, client_id, res):
+        self.auditor_name = auditor_name
         self.client_id = client_id
         self.res = res
 
@@ -27,16 +28,18 @@ class ExpectedSSLClientConnectionAuditResult(object):
         '''
         Given an actual audit result instance (ClientConnectionAuditResult) checks if it matches current expectations.
         '''
-        actual_cert_name = audit_res.auditor.certnkey.name
-        if actual_cert_name != self.cert_name: return False
-
+        actual_auditor_name = audit_res.auditor.name
+        if actual_auditor_name != self.auditor_name:
+            return False
         actual_client_id = audit_res.conn.get_client_id()
-        if actual_client_id != self.client_id: return False
-
-        return audit_res.res == self.res
+        if actual_client_id != self.client_id:
+            return False
+        if audit_res.res != self.res:
+            return False
+        return True
 
     def __str__(self):
-        return "ECCAR(%s, %s, %s)" % (self.cert_name, self.client_id, self.res)
+        return "ECCAR(%s, %s, %s)" % (self.auditor_name, self.client_id, self.res)
 
 
 class TestMainSSL(unittest.TestCase):
@@ -44,6 +47,8 @@ class TestMainSSL(unittest.TestCase):
     Unittests for SSL.
     '''
     logger = logging.getLogger('TestMainSSL')
+
+    HAMMER_ATTEMPTS = 10
 
     def test_bad_client1(self):
         ''' Plain TCP client causes unexpected UNEXPECTED_EOF instead of UNKNOWN_CA '''
@@ -56,10 +61,14 @@ class TestMainSSL(unittest.TestCase):
             ],
             TCPHammer(),
             [
-                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELFSIGNED), '127.0.0.1', UNEXPECTED_EOF),
-                ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, SELFSIGNED), '127.0.0.1', UNEXPECTED_EOF),
-                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, TEST_USER_CA_CN), '127.0.0.1', UNEXPECTED_EOF),
-                ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, TEST_USER_CA_CN), '127.0.0.1', UNEXPECTED_EOF)
+                ExpectedSSLClientConnectionAuditResult(
+                    "sslcert(('%s', '%s'))" % (DEFAULT_CN, SELFSIGNED),'127.0.0.1', UNEXPECTED_EOF),
+                ExpectedSSLClientConnectionAuditResult(
+                    "sslcert(('%s', '%s'))" % (TEST_USER_CN, SELFSIGNED), '127.0.0.1', UNEXPECTED_EOF),
+                ExpectedSSLClientConnectionAuditResult(
+                    "sslcert(('%s', '%s'))" % (DEFAULT_CN, TEST_USER_CA_CN), '127.0.0.1', UNEXPECTED_EOF),
+                ExpectedSSLClientConnectionAuditResult(
+                    "sslcert(('%s', '%s'))" % (TEST_USER_CN, TEST_USER_CA_CN), '127.0.0.1', UNEXPECTED_EOF)
             ])
 
     #    def test_bad_client2(self):
@@ -85,9 +94,12 @@ class TestMainSSL(unittest.TestCase):
             ],
             NotVerifyingSSLHammer(),
             [
-                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELFSIGNED), '127.0.0.1', CONNECTED),
-                ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, SELFSIGNED), '127.0.0.1', CONNECTED),
-                ExpectedSSLClientConnectionAuditResult((TEST_SERVER_CN, SELFSIGNED), '127.0.0.1', CONNECTED)
+                ExpectedSSLClientConnectionAuditResult(
+                    "sslcert(('%s', '%s'))" % (DEFAULT_CN, SELFSIGNED), '127.0.0.1', CONNECTED),
+                ExpectedSSLClientConnectionAuditResult(
+                    "sslcert(('%s', '%s'))" % (TEST_USER_CN, SELFSIGNED), '127.0.0.1', CONNECTED),
+                ExpectedSSLClientConnectionAuditResult(
+                    "sslcert(('%s', '%s'))" % (TEST_SERVER_CN, SELFSIGNED), '127.0.0.1', CONNECTED)
             ])
 
     def test_verifying_client(self):
@@ -99,9 +111,12 @@ class TestMainSSL(unittest.TestCase):
             ],
             VerifyingSSLHammer(TEST_USER_CN),
             [
-                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELFSIGNED), '127.0.0.1', UNKNOWN_CA),
-                ExpectedSSLClientConnectionAuditResult((TEST_USER_CN, SELFSIGNED), '127.0.0.1', UNKNOWN_CA),
-                ExpectedSSLClientConnectionAuditResult((TEST_SERVER_CN, SELFSIGNED), '127.0.0.1', UNKNOWN_CA)
+                ExpectedSSLClientConnectionAuditResult(
+                    "sslcert(('%s', '%s'))" % (DEFAULT_CN, SELFSIGNED), '127.0.0.1', UNKNOWN_CA),
+                ExpectedSSLClientConnectionAuditResult(
+                    "sslcert(('%s', '%s'))" % (TEST_USER_CN, SELFSIGNED), '127.0.0.1', UNKNOWN_CA),
+                ExpectedSSLClientConnectionAuditResult(
+                    "sslcert(('%s', '%s'))" % (TEST_SERVER_CN, SELFSIGNED), '127.0.0.1', UNKNOWN_CA)
             ])
 
     # ------------------------------------------------------------------------------------
@@ -146,7 +161,7 @@ class TestMainSSL(unittest.TestCase):
         # create a client hammering the listener
         self.hammer = hammer
         if self.hammer != None:
-            self.hammer.init_tcp((TestConfig.TEST_LISTENER_ADDR, port), self.main.auditor_set.len())
+            self.hammer.init_tcp((TestConfig.TEST_LISTENER_ADDR, port), self.HAMMER_ATTEMPTS)
 
     def _main_test_do(self, expected_results):
         # run the server

@@ -11,6 +11,8 @@ from src.ClientAuditor.SSL.SSLClientConnectionAuditor import SSLClientConnection
 DEFAULT_CN = 'nonexistent.gremwell.com'
 
 class SSLClientAuditorSet(ClientAuditorSet):
+    MODULE_ID = 'sslcert'
+
     def __init__(self, options):
         self.options = options
 
