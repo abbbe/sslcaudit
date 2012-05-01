@@ -14,15 +14,18 @@ from src.ClientAuditor.ClientHandler import ClientAuditResult
 from src.ClientAuditor.Dummy.DummyClientAuditorSet import DummyClientAuditorSet
 from src.ClientAuditor.SSL.SSLClientAuditorSet import SSLClientAuditorSet, DEFAULT_CN
 
+logger = logging.getLogger('Main')
+
 DEFAULT_HOST = '0.0.0.0'
 DEFAULT_PORT = '8443'
 SSLCERT_MODULE_NAME = 'sslcert'
 DUMMY_MODULE_NAME = 'dummy'
 DEFAULT_TEST_NAME = 'untitled'
 
-logger = logging.getLogger('Main')
 PROG_NAME = 'sslcaudit'
 PROG_VERSION = '1.0rc1'
+
+OUTPUT_FIELD_SEPARATOR = ' '
 
 class Main(Thread):
 
@@ -104,8 +107,16 @@ class Main(Thread):
 
     def handle_result(self, res):
         if isinstance(res, ClientConnectionAuditResult):
-            print "%s %s" % (self.options.test_name, res)
-
+            # print test name, client address and port, auditor name, and result
+            # all in one line, in fixed width columns
+            fields = []
+            if self.options.test_name != None:
+                fields.append('%-25s' % str(self.options.test_name))
+            client_address = '%s:%d' % (res.conn.client_address)
+            fields.append('%-22s' % client_address)
+            fields.append('%-70s' % str(res.auditor.name))
+            fields.append(str(res.res))
+            print OUTPUT_FIELD_SEPARATOR.join(fields)
     def run(self):
         '''
         Main loop function. Will run until the desired number of clients is handled.
