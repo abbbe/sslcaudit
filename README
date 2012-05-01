@@ -1,6 +1,8 @@
 INTRODUCTION
 
-The goal of sslcaudit project is to develop a utility to automate testing SSL/TLS clients for resistance against MITM attacks. It might be useful for testing a thick client, a mobile application, an appliance, pretty much anything communicating over SSL/TLS over TCP.
+The goal of sslcaudit project is to develop a utility to automate testing SSL/TLS clients for
+resistance against MITM attacks. It might be useful for testing a thick client, a mobile
+application, an appliance, pretty much anything communicating over SSL/TLS over TCP.
 
 INSTALLATION
 
@@ -10,7 +12,11 @@ There is no procedure for installation yet. Just grab the code:
 * Or clone leading edge master GIT repository: git clone git://github.com/grwl/sslcaudit.git
 * Find sslcaudit in the top level directory and run it with -h option.
 
-PDF user guide is available under doc/ or online at http://www.gremwell.com/sites/default/files/sslcaudit/doc/sslcaudit-guide-20120501.pdf, you should consider reading it.
+To terminate an instance of sslcaudit running on the console, press Ctrl-\.
+
+PDF user guide is available under doc/ or online at
+http://www.gremwell.com/sites/default/files/sslcaudit/doc/sslcaudit-guide-20120501.pdf, you
+should consider reading it.
 
 Sslcaudit uses M2Crypto Python library. If you dependencies problem, you might see following:
 
