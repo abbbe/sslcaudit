@@ -1,3 +1,4 @@
 *.pyc
 .idea/workspace.xml
 .*.swp
+.~lock.*#
