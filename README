@@ -4,7 +4,6 @@ The goal of sslcaudit project is to develop a utility to automate testing SSL/TL
 resistance against MITM attacks. It might be useful for testing a thick client, a mobile application,
 an appliance, pretty much anything communicating over SSL/TLS over TCP.
 
-
 INSTALLATION
 
 There is no procedure for installation yet. Just grab the code:
@@ -22,7 +21,6 @@ Sslcaudit uses M2Crypto Python library. If you dependencies problem, you might s
 On Debian system M2Crypto library can be installed with the following command:
 
 	$ sudo apt-get install python-m2crypto
-
 
 MORE INFORMATION
 
