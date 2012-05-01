@@ -7,7 +7,7 @@ port=$2
 method=$3
 cipher=$4
 
-socat_errf=`mktemp --tmpdir exthammer-XXXXXX.socat`
+socat_errf=`mktemp --tmpdir exthammer-socat-XXXXXX`
 
 socat EXEC:'date' OPENSSL:$host:$port,method=$method,cipher=$cipher 2> "$socat_errf" > /dev/null || true
 
