@@ -25,7 +25,7 @@ class ClientConnectionAuditResult(ClientConnectionAuditEvent):
 
     def __str__(self):
         #return '%-64s %-10s "%s"' % (self.auditor.name, self.conn.get_client_id(), self.res)
-        return 'CCAR(%s, %s, "%s")' % (self.auditor.name, self.conn.get_client_id(), self.res)
+        return ' CCAR(%s, %s, %s)' % (self.auditor.name, self.conn.get_client_id(), self.res)
 
 #class AuditResult(object):
 #    def __eq__(self, other):

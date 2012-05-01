@@ -3,6 +3,7 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
+from time import time
 
 import M2Crypto
 from M2Crypto.SSL.timeout import timeout
@@ -20,16 +21,43 @@ UNKNOWN_CA = 'tlsv1 alert unknown ca'
 UNEXPECTED_EOF = 'unexpected eof'
 CONNECTED = 'connected'
 
-class Connected:
-    def __init__(self, client_req = None):
-        self.client_req_size = client_req
+class Connected(object): pass
+
+class ConnectedGotEOF(Connected):
+    def __init__(self, dt):
+        self.dt = dt
 
     def __str__(self):
-        if self.client_req_size == None:
-            noctets = 0
+        return "connected, got EOF after %fs" % self.dt
+
+    def __eq__(self, other):
+        return self.__class__ == other.__class__
+
+class ConnectedReadTimeout(Connected):
+    def __init__(self, dt):
+        self.dt = dt
+
+    def __str__(self):
+        if self.dt != None:
+            dt_str = "%.3fs" % self.dt
         else:
-            noctets = len(self.client_req_size)
-        return "connected, got %d octets" % noctets
+            dt_str = '?'
+        return "connected, got nothing in %s" % dt_str
+
+    def __eq__(self, other):
+        return self.__class__ == other.__class__
+
+class ConnectedGotRequest(Connected):
+    def __init__(self, req, dt):
+        self.req = req
+        self.dt = dt
+
+    def __eq__(self, other):
+        return self.__class__ == other.__class__ and self.req == other.req
+
+    def __str__(self):
+        noctets = len(self.req)
+        return "connected, got %d octets after %fs" % (noctets, self.dt)
 
 # ------------------
 
@@ -52,10 +80,21 @@ class SSLClientConnectionAuditor(ClientConnectionAuditor):
             ssl_conn.accept_ssl()
 
             # try to read something from the client
+            start_time = time()
             client_req = ssl_conn.read(size=MAX_SIZE)
+            end_time = time()
+            dt = end_time - start_time
 
-            #
-            res = Connected(client_req)
+            if client_req == None:
+                # read timeout
+                res = ConnectedReadTimeout(dt)
+            else:
+                if len(client_req) == 0:
+                    # EOF
+                    res = ConnectedGotEOF(dt)
+                else:
+                    # got data
+                    res = ConnectedGotRequest(client_req, dt)
         except Exception as ex:
             res = ex.message
 
