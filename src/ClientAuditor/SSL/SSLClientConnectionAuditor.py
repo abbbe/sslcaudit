@@ -29,7 +29,7 @@ class ConnectedGotEOF(Connected):
         self.dt = dt
 
     def __str__(self):
-        return "connected, got EOF after %fs" % self.dt
+        return "connected, got EOF after %.1fs" % self.dt
 
     def __eq__(self, other):
         return self.__class__ == other.__class__
@@ -41,7 +41,7 @@ class ConnectedReadTimeout(Connected):
 
     def __str__(self):
         if self.dt != None:
-            dt_str = "%.3fs" % self.dt
+            dt_str = "%.1fs" % self.dt
         else:
             dt_str = '?'
         return "connected, got nothing in %s" % dt_str
@@ -60,7 +60,7 @@ class ConnectedGotRequest(Connected):
 
     def __str__(self):
         noctets = len(self.req)
-        return "connected, got %d octets after %fs" % (noctets, self.dt)
+        return "connected, got %d octets after %.1fs" % (noctets, self.dt)
 
 # ------------------
 

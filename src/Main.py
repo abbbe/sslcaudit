@@ -36,7 +36,7 @@ class Main(Thread):
                  + "There is also 'dummy' module used for internal testing or as a template code for "
             + "new modules. By default 'sslcert' is started.")
         parser.add_option("-d", dest="debug_level", default=0,
-            help="Set debug level. Default is 0, which disables debuging output. Try 1 to enable it.")
+            help="Set debug level. Default is 0, which disables debugging output. Try 1 to enable it.")
         parser.add_option("-c", dest="nclients", default=1,
             help="Number of clients to handle before quitting. By default sslcaudit will quit as soon as "
             + "it gets one client fully processed.")

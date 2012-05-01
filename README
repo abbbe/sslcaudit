@@ -1,17 +1,28 @@
 INTRODUCTION
 
-The goal of sslcaudit project is to develop a tool for off-line MITM testing
-of any SSL/TLS clients (not necessary HTTPS), suitable for professional use.
-I am tired of messing around with openssl and socat and want a tool which makes
-security audits of SSL clients (thick clients, mobile devices, appliances, etc)
-less labor-intensive.
+The goal of sslcaudit project is to develop a utility to automate testing SSL/TLS clients for
+resistance against MITM attacks. It might be useful for testing a thick client, a mobile application,
+an appliance, pretty much anything communicating over SSL/TLS over TCP.
+
 
 INSTALLATION
 
-There is no procedure for installation yet. Just
+There is no procedure for installation yet. Just grab the code:
+• Download ZIP archive at https://github.com/grwl/sslcaudit/zipball/release_1_0_rc1
+• Or clone leading edge master GIT repository: git clone git://github.com/grwl/sslcaudit.git
+• Find sslcaudit in the top level directory and run it with -h option.
 
-* grab the tarball from https://github.com/grwl/sslcaudit/downloads and unpack
-* cd into the top level directory and run './sslcaudit -h'
+Sslcaudit uses M2Crypto Python library. If you dependencies problem, you might see following:
+
+	$ ./sslcaudit
+	Traceback (most recent call last):
+	...
+	ImportError: No module named M2Crypto
+
+On Debian system M2Crypto library can be installed with the following command:
+
+	$ sudo apt-get install python-m2crypto
+
 
 MORE INFORMATION
 
