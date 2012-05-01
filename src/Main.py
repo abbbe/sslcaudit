@@ -34,7 +34,7 @@ class Main(Thread):
         parser.add_option("-m", dest="module", default=SSLCERT_MODULE_NAME, help="Audit module (sslcert by default)")
         parser.add_option("-d", dest="debug_level", default=0, help="Debug level")
         parser.add_option("-c", dest="nclients", default=1, help="Number of clients to handle before quitting")
-        #parser.add_option("-N", dest="test_name", help="User-specified name of the test")
+        parser.add_option("-N", dest="test_name", help="User-specified name of the test")
 
         parser.add_option("--user-cn", dest="user_cn",
             help="Use specified CN")
@@ -83,11 +83,12 @@ class Main(Thread):
             # XXX
             raise Exception("invalid value for -l parameter '%s'" % self.options.listen_on.split(':'))
 
+        if self.options.test_name == None:
+            self.options.test_name = DEFAULT_TEST_NAME
+
         # unparsed command line goes into test name
         if len(args) > 0:
-            options.test_name = str(args)
-        else:
-            options.test_name = DEFAULT_TEST_NAME
+            raise Exception("unexpected arguments: %s" % args)
 
         self.server = ClientAuditorServer(listen_on, self.auditor_set)
         self.queue_read_timeout = 0.1

@@ -33,9 +33,13 @@ do_test() {
 
 	outf=`mktemp`
 
+	test_name="$hammer $cipher $verify"
+
 	# start sslcaudit in background
 	sslcaudit_errf="$outf.sslcaudit"
-	$sslcaudit -l $test_host:$test_port -- $hammer $cipher $verify 2> "$sslcaudit_errf" &
+
+	#$sslcaudit -l $test_host:$test_port -- $hammer $cipher $verify 2> "$sslcaudit_errf" &
+	$sslcaudit -N "$test_name" -l $test_host:$test_port 2> "$sslcaudit_errf" &
 	sslcaudit_pid=$!
 
 	# start hammering
