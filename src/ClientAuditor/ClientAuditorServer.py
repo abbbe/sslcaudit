@@ -13,7 +13,8 @@ from src.ClientAuditor.ClientHandler import ClientHandler
 
 logger = logging.getLogger('ClientAuditorTCPServer')
 
-class ClientAuditorTCPServer(ThreadingMixIn, TCPServer):
+#class ClientAuditorTCPServer(ThreadingMixIn, TCPServer):
+class ClientAuditorTCPServer(TCPServer):
     '''
     This class extends TCPServer to enforce address reuse, enforce daemon threads, and allow threading.
     '''

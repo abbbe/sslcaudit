@@ -6,7 +6,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import os
 
-TEST_MAIN_JOIN_TIMEOUT = 5
+TEST_MAIN_JOIN_TIMEOUT = 60
 
 TEST_USER_CN = 'user-cn.nonexistent.gremwell.com'
 
