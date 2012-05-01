@@ -10,10 +10,10 @@ TEST_MAIN_JOIN_TIMEOUT = 5
 
 TEST_USER_CN = 'user-cn.nonexistent.gremwell.com'
 
-TEST_SERVER_HOST = 'gmail.google.com'
+TEST_SERVER_HOST = '62.213.200.252'
 TEST_SERVER_PORT = 443
 TEST_SERVER = '%s:%d' % (TEST_SERVER_HOST, TEST_SERVER_PORT)
-TEST_SERVER_CN = '*.google.com'
+TEST_SERVER_CN = 'brufeprd1.hackingmachines.com'
 
 TEST_LISTENER_ADDR = 'localhost'
 TEST_LISTENER_BASEPORT = 10000

@@ -8,7 +8,7 @@ import logging, unittest
 from src.CertFactory import SELFSIGNED
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.ClientAuditor.SSL.SSLClientAuditorSet import DEFAULT_CN
-from src.ClientAuditor.SSL.SSLClientConnectionAuditor import CONNECTED, UNEXPECTED_EOF, UNKNOWN_CA
+from src.ClientAuditor.SSL.SSLClientConnectionAuditor import CONNECTED, UNEXPECTED_EOF, UNKNOWN_CA, Connected
 from src.Main import Main
 from src.Test import TestConfig
 from src.Test.SSLHammer import NotVerifyingSSLHammer, VerifyingSSLHammer
@@ -31,11 +31,16 @@ class ExpectedSSLClientConnectionAuditResult(object):
         actual_auditor_name = audit_res.auditor.name
         if actual_auditor_name != self.auditor_name:
             return False
+
         actual_client_id = audit_res.conn.get_client_id()
         if actual_client_id != self.client_id:
             return False
-        if audit_res.res != self.res:
+
+        actual_res = str(audit_res.res)
+        expected_res = str(self.res)
+        if actual_res != expected_res:
             return False
+
         return True
 
     def __str__(self):
@@ -95,11 +100,11 @@ class TestMainSSL(unittest.TestCase):
             NotVerifyingSSLHammer(),
             [
                 ExpectedSSLClientConnectionAuditResult(
-                    "sslcert(('%s', '%s'))" % (DEFAULT_CN, SELFSIGNED), '127.0.0.1', CONNECTED),
+                    "sslcert(('%s', '%s'))" % (DEFAULT_CN, SELFSIGNED), '127.0.0.1', Connected('')),
                 ExpectedSSLClientConnectionAuditResult(
-                    "sslcert(('%s', '%s'))" % (TEST_USER_CN, SELFSIGNED), '127.0.0.1', CONNECTED),
+                    "sslcert(('%s', '%s'))" % (TEST_USER_CN, SELFSIGNED), '127.0.0.1', Connected('')),
                 ExpectedSSLClientConnectionAuditResult(
-                    "sslcert(('%s', '%s'))" % (TEST_SERVER_CN, SELFSIGNED), '127.0.0.1', CONNECTED)
+                    "sslcert(('%s', '%s'))" % (TEST_SERVER_CN, SELFSIGNED), '127.0.0.1', Connected(''))
             ])
 
     def test_verifying_client(self):

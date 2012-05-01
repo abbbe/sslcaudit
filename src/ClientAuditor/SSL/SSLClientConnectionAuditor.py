@@ -5,17 +5,20 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 import M2Crypto
+from M2Crypto.SSL.timeout import timeout
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.ClientAuditor.ClientConnectionAuditor import ClientConnectionAuditor
+
+MODULE_ID = 'sslcert' # XXX duplication
+
+READ_TIMEOUT = timeout(sec=3)
+MAX_SIZE = 1024
+
+# ------------------
 
 UNKNOWN_CA = 'tlsv1 alert unknown ca'
 UNEXPECTED_EOF = 'unexpected eof'
 CONNECTED = 'connected'
-
-MODULE_ID = 'sslcert' # XXX duplication
-
-READ_TIMEOUT = 3
-MAX_SIZE = 1024
 
 class Connected:
     def __init__(self, client_req = None):
@@ -27,6 +30,8 @@ class Connected:
         else:
             noctets = len(self.client_req_size)
         return "connected, got %d octets" % noctets
+
+# ------------------
 
 class SSLClientConnectionAuditor(ClientConnectionAuditor):
     def __init__(self, proto, certnkey):
@@ -42,14 +47,15 @@ class SSLClientConnectionAuditor(ClientConnectionAuditor):
         try:
             # try to accept SSL connection
             ssl_conn = M2Crypto.SSL.Connection(ctx=ctx, sock=conn.sock)
-            #ssl_conn.set_socket_read_timeout(READ_TIMEOUT)
+            ssl_conn.set_socket_read_timeout(READ_TIMEOUT)
             ssl_conn.setup_ssl()
             ssl_conn.accept_ssl()
 
             # try to read something from the client
-            #client_req = ssl_conn.read(size=MAX_SIZE)
-            #es = Connected(client_req)
-            res = CONNECTED
+            client_req = ssl_conn.read(size=MAX_SIZE)
+
+            #
+            res = Connected(client_req)
         except Exception as ex:
             res = ex.message
 
