@@ -8,5 +8,7 @@ built-id ca generator
 
 shell command autocompletion
 
-better exception handling, in particular from optparser
+better exception handling, in particular from optparser, failure to connect to server
+
 die if not both cert and key are specified
+
