@@ -31,7 +31,7 @@ do_test() {
 	local method=$2
 	local cipher=$3
 
-	outf=`mktemp`
+	outf=`mktemp --tmpdir exthammer-XXXXXX`
 
 	test_name="$hammer $method $cipher"
 
