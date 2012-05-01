@@ -37,7 +37,7 @@ class CertAndKey(object):
             self.cert = cert
 
         if pkey == None:
-            self.pkey = EVP.load_key (self.key_filename)
+            self.pkey = EVP.load_key(self.key_filename)
         else:
             self.pkey = pkey
 
@@ -53,6 +53,7 @@ class CertFactory(object):
     This class provides methods to generate new X509 certificates and corresponding
     keys, encapsulated into CertAndKey objects.
     '''
+
     def new_certnkey(self, cn, country=DEFAULT_X509_C, org=DEFAULT_X509_ORG, ca_certnkey=None):
         '''
         It generates a new certificate with given CN. If CA specified,
@@ -233,6 +234,6 @@ class CertFactory(object):
         and initalizes pathes to the certificate and the key.
 	    '''
         cert = X509.load_cert(cert_file)
-        pkey = EVP.load_key (key_file)
+        pkey = EVP.load_key(key_file)
         return CertAndKey(cert.get_subject().CN, cert_file, key_file, cert, pkey)
 

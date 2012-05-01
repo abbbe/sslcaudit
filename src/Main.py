@@ -5,7 +5,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 from Queue import Empty
-import logging, sys
+import logging
 from optparse import OptionParser
 from threading import Thread
 from src.ClientAuditor.ClientAuditorServer import ClientAuditorServer
@@ -25,29 +25,36 @@ PROG_VERSION = '1.0rc1'
 OUTPUT_FIELD_SEPARATOR = ' '
 
 class Main(Thread):
-
     def __init__(self, argv):
         Thread.__init__(self, target=self.run)
 
         parser = OptionParser(usage=('%s [OPTIONS]' % PROG_NAME), version=("%s %s" % (PROG_NAME, PROG_VERSION)))
-        parser.add_option("-l", dest="listen_on", default='0.0.0.0:8443', help="Listening [HOST:]PORT")
-        parser.add_option("-m", dest="module", help="Audit module (by default - all)")
-        parser.add_option("-d", dest="debug_level", default=0, help="Debug level")
-        parser.add_option("-c", dest="nclients", default=1, help="Number of clients to handle before quitting")
-        parser.add_option("-N", dest="test_name", help="User-specified name of the test")
+        parser.add_option("-l", dest="listen_on", default='0.0.0.0:8443',
+            help="Specify IP address and TCP PORT to listen on, in format of [HOST:]PORT")
+        parser.add_option("-m", dest="module",
+            help="Launch specific audit module. For now the only functional module is 'sslcert'. "
+                 + "There is also 'dummy' module used for internal testing or as a template code for "
+            + "new modules. By default 'sslcert' is started.")
+        parser.add_option("-d", dest="debug_level", default=0,
+            help="Set debug level. Default is 0, which disables debuging output. Try 1 to enable it.")
+        parser.add_option("-c", dest="nclients", default=1,
+            help="Number of clients to handle before quitting. By default sslcaudit will quit as soon as "
+            + "it gets one client fully processed.")
+        parser.add_option("-N", dest="test_name",
+            help="Set the name of the test. If specified will appear in the leftmost column in the output.")
 
         parser.add_option("--user-cn", dest="user_cn",
-            help="Use specified CN")
+            help="Set user-specified CN.")
         parser.add_option("--server", dest="server",
-            help="HOST:PORT to fetch the certificate from")
+            help="Where to fetch the server certificate from, in HOST:PORT format.")
         parser.add_option("--user-cert", dest="user_cert_file",
-            help="A file with user-supplied certificate")
+            help="Set path to file containing the user-supplied certificate.")
         parser.add_option("--user-key", dest="user_key_file",
-            help="A file with user-supplied key")
+            help="Set path to file containing the user-supplied key.")
         parser.add_option("--user-ca-cert", dest="user_ca_cert_file",
-            help="A file with a cert for CA, useful for testing sslcaudit itself")
+            help="Set path to file containing certificate for user-supplied CA.")
         parser.add_option("--user-ca-key", dest="user_ca_key_file",
-            help="A file with a key for CA, useful for testing sslcaudit itself")
+            help="Set path to file containing key for user-supplied CA.")
 
         parser.add_option("--no-default-cn", action="store_true", default=False, dest="no_default_cn",
             help=("Do not use default CN (%s)" % (DEFAULT_CN)))

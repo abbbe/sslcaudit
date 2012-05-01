@@ -161,14 +161,14 @@ class Cert:
 
         self.X509Certificate.set_issuer_name(X509Name)
 
-    #
-    # signing
-    #
+        #
+        # signing
+        #
 
-    #		self.X509Certificate.sign( pkey=self.PKey, md='sha1' )
+        #		self.X509Certificate.sign( pkey=self.PKey, md='sha1' )
 
         ca_cert = M2Crypto.X509.load_cert('sslcaudit-test-cacert.pem')
-        ca_pkey = M2Crypto.EVP.load_key ('sslcaudit-test-cakey.pem')
+        ca_pkey = M2Crypto.EVP.load_key('sslcaudit-test-cakey.pem')
         ca_cert.assign_rsa(ca_pkey, capture=False)
 
         self.X509Certificate.set_issuer(ca_cert.get_subject())

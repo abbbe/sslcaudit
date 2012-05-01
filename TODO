@@ -16,3 +16,6 @@ exit on Ctrl-C
 
 race condition (with auditor_set iterator?)
 
+add __eq__ for both directions for CCAR and ECCAR
+
+attend all XXX'es in the code

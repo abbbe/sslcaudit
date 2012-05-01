@@ -5,7 +5,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 import  logging
-from SocketServer import TCPServer, ThreadingMixIn
+from SocketServer import TCPServer
 from threading import Thread
 from Queue import Queue
 from src.ClientAuditor.ClientConnection import ClientConnection

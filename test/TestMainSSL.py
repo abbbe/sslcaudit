@@ -8,7 +8,7 @@ import logging, unittest
 from src.CertFactory import SELFSIGNED
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.ClientAuditor.SSL.SSLClientAuditorSet import DEFAULT_CN
-from src.ClientAuditor.SSL.SSLClientConnectionAuditor import CONNECTED, UNEXPECTED_EOF, UNKNOWN_CA, Connected, ConnectedReadTimeout
+from src.ClientAuditor.SSL.SSLClientConnectionAuditor import  UNEXPECTED_EOF, UNKNOWN_CA, ConnectedReadTimeout
 from src.Main import Main
 from src.Test import TestConfig
 from src.Test.SSLHammer import NotVerifyingSSLHammer, VerifyingSSLHammer
@@ -18,7 +18,6 @@ from src.Test.TestConfig import *
 TEST_DEBUG = 0
 
 class ExpectedSSLClientConnectionAuditResult(object):
-
     def __init__(self, auditor_name, client_id, res):
         self.auditor_name = auditor_name
         self.client_id = client_id
@@ -62,7 +61,7 @@ class TestMainSSL(unittest.TestCase):
         ''' Plain TCP client causes unexpected UNEXPECTED_EOF instead of UNKNOWN_CA '''
         self._main_test(
             [
-        		'-d', TEST_DEBUG,
+                '-d', TEST_DEBUG,
                 '--user-cn', TEST_USER_CN,
                 '--user-ca-cert', TEST_USER_CA_CERT_FILE,
                 '--user-ca-key', TEST_USER_CA_KEY_FILE
@@ -70,7 +69,7 @@ class TestMainSSL(unittest.TestCase):
             TCPHammer(),
             [
                 ExpectedSSLClientConnectionAuditResult(
-                    "sslcert(('%s', '%s'))" % (DEFAULT_CN, SELFSIGNED),'127.0.0.1', UNEXPECTED_EOF),
+                    "sslcert(('%s', '%s'))" % (DEFAULT_CN, SELFSIGNED), '127.0.0.1', UNEXPECTED_EOF),
                 ExpectedSSLClientConnectionAuditResult(
                     "sslcert(('%s', '%s'))" % (TEST_USER_CN, SELFSIGNED), '127.0.0.1', UNEXPECTED_EOF),
                 ExpectedSSLClientConnectionAuditResult(
@@ -207,6 +206,6 @@ class TestMainSSL(unittest.TestCase):
         self.assertFalse(mismatch)
 
 if __name__ == '__main__':
-	logging.basicConfig()
-	unittest.main()
+    logging.basicConfig()
+    unittest.main()
 

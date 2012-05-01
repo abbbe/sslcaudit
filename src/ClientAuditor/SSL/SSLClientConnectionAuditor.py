@@ -23,6 +23,7 @@ CONNECTED = 'connected'
 
 class Connected(object): pass
 
+
 class ConnectedGotEOF(Connected):
     def __init__(self, dt):
         self.dt = dt
@@ -32,6 +33,7 @@ class ConnectedGotEOF(Connected):
 
     def __eq__(self, other):
         return self.__class__ == other.__class__
+
 
 class ConnectedReadTimeout(Connected):
     def __init__(self, dt):
@@ -46,6 +48,7 @@ class ConnectedReadTimeout(Connected):
 
     def __eq__(self, other):
         return self.__class__ == other.__class__
+
 
 class ConnectedGotRequest(Connected):
     def __init__(self, req, dt):
