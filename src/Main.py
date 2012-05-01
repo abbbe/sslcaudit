@@ -65,15 +65,20 @@ class Main(Thread):
             logging.getLogger().setLevel(logging.DEBUG)
 
         self.auditor_sets = []
+
+        # load sslcert module by default or if specified explicitly
         if self.options.module == None or self.options.module == SSLClientAuditorSet.MODULE_ID:
             self.auditor_sets.append(SSLClientAuditorSet(self.options))
 
-        #if self.options.module == None or self.options.module == DummyClientAuditorSet.MODULE_ID:
-        #    self.auditor_sets.append(DummyClientAuditorSet(self.options))
+        # only use dummy module if it is specified explicitly
+        if self.options.module == DummyClientAuditorSet.MODULE_ID:
+            self.auditor_sets.append(DummyClientAuditorSet(self.options))
 
+        # there must be some auditors in the list
         if len(self.auditor_sets) == 0:
             raise RuntimeError("auditor set is empty")
 
+        # transform listen_on string into a tuple
         listen_on_parts = self.options.listen_on.split(':')
         if len(listen_on_parts) == 1:
             # convert "PORT" string to (DEFAULT_HOST, POST) tuple

@@ -7,12 +7,11 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 from src.ClientAuditor.ClientAuditorSet import ClientAuditorSet
 from src.ClientAuditor.Dummy.DummyClientAuditor import DummyClientConnectionAuditor
 
-MODULE_ID = 'dummy'
-
 class DummyClientAuditorSet(ClientAuditorSet):
     '''
     This is a dummy auditor set, containing only two dummy auditors.
     '''
+    MODULE_ID = 'dummy'
 
     def __init__(self, _):
         auditors = [DummyClientConnectionAuditor(False), DummyClientConnectionAuditor(True)]

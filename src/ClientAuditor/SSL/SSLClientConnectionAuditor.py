@@ -14,6 +14,20 @@ CONNECTED = 'connected'
 
 MODULE_ID = 'sslcert' # XXX duplication
 
+READ_TIMEOUT = 3
+MAX_SIZE = 1024
+
+class Connected:
+    def __init__(self, client_req = None):
+        self.client_req_size = client_req
+
+    def __str__(self):
+        if self.client_req_size == None:
+            noctets = 0
+        else:
+            noctets = len(self.client_req_size)
+        return "connected, got %d octets" % noctets
+
 class SSLClientConnectionAuditor(ClientConnectionAuditor):
     def __init__(self, proto, certnkey):
         self.proto = proto
@@ -28,9 +42,13 @@ class SSLClientConnectionAuditor(ClientConnectionAuditor):
         try:
             # try to accept SSL connection
             ssl_conn = M2Crypto.SSL.Connection(ctx=ctx, sock=conn.sock)
+            #ssl_conn.set_socket_read_timeout(READ_TIMEOUT)
             ssl_conn.setup_ssl()
             ssl_conn.accept_ssl()
 
+            # try to read something from the client
+            #client_req = ssl_conn.read(size=MAX_SIZE)
+            #es = Connected(client_req)
             res = CONNECTED
         except Exception as ex:
             res = ex.message

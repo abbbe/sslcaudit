@@ -18,6 +18,7 @@ class TestMainDummy(unittest.TestCase):
     '''
     logger = logging.getLogger('TestMainDummy')
     MAIN_JOIN_TIMEOUT = 5
+    HAMMER_ATTEMPTS = 3
 
     def test_dummy(self):
         '''
@@ -58,7 +59,7 @@ class TestMainDummy(unittest.TestCase):
         self.main.handle_result = main__handle_result
 
         # tell the hammer how many attempts to make exactly
-        self.hammer.init_tcp((TEST_LISTENER_ADDR, port), self.main.auditor_sets.len())
+        self.hammer.init_tcp((TEST_LISTENER_ADDR, port), self.HAMMER_ATTEMPTS)
 
         # start server and client
         self.main.start()
@@ -70,7 +71,7 @@ class TestMainDummy(unittest.TestCase):
 
         # make sure we have received expected number of results
         self.assertEquals(self.got_result_start, 1)
-        self.assertEquals(self.got_result, self.main.auditor_sets.len())
+        self.assertEquals(self.got_result, 2)
         self.assertEquals(self.got_result_end, 1)
         self.assertEquals(self.got_bulk_result, 1)
         self.assertEquals(self.nstray, 0)
