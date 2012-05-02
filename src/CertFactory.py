@@ -193,17 +193,16 @@ class CertFactory(object):
         rsa_keypair.save_key(key_file.name, None)
         key_file.close()
 
-        # XXX arrange for evidence preservation
-
         return CertAndKey((subj.CN, signedby), cert_file.name, key_file.name, cert, pkey)
 
-    def grab_server_x509_cert(self, server):
+    def grab_server_x509_cert(self, server, protocol='sslv23'):
         '''
         This function connects to the specified server and grabs its certificate.
-        Expects (server, port) tuple as input.
+        Expects (server, port) tuple as input. Gets optional proto parameter to explicitly
+        specify the protocol.
         '''
         # create context
-        ctx = SSL.Context() # XXX should we try different protocols here
+        ctx = SSL.Context(protocol=protocol)
         ctx.set_allow_unknown_ca(True)
         ctx.set_verify(SSL.verify_none, 0)
 
