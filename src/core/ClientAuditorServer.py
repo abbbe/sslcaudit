@@ -77,4 +77,3 @@ class ClientAuditorServer(Thread):
     def run(self):
         logger.debug('running %s, listen_on %s, auditor_set %s', self, self.listen_on, self.auditor_sets)
         self.tcp_server.serve_forever()
-
