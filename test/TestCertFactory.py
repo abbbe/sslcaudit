@@ -6,7 +6,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import unittest
 from src.CertFactory import *
-from src.Test.TestConfig import *
+from src.test.TestConfig import *
 
 class TestCertFactory(unittest.TestCase):
     def setUp(self):

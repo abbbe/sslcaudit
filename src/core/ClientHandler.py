@@ -6,20 +6,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging, itertools
 from exceptions import StopIteration
-from src.ClientAuditor.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent
-
-class ClientAuditResult(object):
-    '''
-    This class holds results of invocation of all auditors for one client.
-    '''
-
-    def __init__(self, client_id):
-        self.client_id = client_id
-        self.results = []
-
-    def add(self, res):
-        self.results.append(res)
-
+from src.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientAuditResult
 
 class ClientHandler(object):
     '''

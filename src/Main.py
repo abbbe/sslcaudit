@@ -4,15 +4,13 @@ Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
-from Queue import Empty
 import logging, sys
+from Queue import Empty
 from optparse import OptionParser
 from threading import Thread
-from src.ClientAuditor.ClientAuditorServer import ClientAuditorServer
-from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.ClientAuditor.ClientHandler import ClientAuditResult
+from src.core.ClientAuditorServer import ClientAuditorServer
+from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientAuditResult
 from src.ConfigErrorException import ConfigErrorException
-from src.modules.sslcert.AuditorSet import DEFAULT_CN
 
 logger = logging.getLogger('Main')
 
@@ -21,8 +19,8 @@ DEFAULT_PORT = '8443'
 DEFAULT_MODULES = 'sslcert'
 
 MODULE_NAME_PREFIX = 'src.modules'
-AUDITOR_SETS_MODULE_NAME = 'AuditorSet'
-AUDITOR_SETS_CLASS_NAME = 'AuditorSet'
+AUDITOR_SETS_MODULE_NAME = 'ClientAuditorSet'
+AUDITOR_SETS_CLASS_NAME = 'ClientAuditorSet'
 
 PROG_NAME = 'sslcaudit'
 PROG_VERSION = '1.0rc1'

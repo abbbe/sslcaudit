@@ -6,15 +6,15 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging
 import unittest
-from src.ClientAuditor.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientConnectionAuditResult
-from src.ClientAuditor.ClientHandler import ClientAuditResult
+from src.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientConnectionAuditResult
+from src.core.ClientHandler import ClientAuditResult
 from src.Main import Main
-from src.Test.TCPHammer import TCPHammer
-from src.Test.TestConfig import get_next_listener_port, TEST_LISTENER_ADDR
+from src.test.TCPHammer import TCPHammer
+from src.test.TestConfig import get_next_listener_port, TEST_LISTENER_ADDR
 
 class TestMainDummy(unittest.TestCase):
     '''
-    Test dummy client / auditor, no SSL whatsoever
+    test dummy client / auditor, no SSL whatsoever
     '''
     logger = logging.getLogger('TestMainDummy')
     MAIN_JOIN_TIMEOUT = 5

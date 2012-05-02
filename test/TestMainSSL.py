@@ -6,14 +6,14 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging, unittest
 from src.CertFactory import SELFSIGNED
-from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.modules.sslcert.AuditorSet import DEFAULT_CN
+from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from src.modules.sslcert.ClientAuditorSet import DEFAULT_CN
 from src.modules.sslcert.SSLClientConnectionAuditor import  UNEXPECTED_EOF, UNKNOWN_CA, ConnectedReadTimeout
 from src.Main import Main
-from src.Test import TestConfig
-from src.Test.SSLHammer import NotVerifyingSSLHammer, VerifyingSSLHammer
-from src.Test.TCPHammer import TCPHammer
-from src.Test.TestConfig import *
+from src.test import TestConfig
+from src.test.SSLHammer import NotVerifyingSSLHammer, VerifyingSSLHammer
+from src.test.TCPHammer import TCPHammer
+from src.test.TestConfig import *
 
 TEST_DEBUG = 0
 

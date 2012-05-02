@@ -8,8 +8,8 @@ import  logging
 from SocketServer import TCPServer
 from threading import Thread
 from Queue import Queue
-from src.ClientAuditor.ClientConnection import ClientConnection
-from src.ClientAuditor.ClientHandler import ClientHandler
+from src.core.ClientConnection import ClientConnection
+from src.core.ClientHandler import ClientHandler
 
 logger = logging.getLogger('ClientAuditorTCPServer')
 

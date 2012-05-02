@@ -7,13 +7,13 @@ from time import time
 
 import M2Crypto
 from M2Crypto.SSL.timeout import timeout
-from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.ClientAuditor.ClientConnectionAuditor import ClientConnectionAuditor
+from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from src.modules.base.BaseClientConnectionAuditor import BaseClientConnectionAuditor
 
 READ_TIMEOUT = timeout(sec=3)
 MAX_SIZE = 1024
 
-# ------------------
+# --- some classes and constants here should be moved elsewhere, to be shared between different modules
 
 UNKNOWN_CA = 'tlsv1 alert unknown ca'
 UNEXPECTED_EOF = 'unexpected eof'
@@ -62,12 +62,12 @@ class ConnectedGotRequest(Connected):
 
 # ------------------
 
-class SSLClientConnectionAuditor(ClientConnectionAuditor):
+class SSLClientConnectionAuditor(BaseClientConnectionAuditor):
     def __init__(self, proto, certnkey):
+        BaseClientConnectionAuditor.__init__(self)
         self.proto = proto
         self.certnkey = certnkey
-        name = 'sslcert(%s)' % str(self.certnkey.name)
-        ClientConnectionAuditor.__init__(self, name)
+        self.name = 'sslcert(%s)' % str(self.certnkey.name)
 
     def handle(self, conn):
         ctx = M2Crypto.SSL.Context(self.proto)

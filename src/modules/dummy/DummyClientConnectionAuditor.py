@@ -4,16 +4,16 @@ Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
-from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.ClientAuditor.ClientConnectionAuditor import  ClientConnectionAuditor
+from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from src.modules.base.BaseClientConnectionAuditor import BaseClientConnectionAuditor
 
-class DummyClientConnectionAuditor(ClientConnectionAuditor):
+class DummyClientConnectionAuditor(BaseClientConnectionAuditor):
     '''
-    This dummy profile does nothing, but returns DummyClientConnectionResult.
+    This dummy profile does nothing, but returns an result it is given.
     '''
 
     def __init__(self, dummy_result):
-        ClientConnectionAuditor.__init__(self, dummy_result)
+        BaseClientConnectionAuditor.__init__(self, dummy_result)
         self.dummy_result = dummy_result
 
     def handle(self, conn):

@@ -5,7 +5,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 import M2Crypto
-from src.Test.TCPHammer import TCPHammer
+from src.test.TCPHammer import TCPHammer
 
 class SSLHammer(TCPHammer):
     def __init__(self, name, verify):

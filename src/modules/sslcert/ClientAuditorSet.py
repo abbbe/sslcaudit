@@ -5,19 +5,27 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 from src.CertFactory import CertFactory
-from src.ClientAuditor.ClientAuditorSet import ClientAuditorSet
 from src.ConfigErrorException import ConfigErrorException
+from src.modules.base.BaseClientAuditorSet import BaseClientAuditorSet
 from src.modules.sslcert.SSLClientConnectionAuditor import SSLClientConnectionAuditor
 
 DEFAULT_CN = 'nonexistent.gremwell.com'
 
-class AuditorSet(ClientAuditorSet):
+class ClientAuditorSet(BaseClientAuditorSet):
     def __init__(self, options, protocol='sslv23'):
-        self.options = options
+        BaseClientAuditorSet.__init__(self, options)
 
         self.protocol = protocol
         self.cert_factory = CertFactory()
 
+        self.init_options()
+
+        self.init_user_cert()
+        self.init_self_signed()
+        self.init_user_cert_signed()
+        self.init_user_ca_signed()
+
+    def init_options(self):
         # handle --server= option
         if self.options.server != None:
             # fetch X.509 certificate from user-specified server
@@ -34,14 +42,6 @@ class AuditorSet(ClientAuditorSet):
         self.user_ca_certnkey = self.load_certnkey(
             '--user-ca-cert', self.options.user_ca_cert_file,
             '--user-ca-key', self.options.user_ca_key_file)
-
-        self.auditors = []
-        self.init_user_cert()
-        self.init_self_signed()
-        self.init_user_cert_signed()
-        self.init_user_ca_signed()
-
-        ClientAuditorSet.__init__(self, self.auditors)
 
     def init_user_cert(self):
         '''
