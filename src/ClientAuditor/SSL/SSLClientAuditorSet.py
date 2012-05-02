@@ -7,7 +7,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 from src.CertFactory import CertFactory
 from src.ClientAuditor.ClientAuditorSet import ClientAuditorSet
 from src.ClientAuditor.SSL.SSLClientConnectionAuditor import SSLClientConnectionAuditor
-from src.UsageException import UsageException
+from src.ConfigErrorException import ConfigErrorException
 
 DEFAULT_CN = 'nonexistent.gremwell.com'
 
@@ -102,20 +102,20 @@ class SSLClientAuditorSet(ClientAuditorSet):
     def load_certnkey(self, cert_param, cert_file, key_param, key_file):
         '''
         This function loads X509 certificate from files and returns CertAndKey object.
-        It produces sensible UsageException in case of parameter error.
+        It throws a sensible ConfigErrorException in case of parameter error or problems
+        with the input files.
         '''
         if (cert_file == None) and (key_file == None):
             return None
 
         if key_file == None:
-            raise UsageException("If %s is set, %s must be set too" % (cert_param, key_param))
+            raise ConfigErrorException("If %s is set, %s must be set too" % (cert_param, key_param))
 
         if cert_file == None:
-            raise UsageException("If %s is set, %s must be set too" % (key_param, cert_param))
+            raise ConfigErrorException("If %s is set, %s must be set too" % (key_param, cert_param))
 
         try:
             self.user_certnkey = self.cert_factory.load_certnkey_files(
                 self.options.user_cert_file, self.options.user_key_file)
         except IOError as ex:
-            # XXX
-            raise IOError(ex)
+            raise ConfigErrorException(ex)

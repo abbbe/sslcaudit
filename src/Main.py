@@ -13,7 +13,7 @@ from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditRe
 from src.ClientAuditor.ClientHandler import ClientAuditResult
 from src.ClientAuditor.Dummy.DummyClientAuditorSet import DummyClientAuditorSet
 from src.ClientAuditor.SSL.SSLClientAuditorSet import SSLClientAuditorSet, DEFAULT_CN
-from src.UsageException import UsageException
+from src.ConfigErrorException import ConfigErrorException
 
 logger = logging.getLogger('Main')
 
@@ -77,7 +77,7 @@ class Main(Thread):
 
         (options, args) = parser.parse_args(argv)
         if len(args) > 0:
-            raise UsageException("unexpected arguments: %s" % args)
+            raise ConfigErrorException("unexpected arguments: %s" % args)
 
         self.options = options
 
@@ -90,7 +90,7 @@ class Main(Thread):
             # convert "HOST:PORT" string to (HOST, PORT) tuple
             self.listen_on = (listen_on_parts[0], int(listen_on_parts[1]))
         else:
-            raise UsageException("invalid value for -l parameter '%s'" % self.options.listen_on.split(':'))
+            raise ConfigErrorException("invalid value for -l parameter '%s'" % self.options.listen_on.split(':'))
 
     def init_modules(self):
         self.auditor_sets = []
@@ -105,7 +105,7 @@ class Main(Thread):
 
         # there must be some auditors in the list
         if len(self.auditor_sets) == 0:
-            raise UsageException("auditor set is empty, nothing to do")
+            raise ConfigErrorException("auditor set is empty, nothing to do")
 
     def start(self):
         self.do_stop = False
