@@ -4,13 +4,11 @@ SSL timeout, read timeout (hardcoded)
 
 XSLT output templates
 
-built-id ca generator
+built-in ca generator
 
 shell command autocompletion
 
 (raf) better exception handling: from optparser, failure to connect to server, failure to read user-specified file, cert/key loading failures
-
-die if not both cert and key are specified
 
 (raf) exit on Ctrl-C
 
