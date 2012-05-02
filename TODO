@@ -1,6 +1,9 @@
-attend all XXX'es in the code
+C2, C4, C5 (v1.1)
+Better report formatting (v1.1)
+Support protocol-level tests (v1.1)
+Save a copy of all keys/certificates used during the test (right now they remain under /tmp) (v1.1)
+
 race condition (with auditor_set iterator?)
-add __eq__ for both directions for CCAR and ECCAR
 XSLT output templates
 built-in ca generator
 (raf) better exception handling: from optparser, failure to connect to server, failure to read user-specified file, cert/key loading failures

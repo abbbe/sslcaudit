@@ -10,8 +10,6 @@ from M2Crypto.SSL.timeout import timeout
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.ClientAuditor.ClientConnectionAuditor import ClientConnectionAuditor
 
-MODULE_ID = 'sslcert' # XXX duplication
-
 READ_TIMEOUT = timeout(sec=3)
 MAX_SIZE = 1024
 
@@ -68,7 +66,7 @@ class SSLClientConnectionAuditor(ClientConnectionAuditor):
     def __init__(self, proto, certnkey):
         self.proto = proto
         self.certnkey = certnkey
-        name = '%s(%s)' % (MODULE_ID, self.certnkey.name)
+        name = 'sslcert(%s)' % str(self.certnkey.name)
         ClientConnectionAuditor.__init__(self, name)
 
     def handle(self, conn):
