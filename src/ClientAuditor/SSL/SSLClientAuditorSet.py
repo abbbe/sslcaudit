@@ -14,16 +14,16 @@ DEFAULT_CN = 'nonexistent.gremwell.com'
 class SSLClientAuditorSet(ClientAuditorSet):
     MODULE_ID = 'sslcert'
 
-    def __init__(self, options):
+    def __init__(self, options, protocol='sslv23'):
         self.options = options
 
-        self.proto = 'sslv23' # XXX
+        self.protocol = protocol
         self.cert_factory = CertFactory()
 
         # handle --server= option
         if self.options.server != None:
             # fetch X.509 certificate from user-specified server
-            self.server_x509_cert = self.cert_factory.grab_server_x509_cert(self.options.server)
+            self.server_x509_cert = self.cert_factory.grab_server_x509_cert(self.options.server, protocol=self.protocol)
         else:
             self.server_x509_cert = None
 
@@ -50,7 +50,7 @@ class SSLClientAuditorSet(ClientAuditorSet):
         This method initializes an auditor using user-supplied certificate as is
         '''
         if self.user_certnkey != None:
-            auditor = SSLClientConnectionAuditor(self.proto, self.user_certnkey)
+            auditor = SSLClientConnectionAuditor(self.protocol, self.user_certnkey)
             self.auditors.append(auditor)
 
     def init_self_signed(self):
@@ -91,12 +91,12 @@ class SSLClientAuditorSet(ClientAuditorSet):
             else:
                 certnkey = self.cert_factory.mk_signed_replica_certnkey(self.server_x509_cert, ca_certnkey)
 
-            auditor = SSLClientConnectionAuditor(self.proto, certnkey)
+            auditor = SSLClientConnectionAuditor(self.protocol, certnkey)
             self.auditors.append(auditor)
 
     def _init_signedtests(self, cn, ca_certnkey):
         certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=ca_certnkey)
-        auditor = SSLClientConnectionAuditor(self.proto, certnkey)
+        auditor = SSLClientConnectionAuditor(self.protocol, certnkey)
         self.auditors.append(auditor)
 
     def load_certnkey(self, cert_param, cert_file, key_param, key_file):
