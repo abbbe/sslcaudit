@@ -8,11 +8,11 @@ built-id ca generator
 
 shell command autocompletion
 
-better exception handling, in particular from optparser, failure to connect to server
+(raf) better exception handling: from optparser, failure to connect to server, failure to read user-specified file, cert/key loading failures
 
 die if not both cert and key are specified
 
-exit on Ctrl-C
+(raf) exit on Ctrl-C
 
 race condition (with auditor_set iterator?)
 
