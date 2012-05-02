@@ -6,8 +6,8 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 from src.CertFactory import CertFactory
 from src.ClientAuditor.ClientAuditorSet import ClientAuditorSet
-from src.ClientAuditor.SSL.SSLClientConnectionAuditor import SSLClientConnectionAuditor
 from src.ConfigErrorException import ConfigErrorException
+from src.modules.sslcert.SSLClientConnectionAuditor import SSLClientConnectionAuditor
 
 DEFAULT_CN = 'nonexistent.gremwell.com'
 

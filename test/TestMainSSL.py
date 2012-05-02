@@ -7,8 +7,8 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 import logging, unittest
 from src.CertFactory import SELFSIGNED
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.ClientAuditor.SSL.SSLClientAuditorSet import DEFAULT_CN
-from src.ClientAuditor.SSL.SSLClientConnectionAuditor import  UNEXPECTED_EOF, UNKNOWN_CA, ConnectedReadTimeout
+from src.modules.sslcert.SSLClientAuditorSet import DEFAULT_CN
+from src.modules.sslcert.SSLClientConnectionAuditor import  UNEXPECTED_EOF, UNKNOWN_CA, ConnectedReadTimeout
 from src.Main import Main
 from src.Test import TestConfig
 from src.Test.SSLHammer import NotVerifyingSSLHammer, VerifyingSSLHammer

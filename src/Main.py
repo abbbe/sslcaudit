@@ -11,8 +11,8 @@ from threading import Thread
 from src.ClientAuditor.ClientAuditorServer import ClientAuditorServer
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.ClientAuditor.ClientHandler import ClientAuditResult
-from src.ClientAuditor.Dummy.DummyClientAuditorSet import DummyClientAuditorSet
-from src.ClientAuditor.SSL.SSLClientAuditorSet import SSLClientAuditorSet, DEFAULT_CN
+from src.modules.dummy.DummyClientAuditorSet import DummyClientAuditorSet
+from src.modules.sslcert.SSLClientAuditorSet import SSLClientAuditorSet, DEFAULT_CN
 from src.ConfigErrorException import ConfigErrorException
 
 logger = logging.getLogger('Main')

@@ -5,7 +5,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 from src.ClientAuditor.ClientAuditorSet import ClientAuditorSet
-from src.ClientAuditor.Dummy.DummyClientAuditor import DummyClientConnectionAuditor
+from src.modules.dummy.DummyClientAuditor import DummyClientConnectionAuditor
 
 class DummyClientAuditorSet(ClientAuditorSet):
     '''
