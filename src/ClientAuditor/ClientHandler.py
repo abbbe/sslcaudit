@@ -25,15 +25,18 @@ class ClientHandler(object):
     '''
     Instances of this class hold information about the progress and the results of an audit of a single client.
     Normally it gets instantiated on the very first connection from a client and same instance handles all subsequent
-    connections from the same client. For each connection it fetches a next auditor object from the auditor set and
-    uses it to test that connection. In the process it sends the following events into results queue:
-        * ClientAuditStartEvent
-    When the set of auditors is exhausted, it pushes XXX.
+    connections from the same client. For each connection it fetches a next auditor object from the predefined
+    auditor set and uses that auditor to test the connection. It sends ClientAuditStartEvent event on first client
+    connection. After each connection is handled, it pushes the result returned by the auditor, which normally is
+    ClientConnectionAuditResult or another subclass of ClientConnectionAuditEvent. After the last auditor has
+    finished its work it pushes ClientAuditEndEvent and ClientAuditResult into the queue.
 
     Object states:
         right after initialization: next_auditor = None, done = False
         after first and subsequent connection: next_auditor = something, done = False
         after set of auditors is exhausted: next_auditor = None, done = True
+
+    XXX race condition XXX
     '''
     logger = logging.getLogger('ClientHandler')
 
