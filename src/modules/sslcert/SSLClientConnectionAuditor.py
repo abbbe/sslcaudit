@@ -63,8 +63,15 @@ class ConnectedGotRequest(Connected):
 # ------------------
 
 class SSLClientConnectionAuditor(BaseClientConnectionAuditor):
+    '''
+    This class implements SSL/TLS server. Its handle() method tries to perform SSL/TLS handshake using provided
+    certificate and a key. If connection is successful, it waits for the client to send some data. In some cases
+    even if SSL session is set up a client terminates the connection right away (for example if it realises CN does
+    not match the expected value).
+    '''
     def __init__(self, proto, certnkey):
         BaseClientConnectionAuditor.__init__(self)
+
         self.proto = proto
         self.certnkey = certnkey
         self.name = 'sslcert(%s)' % str(self.certnkey.name)

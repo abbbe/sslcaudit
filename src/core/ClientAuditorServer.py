@@ -22,6 +22,7 @@ class ClientAuditorTCPServer(TCPServer):
     def __init__(self, listen_on):
         TCPServer.__init__(self, listen_on, None, bind_and_activate=False)
         self.daemon_threads = True
+        # make sure SO_REUSE_ADDR socket option is set
         self.allow_reuse_address = True
 
         try:
@@ -34,12 +35,11 @@ class ClientAuditorTCPServer(TCPServer):
 
 class ClientAuditorServer(Thread):
     '''
-    This class extends TCP server to handle incoming connection from clients under test. Each
+    This class creates ClientAuditorTCPServer server and uses it to handle incoming connection from clients. Each
     client is expected to establish a number of connections to the server.
 
-    The server distinguishes between connections from different clients by source IP address.
-    All connections from the same source IP address are considered to correspond to the same
-    client.
+    The server distinguishes between connections from different clients by source IP address. All connections from
+    the same source IP address are considered to correspond to the same client.
     '''
 
     def __init__(self, listen_on, auditor_sets, res_queue=None):
@@ -50,17 +50,19 @@ class ClientAuditorServer(Thread):
         self.clients = {}
         self.auditor_sets = auditor_sets
 
+        # create a local result queue unless one is already provided
         if res_queue == None:
             self.res_queue = Queue()
         else:
             self.res_queue = res_queue
 
-        # create TCP listener with SO_REUSE_ADDR socket option
+        # create TCP server and make it use our method to handle the requests
         self.tcp_server = ClientAuditorTCPServer(self.listen_on)
         self.tcp_server.finish_request = self.finish_request
 
     def finish_request(self, sock, client_address):
         # this method overrides TCPServer implementation and actually handles new connections
+
         # create new conn object and obtain client id
         conn = ClientConnection(sock, client_address)
         client_id = conn.get_client_id()
@@ -69,7 +71,6 @@ class ClientAuditorServer(Thread):
         if not self.clients.has_key(client_id):
             logger.debug('new client %s [id %s]', conn, client_id)
             self.clients[client_id] = ClientHandler(client_id, self.auditor_sets, self.res_queue)
-            # pass the request to the client handler
 
         # handle the request
         self.clients[client_id].handle(conn)
