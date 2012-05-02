@@ -155,7 +155,7 @@ class CertFactory(object):
         '''
 
         exp = 65537 # hardcoded
-        hash = 'sha1' # XXX unused?
+        md = 'sha1'
 
         # create a new keypair
         rsa_keypair = RSA.gen_key(bits, exp, util.no_passphrase_callback)
@@ -178,10 +178,10 @@ class CertFactory(object):
 
         # sign
         if ca_certnkey != None:
-            cert.sign(ca_certnkey.pkey, hash)
+            cert.sign(ca_certnkey.pkey, md)
             signedby = ca_certnkey.name
         else:
-            cert.sign(pkey, hash)
+            cert.sign(pkey, md)
             signedby = SELFSIGNED
 
         cert_file = NamedTemporaryFile(delete=False)
