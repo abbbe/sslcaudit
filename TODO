@@ -1,19 +1,9 @@
-handle ipv6 addresses properly in -l and -s
-
-SSL timeout, read timeout (hardcoded)
-
-XSLT output templates
-
-built-in ca generator
-
-shell command autocompletion
-
-(raf) better exception handling: from optparser, failure to connect to server, failure to read user-specified file, cert/key loading failures
-
-(raf) exit on Ctrl-C
-
-race condition (with auditor_set iterator?)
-
-add __eq__ for both directions for CCAR and ECCAR
-
 attend all XXX'es in the code
+race condition (with auditor_set iterator?)
+add __eq__ for both directions for CCAR and ECCAR
+XSLT output templates
+built-in ca generator
+(raf) better exception handling: from optparser, failure to connect to server, failure to read user-specified file, cert/key loading failures
+(raf) exit on Ctrl-C
+handle ipv6 addresses properly in -l and -s
+bash parameter completion (http://www.debian-administration.org/articles/317)

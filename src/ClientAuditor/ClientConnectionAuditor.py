@@ -13,7 +13,6 @@ class ClientConnectionAuditor(object):
     def __init__(self, name):
         self.name = name
 
-
     def handle(self, conn):
         '''
         This method is invoked to audit a given client connection. It must return a valid ClientAuditResult object.

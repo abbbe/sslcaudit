@@ -5,6 +5,9 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 class ClientConnectionAuditEvent(object):
+    '''
+    This is a base class for events produced by connection auditors
+    '''
     def __init__(self, auditor, conn):
         self.auditor = auditor
         self.conn = conn
@@ -24,52 +27,7 @@ class ClientConnectionAuditResult(ClientConnectionAuditEvent):
         self.res = res
 
     def __str__(self):
-        #return '%-64s %-10s "%s"' % (self.auditor.name, self.conn.get_client_id(), self.res)
         return ' CCAR(%s, %s, %s)' % (self.auditor.name, self.conn.get_client_id(), self.res)
-
-#class AuditResult(object):
-#    def __eq__(self, other):
-#        return self.__class__ == other.__class__ and self.__dict__ == other.__dict__
-#
-#
-#class PositiveAuditResult(AuditResult):
-#    '''
-#    The outcome of the test is as expected.
-#    '''
-#
-#    def __init__(self, actual):
-#        self.actual = actual
-#
-#    def __repr__(self):
-#        return "+ got '%s'" % (self.actual)
-#
-#
-#class NegativeAuditResult(AuditResult):
-#    '''
-#    The outcome of the test is as expected.
-#    '''
-#
-#    def __init__(self, actual, expected):
-#        self.actual = actual
-#        self.expected = expected
-#
-#    def __repr__(self):
-#        return "- got '%s' expected '%s'" % (self.actual, self.expected)
-#
-#class TestFailureAuditResult(AuditResult):
-#    '''
-#    The outcome of the test suggests inconsistent test results.
-#    '''
-#
-#    def __init__(self, actual, expected):
-#        self.actual = actual
-#        self.expected = expected
-#
-#    def __repr__(self):
-#        return "! got '%s' expected '%s'" % (self.actual, self.expected)
-
-
-# ----------------------------------------------------------------------------------
 
 class ClientAuditStartEvent(ClientConnectionAuditEvent):
     pass

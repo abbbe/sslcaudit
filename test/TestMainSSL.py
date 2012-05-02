@@ -35,9 +35,6 @@ class ExpectedSSLClientConnectionAuditResult(object):
         if actual_client_id != self.client_id:
             return False
 
-        #actual_res = str(audit_res.res)
-        #expected_res = str(self.res)
-        #if actual_res != expected_res:
         if self.res == audit_res.res:
             return True
         else:
