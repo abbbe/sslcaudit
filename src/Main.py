@@ -5,20 +5,24 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 from Queue import Empty
-import logging
+import logging, sys
 from optparse import OptionParser
 from threading import Thread
 from src.ClientAuditor.ClientAuditorServer import ClientAuditorServer
 from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.ClientAuditor.ClientHandler import ClientAuditResult
-from src.modules.dummy.DummyClientAuditorSet import DummyClientAuditorSet
-from src.modules.sslcert.SSLClientAuditorSet import SSLClientAuditorSet, DEFAULT_CN
 from src.ConfigErrorException import ConfigErrorException
+from src.modules.sslcert.AuditorSet import DEFAULT_CN
 
 logger = logging.getLogger('Main')
 
 DEFAULT_HOST = '0.0.0.0'
 DEFAULT_PORT = '8443'
+DEFAULT_MODULES = 'sslcert'
+
+MODULE_NAME_PREFIX = 'src.modules'
+AUDITOR_SETS_MODULE_NAME = 'AuditorSet'
+AUDITOR_SETS_CLASS_NAME = 'AuditorSet'
 
 PROG_NAME = 'sslcaudit'
 PROG_VERSION = '1.0rc1'
@@ -34,6 +38,7 @@ class Main(Thread):
         if self.options.debug_level > 0:
             logging.getLogger().setLevel(logging.DEBUG)
 
+        self.auditor_sets = []
         self.init_modules()
 
         self.server = ClientAuditorServer(self.listen_on, self.auditor_sets)
@@ -43,10 +48,10 @@ class Main(Thread):
         parser = OptionParser(usage=('%s [OPTIONS]' % PROG_NAME), version=("%s %s" % (PROG_NAME, PROG_VERSION)))
         parser.add_option("-l", dest="listen_on", default='0.0.0.0:8443',
             help="Specify IP address and TCP PORT to listen on, in format of [HOST:]PORT")
-        parser.add_option("-m", dest="module",
-            help="Launch specific audit module. For now the only functional module is 'sslcert'. "
+        parser.add_option("-m", dest="modules", default=DEFAULT_MODULES,
+            help="Launch specific audit modules. For now the only functional module is 'sslcert'. "
                  + "There is also 'dummy' module used for internal testing or as a template code for "
-            + "new modules. By default 'sslcert' is started.")
+            + "new modules. Default is %s" % DEFAULT_MODULES)
         parser.add_option("-d", dest="debug_level", default=0,
             help="Set debug level. Default is 0, which disables debugging output. Try 1 to enable it.")
         parser.add_option("-c", dest="nclients", default=1,
@@ -69,7 +74,7 @@ class Main(Thread):
             help="Set path to file containing key for user-supplied CA.")
 
         parser.add_option("--no-default-cn", action="store_true", default=False, dest="no_default_cn",
-            help=("Do not use default CN (%s)" % (DEFAULT_CN)))
+            help=("Do not use default CN"))
         parser.add_option("--no-self-signed", action="store_true", default=False, dest="no_self_signed",
             help="Don't try self-signed certificates")
         parser.add_option("--no-user-cert-signed", action="store_true", default=False, dest="no_user_cert_signed",
@@ -93,19 +98,21 @@ class Main(Thread):
             raise ConfigErrorException("invalid value for -l parameter '%s'" % self.options.listen_on.split(':'))
 
     def init_modules(self):
-        self.auditor_sets = []
+        for module_name in self.options.modules.split(','):
+            # load the module from under MODULE_NAME_PREFIX
+            module_name = MODULE_NAME_PREFIX + "." + module_name + '.' + AUDITOR_SETS_MODULE_NAME
+            try:
+                __import__(module_name, fromlist=[])
+            except Exception as ex:
+                raise ConfigErrorException("Cannot load module module ", module_name, " exception: ", ex)
 
-        # load sslcert module by default or if specified explicitly
-        if self.options.module == None or self.options.module == SSLClientAuditorSet.MODULE_ID:
-            self.auditor_sets.append(SSLClientAuditorSet(self.options))
+            # find and instantiate the auditor-sets class
+            auditor_sets_class = sys.modules[module_name].__dict__[AUDITOR_SETS_CLASS_NAME]
+            self.auditor_sets.append(auditor_sets_class(self.options))
 
-        # only use dummy module if it is specified explicitly
-        if self.options.module == DummyClientAuditorSet.MODULE_ID:
-            self.auditor_sets.append(DummyClientAuditorSet(self.options))
-
-        # there must be some auditors in the list
+        # there must be some auditors in the list, otherwise we die right here
         if len(self.auditor_sets) == 0:
-            raise ConfigErrorException("auditor set is empty, nothing to do")
+            raise ConfigErrorException("auditor set is dummy, nothing to do")
 
     def start(self):
         self.do_stop = False
