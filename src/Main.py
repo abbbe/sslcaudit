@@ -13,6 +13,7 @@ from src.ClientAuditor.ClientConnectionAuditEvent import ClientConnectionAuditRe
 from src.ClientAuditor.ClientHandler import ClientAuditResult
 from src.ClientAuditor.Dummy.DummyClientAuditorSet import DummyClientAuditorSet
 from src.ClientAuditor.SSL.SSLClientAuditorSet import SSLClientAuditorSet, DEFAULT_CN
+from src.UsageException import UsageException
 
 logger = logging.getLogger('Main')
 
@@ -28,6 +29,17 @@ class Main(Thread):
     def __init__(self, argv):
         Thread.__init__(self, target=self.run)
 
+        self.init_options(argv)
+
+        if self.options.debug_level > 0:
+            logging.getLogger().setLevel(logging.DEBUG)
+
+        self.init_modules()
+
+        self.server = ClientAuditorServer(self.listen_on, self.auditor_sets)
+        self.queue_read_timeout = 0.1
+
+    def init_options(self, argv):
         parser = OptionParser(usage=('%s [OPTIONS]' % PROG_NAME), version=("%s %s" % (PROG_NAME, PROG_VERSION)))
         parser.add_option("-l", dest="listen_on", default='0.0.0.0:8443',
             help="Specify IP address and TCP PORT to listen on, in format of [HOST:]PORT")
@@ -63,14 +75,24 @@ class Main(Thread):
         parser.add_option("--no-user-cert-signed", action="store_true", default=False, dest="no_user_cert_signed",
             help="Do not sign server certificates with user-supplied one")
 
-        args = []
         (options, args) = parser.parse_args(argv)
+        if len(args) > 0:
+            raise UsageException("unexpected arguments: %s" % args)
 
         self.options = options
 
-        if self.options.debug_level > 0:
-            logging.getLogger().setLevel(logging.DEBUG)
+        # transform listen_on string into a tuple
+        listen_on_parts = self.options.listen_on.split(':')
+        if len(listen_on_parts) == 1:
+            # convert "PORT" string to (DEFAULT_HOST, POST) tuple
+            self.listen_on = (DEFAULT_HOST, int(listen_on_parts[0]))
+        elif len(listen_on_parts) == 2:
+            # convert "HOST:PORT" string to (HOST, PORT) tuple
+            self.listen_on = (listen_on_parts[0], int(listen_on_parts[1]))
+        else:
+            raise UsageException("invalid value for -l parameter '%s'" % self.options.listen_on.split(':'))
 
+    def init_modules(self):
         self.auditor_sets = []
 
         # load sslcert module by default or if specified explicitly
@@ -83,26 +105,7 @@ class Main(Thread):
 
         # there must be some auditors in the list
         if len(self.auditor_sets) == 0:
-            raise RuntimeError("auditor set is empty")
-
-        # transform listen_on string into a tuple
-        listen_on_parts = self.options.listen_on.split(':')
-        if len(listen_on_parts) == 1:
-            # convert "PORT" string to (DEFAULT_HOST, POST) tuple
-            listen_on = (DEFAULT_HOST, int(listen_on_parts[0]))
-        elif len(listen_on_parts) == 2:
-            # convert "HOST:PORT" string to (HOST, PORT) tuple
-            listen_on = (listen_on_parts[0], int(listen_on_parts[1]))
-        else:
-            # XXX
-            raise Exception("invalid value for -l parameter '%s'" % self.options.listen_on.split(':'))
-
-        # unparsed command line goes into test name
-        if len(args) > 0:
-            raise Exception("unexpected arguments: %s" % args)
-
-        self.server = ClientAuditorServer(listen_on, self.auditor_sets)
-        self.queue_read_timeout = 0.1
+            raise UsageException("auditor set is empty, nothing to do")
 
     def start(self):
         self.do_stop = False
@@ -130,7 +133,6 @@ class Main(Thread):
         '''
         Main loop function. Will run until the desired number of clients is handled.
         '''
-
         nresults = 0
         # loop until get all desired results, quit if stopped
         while nresults < self.options.nclients and not self.do_stop:
@@ -144,5 +146,3 @@ class Main(Thread):
                     nresults = nresults + 1
             except Empty:
                 pass
-
-
