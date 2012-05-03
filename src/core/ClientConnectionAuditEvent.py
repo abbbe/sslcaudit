@@ -18,7 +18,7 @@ class ClientConnectionAuditEvent(object):
 
 class ClientConnectionAuditResult(ClientConnectionAuditEvent):
     '''
-    This class contains audit results returned by handle() method of subclasses of BaseClientConnectionAuditor. It
+    This class contains audit results returned by handle() method of subclasses of BaseServerHandler. It
     contains the results of the audit of a single connection.
     '''
 

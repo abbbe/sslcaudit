@@ -7,16 +7,16 @@ from M2Crypto import X509
 
 from src.core.ConfigErrorException import ConfigErrorException
 from src.core.CertFactory import CertFactory
-from src.modules.base.BaseClientAuditorSet import BaseClientAuditorSet
-from src.modules.sslcert.SSLClientConnectionAuditor import SSLClientConnectionAuditor
+from src.modules.base.BaseProfileFactory import BaseProfileFactory
+from src.modules.sslcert.SSLClientConnectionAuditor import SSLServerHandler
 
 DEFAULT_CN = 'nonexistent.gremwell.com'
 IM_NONCA_CN = 'without-ca-v3-ext'
 IM_CA_CN = 'with-ca-v3-ext'
 
-class ClientAuditorSet(BaseClientAuditorSet):
+class ProfileFactory(BaseProfileFactory):
     def __init__(self, file_bag, options, protocol='sslv23'):
-        BaseClientAuditorSet.__init__(self, file_bag, options)
+        BaseProfileFactory.__init__(self, file_bag, options)
 
         self.protocol = protocol
         self.cert_factory = CertFactory(self.file_bag)
@@ -53,8 +53,8 @@ class ClientAuditorSet(BaseClientAuditorSet):
         This method initializes an auditor using user-supplied certificate as is
         '''
         if self.user_certnkey != None:
-            auditor = SSLClientConnectionAuditor(self.protocol, self.user_certnkey)
-            self.auditors.append(auditor)
+            auditor = SSLServerHandler(self.protocol, self.user_certnkey)
+            self.profiles.append(auditor)
 
     def init_self_signed(self):
         '''
@@ -114,8 +114,8 @@ class ClientAuditorSet(BaseClientAuditorSet):
         certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=im_ca_certnkey)
 
         # create auditor using that certificate
-        auditor = SSLClientConnectionAuditor(self.protocol, certnkey)
-        self.auditors.append(auditor)
+        auditor = SSLServerHandler(self.protocol, certnkey)
+        self.profiles.append(auditor)
 
     def init_expired(self):
         '''
@@ -142,13 +142,13 @@ class ClientAuditorSet(BaseClientAuditorSet):
             else:
                 certnkey = self.cert_factory.mk_signed_replica_certnkey(self.server_x509_cert, ca_certnkey)
 
-            auditor = SSLClientConnectionAuditor(self.protocol, certnkey)
-            self.auditors.append(auditor)
+            auditor = SSLServerHandler(self.protocol, certnkey)
+            self.profiles.append(auditor)
 
     def _init_signedtests(self, cn, ca_certnkey):
         certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=ca_certnkey)
-        auditor = SSLClientConnectionAuditor(self.protocol, certnkey)
-        self.auditors.append(auditor)
+        auditor = SSLServerHandler(self.protocol, certnkey)
+        self.profiles.append(auditor)
 
     def load_certnkey(self, cert_param, cert_file, key_param, key_file):
         '''

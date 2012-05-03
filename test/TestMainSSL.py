@@ -7,7 +7,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 import logging, unittest
 from src.core.CertFactory import SELFSIGNED
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.modules.sslcert.ClientAuditorSet import DEFAULT_CN, IM_CA_CN, IM_NONCA_CN
+from src.modules.sslcert.ProfileFactory import DEFAULT_CN, IM_CA_CN, IM_NONCA_CN
 from src.modules.sslcert.SSLClientConnectionAuditor import  UNEXPECTED_EOF, UNKNOWN_CA, ConnectedReadTimeout
 from src.Main import Main
 from src.test import TestConfig

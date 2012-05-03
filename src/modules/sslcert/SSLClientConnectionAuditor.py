@@ -8,7 +8,7 @@ from time import time
 import M2Crypto
 from M2Crypto.SSL.timeout import timeout
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.modules.base.BaseClientConnectionAuditor import BaseClientConnectionAuditor
+from src.modules.base.BaseServerHandler import BaseServerHandler
 
 READ_TIMEOUT = timeout(sec=1.0)
 MAX_SIZE = 1024
@@ -62,7 +62,7 @@ class ConnectedGotRequest(Connected):
 
 # ------------------
 
-class SSLClientConnectionAuditor(BaseClientConnectionAuditor):
+class SSLServerHandler(BaseServerHandler):
     '''
     This class implements SSL/TLS server. Its handle() method tries to perform SSL/TLS handshake using provided
     certificate and a key. If connection is successful, it waits for the client to send some data. In some cases
@@ -70,7 +70,7 @@ class SSLClientConnectionAuditor(BaseClientConnectionAuditor):
     not match the expected value).
     '''
     def __init__(self, proto, certnkey):
-        BaseClientConnectionAuditor.__init__(self)
+        BaseServerHandler.__init__(self)
 
         self.proto = proto
         self.certnkey = certnkey
@@ -109,5 +109,5 @@ class SSLClientConnectionAuditor(BaseClientConnectionAuditor):
         return ClientConnectionAuditResult(self, conn, res)
 
     def __repr__(self):
-        return "SSLClientConnectionAuditor%s" % self.__dict__
+        return "SSLServerHandler%s" % self.__dict__
 

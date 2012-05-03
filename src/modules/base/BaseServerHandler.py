@@ -4,9 +4,9 @@ Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
-class BaseClientConnectionAuditor(object):
+class BaseServerHandler(object):
     '''
-    This is an abstract class for client connection auditor classes. Each module is expected to contain one or more
+    This is an abstract class for a server handler profile. Each module is expected to contain one or more
     subclasses of this class. Instances of those subclasses are normally created and contained by a subclass of
     BaseClientAuditor, when a module gets loaded during program startup.
 
@@ -18,7 +18,7 @@ class BaseClientConnectionAuditor(object):
     the output of the program. The name has to be descriptive enough to indicate what tests have been performed.
     '''
 
-    def __init__(self, name='BaseClientConnectionAuditor'):
+    def __init__(self, name='BaseServerHandler'):
         self.name = name
 
     def handle(self, conn):

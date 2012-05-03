@@ -8,7 +8,7 @@ import logging, sys
 from Queue import Empty
 from optparse import OptionParser
 from threading import Thread
-from src.core import ConfigErrorException
+from src.core.ConfigErrorException import ConfigErrorException
 from src.core.ClientAuditorServer import ClientAuditorServer
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientAuditResult
 from src.core.FileBag import FileBag
@@ -20,8 +20,8 @@ DEFAULT_PORT = '8443'
 DEFAULT_MODULES = 'sslcert'
 
 MODULE_NAME_PREFIX = 'src.modules'
-AUDITOR_SETS_MODULE_NAME = 'ClientAuditorSet'
-AUDITOR_SETS_CLASS_NAME = 'ClientAuditorSet'
+AUDITOR_SETS_MODULE_NAME = 'ProfileFactory'
+AUDITOR_SETS_CLASS_NAME = 'ProfileFactory'
 
 PROG_NAME = 'sslcaudit'
 PROG_VERSION = '1.0rc1'

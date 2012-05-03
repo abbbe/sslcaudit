@@ -4,15 +4,15 @@ Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
-from src.modules.base.BaseClientAuditorSet import BaseClientAuditorSet
-from src.modules.dummy.DummyClientConnectionAuditor import DummyClientConnectionAuditor
+from src.modules.base.BaseProfileFactory import BaseProfileFactory
+from src.modules.dummy.DummyServerHandler import DummyServerHandler
 
-class ClientAuditorSet(BaseClientAuditorSet):
+class ProfileFactory(BaseProfileFactory):
     '''
     This is a dummy auditor set, containing only two dummy auditors.
     '''
     def __init__(self, file_bag, options):
-        BaseClientAuditorSet.__init__(self, file_bag, options)
+        BaseProfileFactory.__init__(self, file_bag, options)
 
-        self.add_auditor(DummyClientConnectionAuditor(False))
-        self.add_auditor(DummyClientConnectionAuditor(True))
+        self.add_profile(DummyServerHandler(False))
+        self.add_profile(DummyServerHandler(True))
