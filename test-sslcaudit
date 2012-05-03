@@ -1,0 +1,23 @@
+#!/usr/bin/env python
+
+# ----------------------------------------------------------------------
+# SSLCAUDIT - a tool for automating security audit of SSL clients
+# Released under terms of GPLv3, see COPYING.TXT
+# Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+# ----------------------------------------------------------------------
+
+import sys
+sys.path.insert(0, 'test')
+
+import unittest
+
+from test.TestCertFactory import TestCertFactory
+from test.TestMainDummy import TestMainDummy
+from test.TestMainSSL import TestMainSSL
+
+if __name__ == '__main__':
+    suite = unittest.TestSuite()
+    suite.addTest(unittest.makeSuite(TestCertFactory))
+    suite.addTest(unittest.makeSuite(TestMainDummy))
+    suite.addTest(unittest.makeSuite(TestMainSSL))
+    unittest.TextTestRunner(verbosity=2).run(suite)
