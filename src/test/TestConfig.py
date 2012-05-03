@@ -28,7 +28,7 @@ TEST_LISTENER_BASEPORT = 10000
 #        if os.path.isfile(filename2): return filename2
 #        else: raise RuntimeError("Can't find location of test file %s", filename)
 
-TEST_CERT_DIR = 'test/certs/'
+TEST_CERT_DIR = os.getcwd() + os.sep + 'certs' + os.sep
 TEST_USER_CERT_CN = 'sslcaudit-test.gremwell.com'
 TEST_USER_CERT_FILE = TEST_CERT_DIR + 'sslcaudit-test.gremwell.com-cert.pem'
 TEST_USER_KEY_FILE = TEST_CERT_DIR + 'sslcaudit-test.gremwell.com-key.pem'
