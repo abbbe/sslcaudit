@@ -14,10 +14,8 @@ DEFAULT_X509_C = 'BE'
 DEFAULT_X509_ORG = 'Gremwell bvba'
 SELFSIGNED = 'SELF'
 
-CERT_FILE_PREFIX = 'cert-'
-CERT_FILE_SUFFIX = '.pem'
-KEY_FILE_PREFIX = 'key-'
-KEY_FILE_SUFFIX = '.pem'
+CERT_FILE_SUFFIX = '-cert.pem'
+KEY_FILE_SUFFIX = '-key.pem'
 
 class CertAndKey(object):
     '''
@@ -189,7 +187,7 @@ class CertFactory(object):
             signedby = SELFSIGNED
 
         # save the certificate in a file
-        cert_file = self.file_bag.mk_file(prefix=CERT_FILE_PREFIX, suffix=CERT_FILE_SUFFIX)
+        (cert_file, key_file) = self.file_bag.mk_two_files(suffix1=CERT_FILE_SUFFIX, suffix2=KEY_FILE_SUFFIX)
         cert_file.write(cert.as_text())
         cert_file.write(cert.as_pem())
         if ca_certnkey != None:
@@ -198,7 +196,6 @@ class CertFactory(object):
         cert_file.close()
 
         # save the private key in a file
-        key_file = self.file_bag.mk_file(prefix=KEY_FILE_PREFIX, suffix=KEY_FILE_SUFFIX)
         rsa_keypair.save_key(key_file.name, None)
         key_file.close()
 

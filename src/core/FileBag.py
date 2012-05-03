@@ -44,5 +44,30 @@ class FileBag(object):
         # was unable to create any directory
         raise Exception("Can't find a free revision number for basename %s" % basename)
 
-    def mk_file(self, prefix=tempfile.template, suffix=''):
+    def mk_file(self, suffix='', prefix=tempfile.template):
         return NamedTemporaryFile(dir=self.base_dir, prefix=prefix, suffix=suffix, delete=False)
+
+    def mk_two_files(self, suffix1, suffix2, prefix=tempfile.template):
+        while True:
+            # create the first file
+            f1 = NamedTemporaryFile(dir=self.base_dir, prefix=prefix, suffix=suffix1, delete=False)
+            # the name of the second file is the same as the first one, but with different suffix
+            f2name = f1.name[:-len(suffix1)] + suffix2
+
+            if os.path.exists(f2name):
+                # a file with a name matching desired f2 name already exists
+                try:
+                    # remove the first file
+                    os.unlink(f1)
+                except:
+                    # XXX
+                    pass
+
+                # try from the beginning
+                continue
+            else:
+                # create the second file
+                # XXX race condition here, but rather unlikely to happen
+                f2 = open(f2name, 'w')
+
+                return (f1, f2)
