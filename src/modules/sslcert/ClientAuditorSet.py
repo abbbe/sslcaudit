@@ -5,7 +5,8 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 from M2Crypto import X509
 
-from src.core import ConfigErrorException, CertFactory
+from src.core.ConfigErrorException import ConfigErrorException
+from src.core.CertFactory import CertFactory
 from src.modules.base.BaseClientAuditorSet import BaseClientAuditorSet
 from src.modules.sslcert.SSLClientConnectionAuditor import SSLClientConnectionAuditor
 
@@ -14,11 +15,11 @@ IM_NONCA_CN = 'without-ca-v3-ext'
 IM_CA_CN = 'with-ca-v3-ext'
 
 class ClientAuditorSet(BaseClientAuditorSet):
-    def __init__(self, options, protocol='sslv23'):
-        BaseClientAuditorSet.__init__(self, options)
+    def __init__(self, file_bag, options, protocol='sslv23'):
+        BaseClientAuditorSet.__init__(self, file_bag, options)
 
         self.protocol = protocol
-        self.cert_factory = CertFactory()
+        self.cert_factory = CertFactory(self.file_bag)
 
         self.init_options()
 

@@ -3,14 +3,17 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
+import tempfile
 
 import unittest
 from src.core.CertFactory import *
+from src.core.FileBag import FileBag
 from src.test.TestConfig import *
 
 class TestCertFactory(unittest.TestCase):
     def setUp(self):
-        self.cert_factory = CertFactory()
+        self.file_bag = FileBag('testcertfactory', use_tempdir=True)
+        self.cert_factory = CertFactory(self.file_bag)
 
     def test_new_selfsigned_certnkey(self):
         certnkey = self.cert_factory.new_certnkey(TEST_USER_CN, ca_certnkey=None)

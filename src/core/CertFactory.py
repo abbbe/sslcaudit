@@ -8,13 +8,16 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import socket
 
-from tempfile import NamedTemporaryFile
 from M2Crypto import X509, ASN1, RSA, EVP, util, SSL
 
 DEFAULT_X509_C = 'BE'
 DEFAULT_X509_ORG = 'Gremwell bvba'
-
 SELFSIGNED = 'SELF'
+
+CERT_FILE_PREFIX = 'cert-'
+CERT_FILE_SUFFIX = '.pem'
+KEY_FILE_PREFIX = 'key-'
+KEY_FILE_SUFFIX = '.pem'
 
 class CertAndKey(object):
     '''
@@ -53,6 +56,9 @@ class CertFactory(object):
     This class provides methods to generate new X509 certificates and corresponding
     keys, encapsulated into CertAndKey objects.
     '''
+
+    def __init__(self, file_bag):
+        self.file_bag = file_bag
 
     def new_certnkey(self, cn, country=DEFAULT_X509_C, org=DEFAULT_X509_ORG, ca_certnkey=None, v3_ext=[]):
         '''
@@ -183,7 +189,7 @@ class CertFactory(object):
             signedby = SELFSIGNED
 
         # save the certificate in a file
-        cert_file = NamedTemporaryFile(delete=False)
+        cert_file = self.file_bag.mk_file(prefix=CERT_FILE_PREFIX, suffix=CERT_FILE_SUFFIX)
         cert_file.write(cert.as_text())
         cert_file.write(cert.as_pem())
         if ca_certnkey != None:
@@ -192,7 +198,7 @@ class CertFactory(object):
         cert_file.close()
 
         # save the private key in a file
-        key_file = NamedTemporaryFile(delete=False)
+        key_file = self.file_bag.mk_file(prefix=KEY_FILE_PREFIX, suffix=KEY_FILE_SUFFIX)
         rsa_keypair.save_key(key_file.name, None)
         key_file.close()
 

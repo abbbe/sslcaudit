@@ -11,6 +11,7 @@ from threading import Thread
 from src.core import ConfigErrorException
 from src.core.ClientAuditorServer import ClientAuditorServer
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientAuditResult
+from src.core.FileBag import FileBag
 
 logger = logging.getLogger('Main')
 
@@ -35,6 +36,8 @@ class Main(Thread):
 
         if self.options.debug_level > 0:
             logging.getLogger().setLevel(logging.DEBUG)
+
+        self.file_bag = FileBag(self.options.test_name)
 
         self.auditor_sets = []
         self.init_modules()
@@ -106,7 +109,7 @@ class Main(Thread):
 
             # find and instantiate the auditor-sets class
             auditor_sets_class = sys.modules[module_name].__dict__[AUDITOR_SETS_CLASS_NAME]
-            self.auditor_sets.append(auditor_sets_class(self.options))
+            self.auditor_sets.append(auditor_sets_class(self.file_bag, self.options))
 
         # there must be some auditors in the list, otherwise we die right here
         if len(self.auditor_sets) == 0:

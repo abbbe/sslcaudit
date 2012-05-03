@@ -13,7 +13,8 @@ class BaseClientAuditorSet(object):
     this list should extend BaseClientConnectionAuditor class.
     '''
 
-    def __init__(self, options):
+    def __init__(self, file_bag,options):
+        self.file_bag = file_bag
         self.options = options
         self.auditors = []
 

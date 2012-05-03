@@ -11,8 +11,8 @@ class ClientAuditorSet(BaseClientAuditorSet):
     '''
     This is a dummy auditor set, containing only two dummy auditors.
     '''
-    def __init__(self, options):
-        BaseClientAuditorSet.__init__(self, options)
+    def __init__(self, file_bag, options):
+        BaseClientAuditorSet.__init__(self, file_bag, options)
 
         self.add_auditor(DummyClientConnectionAuditor(False))
         self.add_auditor(DummyClientConnectionAuditor(True))

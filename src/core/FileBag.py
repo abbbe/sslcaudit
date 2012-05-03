@@ -11,22 +11,22 @@ import tempfile
 
 DEFAULT_BASENAME = 'sslcaudit'
 MAX_REV = 1000000
+DEFAULT_TMPDIR_PREFIX = 'filebag'
 
 class FileBag(object):
     '''
     This class
     '''
-    def __init__(self, basename, dir=None):
+    def __init__(self, basename, use_tempdir=False):
         if basename == None:
             basename = DEFAULT_BASENAME
+
+        if use_tempdir:
+            basename = os.path.join(tempfile.mkdtemp(prefix=DEFAULT_TMPDIR_PREFIX), basename)
 
         for rev in range(0, MAX_REV):
             # create a path based on the base name and revision number
             path = '%s.%d' % (basename, rev)
-
-            # if a directory was given to us, use it
-            if dir != None:
-                path = os.path.join(dir, path)
 
             # try to create the directory, if already exist, retry with another revision number
             try:
@@ -45,4 +45,4 @@ class FileBag(object):
         raise Exception("Can't find a free revision number for basename %s" % basename)
 
     def mk_file(self, prefix=tempfile.template, suffix=''):
-        key_file = NamedTemporaryFile(dir=self.base_dir, prefix=prefix, suffix=suffix, delete=False)
+        return NamedTemporaryFile(dir=self.base_dir, prefix=prefix, suffix=suffix, delete=False)
