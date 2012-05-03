@@ -182,11 +182,16 @@ class CertFactory(object):
             cert.sign(pkey, md)
             signedby = SELFSIGNED
 
+        # save the certificate in a file
         cert_file = NamedTemporaryFile(delete=False)
         cert_file.write(cert.as_text())
         cert_file.write(cert.as_pem())
+        if ca_certnkey != None:
+            cert_file.write(ca_certnkey.cert.as_text())
+            cert_file.write(ca_certnkey.cert.as_pem())
         cert_file.close()
 
+        # save the private key in a file
         key_file = NamedTemporaryFile(delete=False)
         rsa_keypair.save_key(key_file.name, None)
         key_file.close()
