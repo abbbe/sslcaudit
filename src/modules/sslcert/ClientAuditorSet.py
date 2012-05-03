@@ -10,6 +10,7 @@ from src.modules.base.BaseClientAuditorSet import BaseClientAuditorSet
 from src.modules.sslcert.SSLClientConnectionAuditor import SSLClientConnectionAuditor
 
 DEFAULT_CN = 'nonexistent.gremwell.com'
+IM_CA_CN = 'whatever'
 
 class ClientAuditorSet(BaseClientAuditorSet):
     def __init__(self, options, protocol='sslv23'):
@@ -24,6 +25,8 @@ class ClientAuditorSet(BaseClientAuditorSet):
         self.init_self_signed()
         self.init_user_cert_signed()
         self.init_user_ca_signed()
+        self.init_bad_constraints()
+        self.init_expired()
 
     def init_options(self):
         # handle --server= option
@@ -71,6 +74,46 @@ class ClientAuditorSet(BaseClientAuditorSet):
         '''
         if self.user_ca_certnkey != None:
             self._init_signed(ca_certnkey=self.user_ca_certnkey)
+
+    def init_bad_constraints(self):
+        '''
+        This method initializes auditors testing for basicConstraints violations
+        '''
+        if not self.options.no_default_cn:
+            self.init_bad_constraints2(DEFAULT_CN)
+
+        if self.options.user_cn != None:
+            self.init_bad_constraints2(self.options.user_cn)
+
+    def init_bad_constraints2(self, cn):
+        certnkeys = []
+
+        # create test certificate signed by the user-supplied certificate
+        if self.user_certnkey != None:
+            certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=self.user_certnkey)
+            certnkeys.append(certnkey)
+
+        # create proper CA certificate signed by user-supplied CA and use it to sign the test certificate
+        if self.user_ca_certnkey != None:
+            im_ca_certnkey = self.cert_factory.new_certnkey(IM_CA_CN, ca_certnkey=self.user_ca_certnkey)
+            certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=im_ca_certnkey)
+            certnkeys.append(certnkey)
+
+            invalid_im_ca_certnkey = self.cert_factory.new_certnkey(IM_CA_CN, ca_certnkey=self.user_ca_certnkey)
+            certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=invalid_im_ca_certnkey)
+            certnkeys.append(certnkey)
+
+        for certnkey in certnkeys:
+            auditor = SSLClientConnectionAuditor(self.protocol, certnkey)
+            self.auditors.append(auditor)
+
+    def init_expired(self):
+        '''
+        This method initializes auditors testing for expiration violations
+        '''
+
+        # create test certificate signed by user-supplied CA, but make it expired
+        pass
 
     def _init_signed(self, ca_certnkey):
         '''
