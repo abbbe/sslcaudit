@@ -5,8 +5,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 from M2Crypto import X509
 
-from src.CertFactory import CertFactory
-from src.ConfigErrorException import ConfigErrorException
+from src.core import ConfigErrorException, CertFactory
 from src.modules.base.BaseClientAuditorSet import BaseClientAuditorSet
 from src.modules.sslcert.SSLClientConnectionAuditor import SSLClientConnectionAuditor
 

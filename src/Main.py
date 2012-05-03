@@ -8,9 +8,9 @@ import logging, sys
 from Queue import Empty
 from optparse import OptionParser
 from threading import Thread
+from src.core import ConfigErrorException
 from src.core.ClientAuditorServer import ClientAuditorServer
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientAuditResult
-from src.ConfigErrorException import ConfigErrorException
 
 logger = logging.getLogger('Main')
 

@@ -5,7 +5,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 import unittest
-from src.CertFactory import *
+from src.core.CertFactory import *
 from src.test.TestConfig import *
 
 class TestCertFactory(unittest.TestCase):
