@@ -156,7 +156,7 @@ class ClientAuditorSet(BaseClientAuditorSet):
             raise ConfigErrorException("If %s is set, %s must be set too" % (key_param, cert_param))
 
         try:
-            self.user_certnkey = self.cert_factory.load_certnkey_files(
-                self.options.user_cert_file, self.options.user_key_file)
+            return self.cert_factory.load_certnkey_files(
+                cert_file, key_file)
         except IOError as ex:
             raise ConfigErrorException(ex)
