@@ -4,6 +4,7 @@ C5 (v1.1)
 Better report formatting (v1.1)
 (Raf) Support protocol-level tests (v1.1)
 Save a copy of all keys/certificates used during the test (right now they remain under /tmp) (v1.1)
+Increment certificate serial number
 
 race condition (with auditor_set iterator?)
 XSLT output templates
