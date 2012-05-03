@@ -10,7 +10,7 @@ from M2Crypto.SSL.timeout import timeout
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.modules.base.BaseClientConnectionAuditor import BaseClientConnectionAuditor
 
-READ_TIMEOUT = timeout(sec=3)
+READ_TIMEOUT = timeout(sec=1.0)
 MAX_SIZE = 1024
 
 # --- some classes and constants here should be moved elsewhere, to be shared between different modules
@@ -78,8 +78,7 @@ class SSLClientConnectionAuditor(BaseClientConnectionAuditor):
 
     def handle(self, conn):
         ctx = M2Crypto.SSL.Context(self.proto)
-        ctx.load_cert(certfile=self.certnkey.cert_filename, keyfile=self.certnkey.key_filename)
-
+        ctx.load_cert_chain(certchainfile=self.certnkey.cert_filename, keyfile=self.certnkey.key_filename)
         try:
             # try to accept SSL connection
             ssl_conn = M2Crypto.SSL.Connection(ctx=ctx, sock=conn.sock)

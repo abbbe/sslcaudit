@@ -95,10 +95,12 @@ class ClientAuditorSet(BaseClientAuditorSet):
             certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=self.user_certnkey)
             certnkeys.append(certnkey)
 
-        # create proper CA certificate signed by user-supplied CA and use it to sign the test certificate
+        # create certificate signed by user-supplied CA but with wrong basicConstraints, and use it to sign the test certificate
         if self.user_ca_certnkey != None:
-            ca_ext = X509.new_extension('CA', 'FALSE')
-            im_ca_certnkey = self.cert_factory.new_certnkey(IM_NONCA_CN, ca_certnkey=self.user_ca_certnkey, v3_ext=[ca_ext])
+            ca_ext = X509.new_extension("basicConstraints", "CA:TRUE")
+            ca_ext.set_critical()
+            v3_ext=[ca_ext]
+            im_ca_certnkey = self.cert_factory.new_certnkey(IM_NONCA_CN, ca_certnkey=self.user_ca_certnkey, v3_ext=v3_ext)
             certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=im_ca_certnkey)
             certnkeys.append(certnkey)
 
