@@ -7,7 +7,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 import logging, unittest
 from src.CertFactory import SELFSIGNED
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.modules.sslcert.ClientAuditorSet import DEFAULT_CN
+from src.modules.sslcert.ClientAuditorSet import DEFAULT_CN, IM_CA_CN
 from src.modules.sslcert.SSLClientConnectionAuditor import  UNEXPECTED_EOF, UNKNOWN_CA, ConnectedReadTimeout
 from src.Main import Main
 from src.test import TestConfig
@@ -56,6 +56,22 @@ class TestMainSSL(unittest.TestCase):
 
     def test_bad_client1(self):
         # Plain TCP client causes unexpected UNEXPECTED_EOF instead of UNKNOWN_CA
+        expected_certs = [
+            "sslcert(('%s', '%s'))" % (DEFAULT_CN, SELFSIGNED),
+            "sslcert(('%s', '%s'))" % (TEST_USER_CN, SELFSIGNED),
+            "sslcert(('%s', '%s'))" % (DEFAULT_CN, TEST_USER_CA_CN),
+            "sslcert(('%s', '%s'))" % (TEST_USER_CN, TEST_USER_CA_CN),
+            "sslcert(('%s', ('%s', '%s')))" % (DEFAULT_CN, IM_CA_CN, TEST_USER_CA_CN),
+            "sslcert(('%s', ('%s', '%s')))" % (DEFAULT_CN, IM_CA_CN, TEST_USER_CA_CN),
+            "sslcert(('%s', ('%s', '%s')))" % (TEST_USER_CN, IM_CA_CN, TEST_USER_CA_CN),
+            "sslcert(('%s', ('%s', '%s')))" % (TEST_USER_CN, IM_CA_CN, TEST_USER_CA_CN)
+        ]
+
+        def mapf(cert):
+            return ExpectedSSLClientConnectionAuditResult(cert, '127.0.0.1', UNEXPECTED_EOF)
+
+        expected_results = map(mapf, expected_certs)
+
         self._main_test(
             [
                 '-d', TEST_DEBUG,
@@ -64,16 +80,8 @@ class TestMainSSL(unittest.TestCase):
                 '--user-ca-key', TEST_USER_CA_KEY_FILE
             ],
             TCPHammer(),
-            [
-                ExpectedSSLClientConnectionAuditResult(
-                    "sslcert(('%s', '%s'))" % (DEFAULT_CN, SELFSIGNED), '127.0.0.1', UNEXPECTED_EOF),
-                ExpectedSSLClientConnectionAuditResult(
-                    "sslcert(('%s', '%s'))" % (TEST_USER_CN, SELFSIGNED), '127.0.0.1', UNEXPECTED_EOF),
-                ExpectedSSLClientConnectionAuditResult(
-                    "sslcert(('%s', '%s'))" % (DEFAULT_CN, TEST_USER_CA_CN), '127.0.0.1', UNEXPECTED_EOF),
-                ExpectedSSLClientConnectionAuditResult(
-                    "sslcert(('%s', '%s'))" % (TEST_USER_CN, TEST_USER_CA_CN), '127.0.0.1', UNEXPECTED_EOF)
-            ])
+            expected_results
+        )
 
     #    def test_bad_client2(self):
     #        ''' Plain TCP client causes unexpected UNEXPECTED_EOF instead of UNKNOWN_CA '''
