@@ -53,6 +53,8 @@ class Main(Thread):
             help="Launch specific audit modules. For now the only functional module is 'sslcert'. "
                  + "There is also 'dummy' module used for internal testing or as a template code for "
             + "new modules. Default is %s" % DEFAULT_MODULES)
+        parser.add_option("-v", dest="verbose", default=0,
+            help="Increase verbosity level. Default is 0. Try 1.")
         parser.add_option("-d", dest="debug_level", default=0,
             help="Set debug level. Default is 0, which disables debugging output. Try 1 to enable it.")
         parser.add_option("-c", dest="nclients", default=1,
@@ -129,8 +131,8 @@ class Main(Thread):
             # print test name, client address and port, auditor name, and result
             # all in one line, in fixed width columns
             fields = []
-            if self.options.test_name != None:
-                fields.append('%-25s' % str(self.options.test_name))
+            if self.options.verbose > 0:
+                fields.append('%-25s' % str(self.file_bag.base_dir))
             client_address = '%s:%d' % (res.conn.client_address)
             fields.append('%-16s' % client_address)
             fields.append('%-60s' % str(res.auditor.name))

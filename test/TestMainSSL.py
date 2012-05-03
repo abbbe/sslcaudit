@@ -82,7 +82,7 @@ class TestMainSSL(unittest.TestCase):
             expected_results
         )
 
-    def xtest_notverifying_client(self):
+    def test_notverifying_client(self):
         # A client which fails to verify the chain of trust reports no error '''
         self._main_test(
             [
@@ -99,12 +99,14 @@ class TestMainSSL(unittest.TestCase):
                     "sslcert(('%s', '%s'))" % (TEST_SERVER_CN, SELFSIGNED), '127.0.0.1', ConnectedReadTimeout(None))
             ])
 
-    def xtest_verifying_client(self):
+    def test_verifying_client(self):
         # A client which properly verifies the certificate reports UNKNOWN_CA '''
         self._main_test(
             [
                 '--user-cn', TEST_USER_CN,
-                '--server', TEST_SERVER
+                '--server', TEST_SERVER,
+                #'--user-ca-cert', TEST_USER_CA_CERT_FILE,
+                #'--user-ca-key', TEST_USER_CA_KEY_FILE
             ],
             VerifyingSSLHammer(TEST_USER_CN),
             [

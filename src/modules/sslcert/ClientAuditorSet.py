@@ -81,36 +81,39 @@ class ClientAuditorSet(BaseClientAuditorSet):
         '''
         This method initializes auditors testing for basicConstraints violations
         '''
+        if self.user_ca_certnkey == None: return
+
+        def _init_with_constraints(cn):
+            self.init_with_constraints(cn, im_ca=None)
+            self.init_with_constraints(cn, im_ca=False)
+            self.init_with_constraints(cn, im_ca=True)
+
         if not self.options.no_default_cn:
-            self.init_bad_constraints2(DEFAULT_CN)
+            _init_with_constraints(DEFAULT_CN)
 
         if self.options.user_cn != None:
-            self.init_bad_constraints2(self.options.user_cn)
+            _init_with_constraints(self.options.user_cn)
 
-    def init_bad_constraints2(self, cn):
-        certnkeys = []
+        # XXX if no user-cn and defalt-cn is disabled the test will not be performed silently
 
-        # create test certificate signed by the user-supplied certificate
-        if self.user_certnkey != None:
-            certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=self.user_certnkey)
-            certnkeys.append(certnkey)
-
-        # create certificate signed by user-supplied CA but with wrong basicConstraints, and use it to sign the test certificate
-        if self.user_ca_certnkey != None:
+    def init_with_constraints(self, cn, im_ca=None):
+        # create an intermediate authority, signed by user-supplied CA, possibly with proper constraints
+        if im_ca:
             ca_ext = X509.new_extension("basicConstraints", "CA:TRUE")
             ca_ext.set_critical()
             v3_ext=[ca_ext]
-            im_ca_certnkey = self.cert_factory.new_certnkey(IM_NONCA_CN, ca_certnkey=self.user_ca_certnkey, v3_ext=v3_ext)
-            certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=im_ca_certnkey)
-            certnkeys.append(certnkey)
+        else:
+            v3_ext=[]
 
-            invalid_im_ca_certnkey = self.cert_factory.new_certnkey(IM_CA_CN, ca_certnkey=self.user_ca_certnkey)
-            certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=invalid_im_ca_certnkey)
-            certnkeys.append(certnkey)
+        # create the intermediate CA
+        im_ca_certnkey = self.cert_factory.new_certnkey(IM_NONCA_CN, ca_certnkey=self.user_ca_certnkey, v3_ext=v3_ext)
 
-        for certnkey in certnkeys:
-            auditor = SSLClientConnectionAuditor(self.protocol, certnkey)
-            self.auditors.append(auditor)
+        # create server certificate, signed by that authority
+        certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=im_ca_certnkey)
+
+        # create auditor using that certificate
+        auditor = SSLClientConnectionAuditor(self.protocol, certnkey)
+        self.auditors.append(auditor)
 
     def init_expired(self):
         '''
