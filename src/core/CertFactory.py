@@ -181,11 +181,6 @@ class CertFactory(object):
         # sign
         if ca_certnkey != None:
             cert.sign(ca_certnkey.pkey, md)
-            print '------------------------------------------------'
-            print cert.get_ext_count()
-            print cert.get_fingerprint()
-            print cert.as_text()
-            print '------------------------------------------------'
             signedby = ca_certnkey.name
         else:
             cert.sign(pkey, md)

@@ -9,7 +9,7 @@ Increment certificate serial number
 race condition (with auditor_set iterator?)
 XSLT output templates
 built-in ca generator
-(Raf) better exception handling: from optparser, failure to connect to server, failure to read user-specified file, cert/key loading failures
+(Raf) better exception handling: when an invalid option is suppied, from optparser, failure to connect to server, failure to read user-specified file, cert/key loading failures
 (Raf) exit on Ctrl-C
 handle ipv6 addresses properly in -l and -s
 bash parameter completion (http://www.debian-administration.org/articles/317)

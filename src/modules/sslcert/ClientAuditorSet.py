@@ -102,11 +102,13 @@ class ClientAuditorSet(BaseClientAuditorSet):
             ca_ext = X509.new_extension("basicConstraints", "CA:TRUE")
             ca_ext.set_critical()
             v3_ext=[ca_ext]
+            im_cn = IM_CA_CN
         else:
             v3_ext=[]
+            im_cn = IM_NONCA_CN
 
         # create the intermediate CA
-        im_ca_certnkey = self.cert_factory.new_certnkey(IM_NONCA_CN, ca_certnkey=self.user_ca_certnkey, v3_ext=v3_ext)
+        im_ca_certnkey = self.cert_factory.new_certnkey(im_cn, ca_certnkey=self.user_ca_certnkey, v3_ext=v3_ext)
 
         # create server certificate, signed by that authority
         certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=im_ca_certnkey)
