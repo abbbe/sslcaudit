@@ -54,7 +54,7 @@ class TestMainSSL(unittest.TestCase):
 
     HAMMER_ATTEMPTS = 10
 
-    def test_bad_client1(self):
+    def test_plain_tcp_client(self):
         # Plain TCP client causes unexpected UNEXPECTED_EOF instead of UNKNOWN_CA
         expected_certs = [
             "sslcert(('%s', '%s'))" % (DEFAULT_CN, SELFSIGNED),
@@ -74,7 +74,6 @@ class TestMainSSL(unittest.TestCase):
 
         self._main_test(
             [
-                '-d', TEST_DEBUG,
                 '--user-cn', TEST_USER_CN,
                 '--user-ca-cert', TEST_USER_CA_CERT_FILE,
                 '--user-ca-key', TEST_USER_CA_KEY_FILE
@@ -82,20 +81,6 @@ class TestMainSSL(unittest.TestCase):
             TCPHammer(),
             expected_results
         )
-
-    #    def test_bad_client2(self):
-    #        ''' Plain TCP client causes unexpected UNEXPECTED_EOF instead of UNKNOWN_CA '''
-    #        self._main_test(
-    #            [
-    #                '--user-cert', TEST_USER_CERT_FILE,
-    #                '--user-key', TEST_USER_KEY_FILE,
-    #                '--no-user-cert-sign'
-    #            ],
-    #            TCPHammer(),
-    #            [
-    #                ExpectedSSLClientConnectionAuditResult((TEST_USER_CERT_CN, None), '127.0.0.1', UNEXPECTED_EOF),
-    #                ExpectedSSLClientConnectionAuditResult((DEFAULT_CN, SELFSIGNED), '127.0.0.1', UNEXPECTED_EOF),
-    #            ])
 
     def xtest_notverifying_client(self):
         # A client which fails to verify the chain of trust reports no error '''
