@@ -7,7 +7,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 import logging, unittest
 from src.CertFactory import SELFSIGNED
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.modules.sslcert.ClientAuditorSet import DEFAULT_CN, IM_CA_CN
+from src.modules.sslcert.ClientAuditorSet import DEFAULT_CN, IM_CA_CN, IM_NONCA_CN
 from src.modules.sslcert.SSLClientConnectionAuditor import  UNEXPECTED_EOF, UNKNOWN_CA, ConnectedReadTimeout
 from src.Main import Main
 from src.test import TestConfig
@@ -61,9 +61,9 @@ class TestMainSSL(unittest.TestCase):
             "sslcert(('%s', '%s'))" % (TEST_USER_CN, SELFSIGNED),
             "sslcert(('%s', '%s'))" % (DEFAULT_CN, TEST_USER_CA_CN),
             "sslcert(('%s', '%s'))" % (TEST_USER_CN, TEST_USER_CA_CN),
+            "sslcert(('%s', ('%s', '%s')))" % (DEFAULT_CN, IM_NONCA_CN, TEST_USER_CA_CN),
             "sslcert(('%s', ('%s', '%s')))" % (DEFAULT_CN, IM_CA_CN, TEST_USER_CA_CN),
-            "sslcert(('%s', ('%s', '%s')))" % (DEFAULT_CN, IM_CA_CN, TEST_USER_CA_CN),
-            "sslcert(('%s', ('%s', '%s')))" % (TEST_USER_CN, IM_CA_CN, TEST_USER_CA_CN),
+            "sslcert(('%s', ('%s', '%s')))" % (TEST_USER_CN, IM_NONCA_CN, TEST_USER_CA_CN),
             "sslcert(('%s', ('%s', '%s')))" % (TEST_USER_CN, IM_CA_CN, TEST_USER_CA_CN)
         ]
 

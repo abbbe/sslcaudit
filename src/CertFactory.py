@@ -54,17 +54,17 @@ class CertFactory(object):
     keys, encapsulated into CertAndKey objects.
     '''
 
-    def new_certnkey(self, cn, country=DEFAULT_X509_C, org=DEFAULT_X509_ORG, ca_certnkey=None):
+    def new_certnkey(self, cn, country=DEFAULT_X509_C, org=DEFAULT_X509_ORG, ca_certnkey=None, v3_ext=[]):
         '''
         It generates a new certificate with given CN. If CA specified,
         it signs the new certificate by given CA. Otherwise, it self-signs it.
         '''
         if ca_certnkey != None:
-            return self._mk_simple_signed_certnkey(cn, country, org, ca_certnkey)
+            return self._mk_simple_signed_certnkey(cn, country, org, ca_certnkey, v3_ext)
         else:
-            return self._mk_simple_selfsigned_certnkey(cn, DEFAULT_X509_C, DEFAULT_X509_ORG)
+            return self._mk_simple_selfsigned_certnkey(cn, DEFAULT_X509_C, DEFAULT_X509_ORG, v3_ext)
 
-    def _mk_simple_selfsigned_certnkey(self, cn, country, org):
+    def _mk_simple_selfsigned_certnkey(self, cn, country, org, v3_ext):
         '''
         This function creates a self-signed server certificate with following attributes:
          * given common name, organization, and country
@@ -93,9 +93,9 @@ class CertFactory(object):
         #ext = X509.new_extension('nsCertType', 'SSL Server')
         #exts.append(ext)
 
-        return self._mk_signed_certnkey(2, 1, not_before, not_after, subj, 1024, exts)
+        return self._mk_signed_certnkey(2, 1, not_before, not_after, subj, 1024, v3_ext)
 
-    def _mk_simple_signed_certnkey(self, cn, country, org, ca_certnkey):
+    def _mk_simple_signed_certnkey(self, cn, country, org, ca_certnkey, v3_ext):
         '''
         This function creates a signed certificate with following attributes:
          * given common name, organization, and country
@@ -113,9 +113,7 @@ class CertFactory(object):
         not_after = ASN1.ASN1_UTCTIME()
         not_after.set_time(2 ** 31)
 
-        # build a list of extensions
-        exts = []
-        return self._mk_signed_certnkey(2, 1, not_before, not_after, subj, 1024, exts, ca_certnkey)
+        return self._mk_signed_certnkey(2, 1, not_before, not_after, subj, 1024, v3_ext, ca_certnkey)
 
     def mk_signed_replica_certnkey(self, orig_cert, ca_certnkey=None):
         '''

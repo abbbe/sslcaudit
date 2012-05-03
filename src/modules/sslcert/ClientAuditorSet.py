@@ -3,6 +3,7 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
+from M2Crypto import X509
 
 from src.CertFactory import CertFactory
 from src.ConfigErrorException import ConfigErrorException
@@ -10,7 +11,8 @@ from src.modules.base.BaseClientAuditorSet import BaseClientAuditorSet
 from src.modules.sslcert.SSLClientConnectionAuditor import SSLClientConnectionAuditor
 
 DEFAULT_CN = 'nonexistent.gremwell.com'
-IM_CA_CN = 'whatever'
+IM_NONCA_CN = 'without-ca-v3-ext'
+IM_CA_CN = 'with-ca-v3-ext'
 
 class ClientAuditorSet(BaseClientAuditorSet):
     def __init__(self, options, protocol='sslv23'):
@@ -95,7 +97,8 @@ class ClientAuditorSet(BaseClientAuditorSet):
 
         # create proper CA certificate signed by user-supplied CA and use it to sign the test certificate
         if self.user_ca_certnkey != None:
-            im_ca_certnkey = self.cert_factory.new_certnkey(IM_CA_CN, ca_certnkey=self.user_ca_certnkey)
+            ca_ext = X509.new_extension('CA', 'FALSE')
+            im_ca_certnkey = self.cert_factory.new_certnkey(IM_NONCA_CN, ca_certnkey=self.user_ca_certnkey, v3_ext=[ca_ext])
             certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=im_ca_certnkey)
             certnkeys.append(certnkey)
 
