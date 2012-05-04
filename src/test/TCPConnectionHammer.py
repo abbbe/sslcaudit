@@ -6,14 +6,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging
 from socket import socket
-from src.test.Hammer import Hammer
-
-class ConnectionHammer(Hammer):
-    def __init__(self, peer):
-        Hammer.__init__(self, nattempts)
-        self.peer = peer
-        self.delay_before_close = 60
-
+from src.test.ConnectionHammer import ConnectionHammer
 
 class TCPConnectionHammer(ConnectionHammer):
     '''
@@ -23,8 +16,6 @@ class TCPConnectionHammer(ConnectionHammer):
     '''
     logger = logging.getLogger('TCPConnectionHammer')
 
-
-
     def hammer(self, i):
         # connect to the peer, do something, disconnect
         try:
@@ -32,7 +23,8 @@ class TCPConnectionHammer(ConnectionHammer):
             sock = socket()
             sock.connect(self.peer)
             self.logger.debug("connection %d to %s established, waiting for %.1fs before closing",
-                i, self.peer, delay_before_close)
+                i, self.peer, self.delay_before_close)
+            time.sleep(self.daemon)
 
         except IOError as ex:
             self.logger.error('connection %d failed: %s', i, ex)

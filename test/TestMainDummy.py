@@ -9,7 +9,7 @@ import unittest
 from src.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientConnectionAuditResult
 from src.core.ClientHandler import ClientAuditResult
 from src.Main import Main
-from src.test.TCPHammer import TCPHammer
+from src.test.TCPConnectionHammer import TCPConnectionHammer
 from src.test.TestConfig import get_next_listener_port, TEST_LISTENER_ADDR
 
 class TestMainDummy(unittest.TestCase):
@@ -52,7 +52,7 @@ class TestMainDummy(unittest.TestCase):
         port = get_next_listener_port()
 
         # create a client hammering our test listener
-        self.hammer = TCPHammer()
+        self.hammer = TCPConnectionHammer()
 
         # create main, the target of the test
         self.main = Main(['-m', 'dummy', '-l', ("%s:%d" % (TEST_LISTENER_ADDR, port))])
