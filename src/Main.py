@@ -19,9 +19,9 @@ DEFAULT_HOST = '0.0.0.0'
 DEFAULT_PORT = '8443'
 DEFAULT_MODULES = 'sslcert'
 
-MODULE_NAME_PREFIX = 'src.modules'
-AUDITOR_SETS_MODULE_NAME = 'ProfileFactory'
-AUDITOR_SETS_CLASS_NAME = 'ProfileFactory'
+MODULE_MODULE_NAME_PREFIX = 'src.modules'
+PROFILE_FACTORY_MODULE_NAME = 'ProfileFactory'
+PROFILE_FACTORY_CLASS_NAME = 'ProfileFactory'
 
 PROG_NAME = 'sslcaudit'
 PROG_VERSION = '1.0rc1'
@@ -39,10 +39,10 @@ class Main(Thread):
 
         self.file_bag = FileBag(self.options.test_name)
 
-        self.auditor_sets = []
+        self.profile_factories = []
         self.init_modules()
 
-        self.server = ClientAuditorServer(self.listen_on, self.auditor_sets)
+        self.server = ClientAuditorServer(self.listen_on, self.profile_factories)
         self.queue_read_timeout = 0.1
 
     def init_options(self, argv):
@@ -50,7 +50,7 @@ class Main(Thread):
         parser.add_option("-l", dest="listen_on", default='0.0.0.0:8443',
             help="Specify IP address and TCP PORT to listen on, in format of [HOST:]PORT")
         parser.add_option("-m", dest="modules", default=DEFAULT_MODULES,
-            help="Launch specific audit modules. For now the only functional module is 'sslcert'. "
+            help="Launch specific modules. For now the only functional module is 'sslcert'. "
                  + "There is also 'dummy' module used for internal testing or as a template code for "
             + "new modules. Default is %s" % DEFAULT_MODULES)
         parser.add_option("-v", dest="verbose", default=0,
@@ -103,19 +103,19 @@ class Main(Thread):
     def init_modules(self):
         for module_name in self.options.modules.split(','):
             # load the module from under MODULE_NAME_PREFIX
-            module_name = MODULE_NAME_PREFIX + "." + module_name + '.' + AUDITOR_SETS_MODULE_NAME
+            module_name = MODULE_MODULE_NAME_PREFIX + "." + module_name + '.' + PROFILE_FACTORY_MODULE_NAME
             try:
                 __import__(module_name, fromlist=[])
             except Exception as ex:
-                raise ConfigErrorException("Cannot load module module ", module_name, " exception: ", ex)
+                raise ConfigErrorException("Cannot load module ", module_name, ", exception: ", ex)
 
-            # find and instantiate the auditor-sets class
-            auditor_sets_class = sys.modules[module_name].__dict__[AUDITOR_SETS_CLASS_NAME]
-            self.auditor_sets.append(auditor_sets_class(self.file_bag, self.options))
+            # find and instantiate the profile factory class
+            profile_factory_class = sys.modules[module_name].__dict__[PROFILE_FACTORY_CLASS_NAME]
+            self.profile_factories.append(profile_factory_class(self.file_bag, self.options))
 
-        # there must be some auditors in the list, otherwise we die right here
-        if len(self.auditor_sets) == 0:
-            raise ConfigErrorException("auditor set is dummy, nothing to do")
+        # there must be some profile factories in the list, otherwise we die right here
+        if len(self.profile_factories) == 0:
+            raise ConfigErrorException("no single profile factory, nothing to do")
 
     def start(self):
         self.do_stop = False
@@ -128,14 +128,16 @@ class Main(Thread):
 
     def handle_result(self, res):
         if isinstance(res, ClientConnectionAuditResult):
-            # print test name, client address and port, auditor name, and result
+            # dump:
+            # * filebag path (only in verbose mode),
+            # * client address and port,
+            # * server profile
+            # * result
             # all in one line, in fixed width columns
             fields = []
-            if self.options.verbose > 0:
-                fields.append('%-25s' % str(self.file_bag.base_dir))
             client_address = '%s:%d' % (res.conn.client_address)
             fields.append('%-16s' % client_address)
-            fields.append('%-60s' % str(res.auditor.name))
+            fields.append('%-60s' % (res.profile))
             fields.append(str(res.res))
             print OUTPUT_FIELD_SEPARATOR.join(fields)
 
@@ -144,6 +146,10 @@ class Main(Thread):
         Main loop function. Will run until the desired number of clients is handled.
         '''
         nresults = 0
+
+        if self.options.verbose > 0:
+            print '# filebag location: %s' % str(self.file_bag.base_dir)
+
         # loop until get all desired results, quit if stopped
         while nresults < self.options.nclients and not self.do_stop:
             try:

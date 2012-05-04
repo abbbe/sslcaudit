@@ -69,16 +69,14 @@ class SSLServerHandler(BaseServerHandler):
     even if SSL session is set up a client terminates the connection right away (for example if it realises CN does
     not match the expected value).
     '''
-    def __init__(self, proto, certnkey):
+    def __init__(self, proto):
         BaseServerHandler.__init__(self)
 
         self.proto = proto
-        self.certnkey = certnkey
-        self.name = 'sslcert(%s)' % str(self.certnkey.name)
 
-    def handle(self, conn):
+    def handle(self, conn, profile):
         ctx = M2Crypto.SSL.Context(self.proto)
-        ctx.load_cert_chain(certchainfile=self.certnkey.cert_filename, keyfile=self.certnkey.key_filename)
+        ctx.load_cert_chain(certchainfile=profile.certnkey.cert_filename, keyfile=profile.certnkey.key_filename)
         try:
             # try to accept SSL connection
             ssl_conn = M2Crypto.SSL.Connection(ctx=ctx, sock=conn.sock)
@@ -106,8 +104,8 @@ class SSLServerHandler(BaseServerHandler):
             res = ex.message
 
         # report the result
-        return ClientConnectionAuditResult(self, conn, res)
+
+        return ClientConnectionAuditResult(conn, profile, res)
 
     def __repr__(self):
         return "SSLServerHandler%s" % self.__dict__
-

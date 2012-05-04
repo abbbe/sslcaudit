@@ -8,8 +8,8 @@ class ClientConnectionAuditEvent(object):
     '''
     This is a base class for events produced while auditing client connections.
     '''
-    def __init__(self, auditor, conn):
-        self.auditor = auditor
+    def __init__(self, conn, profile):
+        self.profile = profile
         self.conn = conn
 
     def __eq__(self, other):
@@ -22,12 +22,12 @@ class ClientConnectionAuditResult(ClientConnectionAuditEvent):
     contains the results of the audit of a single connection.
     '''
 
-    def __init__(self, auditor, conn, res):
-        ClientConnectionAuditEvent.__init__(self, auditor, conn)
+    def __init__(self, conn, profile, res):
+        ClientConnectionAuditEvent.__init__(self, conn, profile)
         self.res = res
 
     def __str__(self):
-        return ' CCAR(%s, %s, %s)' % (self.auditor.name, self.conn.get_client_id(), self.res)
+        return ' CCAR(%s, %s, %s)' % (self.conn.get_client_id(), self.profile, self.res)
 
 class ClientAuditStartEvent(ClientConnectionAuditEvent):
     '''

@@ -7,12 +7,53 @@ from M2Crypto import X509
 
 from src.core.ConfigErrorException import ConfigErrorException
 from src.core.CertFactory import CertFactory
-from src.modules.base.BaseProfileFactory import BaseProfileFactory
-from src.modules.sslcert.SSLClientConnectionAuditor import SSLServerHandler
+from src.modules.base.BaseProfileFactory import BaseProfileFactory, BaseProfile, BaseProfileSpec
+from src.modules.sslcert.SSLServerHandler import SSLServerHandler
 
 DEFAULT_CN = 'nonexistent.gremwell.com'
-IM_NONCA_CN = 'without-ca-v3-ext'
-IM_CA_CN = 'with-ca-v3-ext'
+IM_CA_NONE_CN = 'v3-ext-ca-none'
+IM_CA_FALSE_CN = 'v3-ext-ca-false'
+IM_CA_TRUE_CN = 'v3-ext-ca-true'
+
+sslcert_server_handler = SSLServerHandler('sslv23')
+
+class SSLProfileSpec_SelfSigned(BaseProfileSpec):
+    def __init__(self, cn):
+        self.cn = cn
+
+    def __str__(self):
+        return "selfsigned(%s)" % self.cn
+
+class SSLProfileSpec_Signed(BaseProfileSpec):
+    def __init__(self, cn, ca_cn):
+        self.cn = cn
+        self.ca_cn = ca_cn
+
+    def __str__(self):
+        return "signed(%s, %s)" % (self.cn, self.ca_cn)
+
+class SSLProfileSpec_IMCA_Signed(BaseProfileSpec):
+    def __init__(self, cn, im_ca_cn, ca_cn):
+        self.cn = cn
+        self.im_ca_cn = im_ca_cn
+        self.ca_cn = ca_cn
+
+    def __str__(self):
+        return "signed(%s, %s, %s)" % (self.cn, self.im_ca_cn, self.ca_cn)
+
+class SSLServerCertProfile(BaseProfile):
+    def __init__(self, profile_spec, certnkey):
+        self.profile_spec = profile_spec
+        self.certnkey = certnkey
+
+    def get_spec(self):
+        return self.profile_spec
+
+    def get_handler(self):
+        return sslcert_server_handler
+
+    def __str__(self):
+        return str(self.profile_spec)
 
 class ProfileFactory(BaseProfileFactory):
     def __init__(self, file_bag, options, protocol='sslv23'):
@@ -23,12 +64,10 @@ class ProfileFactory(BaseProfileFactory):
 
         self.init_options()
 
-        self.init_user_cert()
-        self.init_self_signed()
-        self.init_user_cert_signed()
-        self.init_user_ca_signed()
-        self.init_bad_constraints()
-        self.init_expired()
+#        self.init_user_cert()
+        self.init_cert_requests()
+        self.add_user_cert_profile()
+        self.add_profiles()
 
     def init_options(self):
         # handle --server= option
@@ -48,107 +87,98 @@ class ProfileFactory(BaseProfileFactory):
             '--user-ca-cert', self.options.user_ca_cert_file,
             '--user-ca-key', self.options.user_ca_key_file)
 
-    def init_user_cert(self):
+    # ----------------------------------------------------------------------------------------------
+
+    def init_cert_requests(self):
+        self.certreq_n_keyss = []
+
+        if not self.options.no_default_cn:
+            req1 = self.cert_factory.mk_certreq_n_keys(cn=DEFAULT_CN)
+            self.certreq_n_keyss.append(req1)
+
+        if self.options.user_cn != None:
+            req2 = self.cert_factory.mk_certreq_n_keys(cn=self.options.user_cn)
+            self.certreq_n_keyss.append(req2)
+
+#        if self.options.server != None:
+#            cert_req3 = self.cert_factory.mk_cert_request_replicating_server(server=self.options.server)
+#            self.cert_requests.append(cert_req3)
+
+    def add_user_cert_profile(self):
         '''
         This method initializes an auditor using user-supplied certificate as is
         '''
         if self.user_certnkey != None:
-            auditor = SSLServerHandler(self.protocol, self.user_certnkey)
-            self.profiles.append(auditor)
+            self.add_profile(SSLServerCertProfile(self.user_certnkey))
 
-    def init_self_signed(self):
-        '''
-        This method initializes auditors using self-signed certificates
-        '''
+    def add_profiles(self):
         if not self.options.no_self_signed:
-            self._init_signed(ca_certnkey=None)
+            self.add_signed_profiles(ca_certnkey=None)
 
-    def init_user_cert_signed(self):
-        '''
-        This method initializes auditors using user-supplied certificate as CA
-        '''
         if self.user_certnkey != None:
-            self._init_signed(ca_certnkey=self.user_certnkey)
+            self.add_signed_profiles(ca_certnkey=self.user_certnkey)
 
-    def init_user_ca_signed(self):
-        '''
-        This method initializes auditors using certificates signed by known good CA
-        '''
         if self.user_ca_certnkey != None:
-            self._init_signed(ca_certnkey=self.user_ca_certnkey)
+            self.add_signed_profiles(ca_certnkey=self.user_ca_certnkey)
+            self.add_im_basic_constraints_profiles()
 
-    def init_bad_constraints(self):
+    def add_im_basic_constraints_profiles(self):
         '''
         This method initializes auditors testing for basicConstraints violations
         '''
-        if self.user_ca_certnkey == None: return
 
-        def _init_with_constraints(cn):
-            self.init_with_constraints(cn, im_ca=None)
-            self.init_with_constraints(cn, im_ca=False)
-            self.init_with_constraints(cn, im_ca=True)
+        for cert_req in self.certreq_n_keyss:
+            self.add_im_basic_constraints_profile(cert_req, basicConstraint_CA=None)
+            self.add_im_basic_constraints_profile(cert_req, basicConstraint_CA=False)
+            self.add_im_basic_constraints_profile(cert_req, basicConstraint_CA=True)
 
-        if not self.options.no_default_cn:
-            _init_with_constraints(DEFAULT_CN)
+            # XXX if no user-cn and defalt-cn is disabled the test will not be performed silently
 
-        if self.options.user_cn != None:
-            _init_with_constraints(self.options.user_cn)
+    # ----------------------------------------------------------------------------------------------
 
-        # XXX if no user-cn and defalt-cn is disabled the test will not be performed silently
+    def add_signed_profiles(self, ca_certnkey):
+        for certreq_n_keys in self.certreq_n_keyss:
+            cn = certreq_n_keys[0].get_subject().CN
+            if ca_certnkey == None:
+                cert_spec = SSLProfileSpec_SelfSigned(cn)
+            else:
+                ca_cn = ca_certnkey.cert.get_subject().CN
+                cert_spec = SSLProfileSpec_Signed(cn, ca_cn)
 
-    def init_with_constraints(self, cn, im_ca=None):
+            self.add_signed_profile(cert_spec, certreq_n_keys, ca_certnkey)
+
+    def add_signed_profile(self, cert_spec, certreq_n_keys, ca_certnkey):
+        certnkey = self.cert_factory.sign_cert_req(certreq_n_keys=certreq_n_keys, ca_certnkey=ca_certnkey)
+        self.add_profile(SSLServerCertProfile(cert_spec, certnkey))
+
+    def add_im_basic_constraints_profile(self, cert_req, basicConstraint_CA=None):
         # create an intermediate authority, signed by user-supplied CA, possibly with proper constraints
-        if im_ca:
-            ca_ext = X509.new_extension("basicConstraints", "CA:TRUE")
+        if basicConstraint_CA != None:
+            if basicConstraint_CA:
+                ext_value="CA:TRUE"
+                im_ca_cn = IM_CA_TRUE_CN
+            else:
+                ext_value = "CA:FALSE"
+                im_ca_cn = IM_CA_FALSE_CN
+            ca_ext = X509.new_extension("basicConstraints", ext_value)
             ca_ext.set_critical()
-            v3_ext=[ca_ext]
-            im_cn = IM_CA_CN
+            v3_exts=[ca_ext]
         else:
-            v3_ext=[]
-            im_cn = IM_NONCA_CN
+            v3_exts=[]
+            im_ca_cn = IM_CA_NONE_CN
 
         # create the intermediate CA
-        im_ca_certnkey = self.cert_factory.new_certnkey(im_cn, ca_certnkey=self.user_ca_certnkey, v3_ext=v3_ext)
+        im_ca_cert_req = self.cert_factory.mk_certreq_n_keys(cn=im_ca_cn, v3_exts=v3_exts)
+        im_ca_certnkey = self.cert_factory.sign_cert_req(im_ca_cert_req, ca_certnkey=self.user_ca_certnkey)
 
         # create server certificate, signed by that authority
-        certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=im_ca_certnkey)
+        certnkey = self.cert_factory.sign_cert_req(cert_req, ca_certnkey=im_ca_certnkey)
 
         # create auditor using that certificate
-        auditor = SSLServerHandler(self.protocol, certnkey)
-        self.profiles.append(auditor)
-
-    def init_expired(self):
-        '''
-        This method initializes auditors testing for expiration violations
-        '''
-
-        # create test certificate signed by user-supplied CA, but make it expired
-        pass
-
-    def _init_signed(self, ca_certnkey):
-        '''
-        This method initializes auditors using signed certificates: self signed or by a CA.
-        '''
-        if not self.options.no_default_cn:
-            self._init_signedtests(DEFAULT_CN, ca_certnkey)
-
-        if self.options.user_cn != None:
-            self._init_signedtests(self.options.user_cn, ca_certnkey)
-
-        if self.server_x509_cert != None:
-            # automatically generated certificate, replicated after server cert, selfsigned
-            if ca_certnkey == None:
-                certnkey = self.cert_factory.mk_signed_replica_certnkey(self.server_x509_cert)
-            else:
-                certnkey = self.cert_factory.mk_signed_replica_certnkey(self.server_x509_cert, ca_certnkey)
-
-            auditor = SSLServerHandler(self.protocol, certnkey)
-            self.profiles.append(auditor)
-
-    def _init_signedtests(self, cn, ca_certnkey):
-        certnkey = self.cert_factory.new_certnkey(cn, ca_certnkey=ca_certnkey)
-        auditor = SSLServerHandler(self.protocol, certnkey)
-        self.profiles.append(auditor)
+        cn = certnkey.cert.get_subject().CN
+        ca_cn = self.user_ca_certnkey.cert.get_subject().CN
+        spec = SSLProfileSpec_IMCA_Signed(cn, im_ca_cn, ca_cn)
+        self.add_profile(SSLServerCertProfile(spec, certnkey))
 
     def load_certnkey(self, cert_param, cert_file, key_param, key_file):
         '''
@@ -166,7 +196,6 @@ class ProfileFactory(BaseProfileFactory):
             raise ConfigErrorException("If %s is set, %s must be set too" % (key_param, cert_param))
 
         try:
-            return self.cert_factory.load_certnkey_files(
-                cert_file, key_file)
+            return self.cert_factory.load_certnkey_files(cert_file, key_file)
         except IOError as ex:
             raise ConfigErrorException(ex)

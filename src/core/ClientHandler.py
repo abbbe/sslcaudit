@@ -27,14 +27,14 @@ class ClientHandler(object):
     '''
     logger = logging.getLogger('ClientHandler')
 
-    def __init__(self, client_id, auditor_sets, res_queue):
+    def __init__(self, client_id, profiles, res_queue):
         self.client_id = client_id
-        self.auditor_iterator = itertools.chain.from_iterable(auditor_sets.__iter__())
+        self.profiles_iterator = itertools.chain.from_iterable(profiles)
         self.result = ClientAuditResult(self.client_id)
         self.res_queue = res_queue
 
-        self.next_auditor = None
-        self.auditor_count = 0
+        self.next_profile = None
+        self.profiles_count = 0
         self.done = False
 
     def handle(self, conn):
@@ -42,37 +42,38 @@ class ClientHandler(object):
         This method is invoked when a new connection arrives.
         '''
         if self.done:
-            self.logger.debug('no more tests for client conn %s', conn)
+            self.logger.debug('no more profiles for connection %s', conn)
             return
 
-        if self.next_auditor == None:
+        if self.next_profile == None:
             # this is a very first connection
             try:
-                self.next_auditor = self.auditor_iterator.next()
-                self.auditor_count = self.auditor_count + 1
-                self.res_queue.put(ClientAuditStartEvent(self.next_auditor, self.client_id))
+                self.next_profile = self.profiles_iterator.next()
+                self.profiles_count = self.profiles_count + 1
+                self.res_queue.put(ClientAuditStartEvent(self.next_profile, self.client_id))
             except StopIteration:
-                self.logger.debug('no tests for client conn %s (iterator was empty)', conn)
+                self.logger.debug('no profiles for connection %s (the iterator was empty)', conn)
                 self.res_queue.put(self.result)
                 self.done = True
                 return
 
-        # audit this client connection
-        res = self.next_auditor.handle(conn)
+        # handle this connection
+        handler = self.next_profile.get_handler()
+        res = handler.handle(conn, self.next_profile)
 
         # log and record the results of the test
         #self.logger.debug('testing client conn %s using %s resulted in %s', conn, self.next_auditor, res)
-        self.logger.debug('testing client conn %s using %s resulted in %s', conn, self.next_auditor, res)
+        self.logger.debug('testing connection %s using %s resulted in %s', conn, self.next_profile, res)
         self.result.add(res)
         self.res_queue.put(res)
 
         # prefetch next auditor from the iterator, to check if this was the last one
         try:
-            self.next_auditor = self.auditor_iterator.next()
-            self.auditor_count = self.auditor_count + 1
+            self.next_profile = self.profiles_iterator.next()
+            self.profiles_count = self.profiles_count + 1
         except StopIteration:
             # it was the last auditor in the set
             self.logger.debug('no more tests for client conn %s', conn)
-            self.res_queue.put(ClientAuditEndEvent(self.next_auditor, self.client_id))
+            self.res_queue.put(ClientAuditEndEvent(self.next_profile, self.client_id))
             self.res_queue.put(self.result)
             self.done = True

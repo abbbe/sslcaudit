@@ -79,11 +79,11 @@ PKCS#12: Personal Information Exchange Syntax Standard, version 1.0.
 
 3279 Algorithms and Identifiers for the Internet X.509 Public Key
      Infrastructure Certificate and Certificate Revocation List (CRL)
-     Profile. L. Bassham, W. Polk, R. Housley. April 2002. (Format:
+     BaseProfile. L. Bassham, W. Polk, R. Housley. April 2002. (Format:
      TXT=53833 bytes) (Status: PROPOSED STANDARD)
 
 3280 Internet X.509 Public Key Infrastructure Certificate and
-     Certificate Revocation List (CRL) Profile. R. Housley, W. Polk, W.
+     Certificate Revocation List (CRL) BaseProfile. R. Housley, W. Polk, W.
      Ford, D. Solo. April 2002. (Format: TXT=295556 bytes) (Obsoletes
      RFC2459) (Status: PROPOSED STANDARD)
 
@@ -97,7 +97,7 @@ PKCS#12: Personal Information Exchange Syntax Standard, version 1.0.
      (Status: INFORMATIONAL)
 
 3820 Internet X.509 Public Key Infrastructure (PKI) Proxy Certificate
-     Profile. S. Tuecke, V. Welch, D. Engert, L. Pearlman, M. Thompson.
+     BaseProfile. S. Tuecke, V. Welch, D. Engert, L. Pearlman, M. Thompson.
      June 2004. (Format: TXT=86374 bytes) (Status: PROPOSED STANDARD)
 
 4132 Addition of Camellia Cipher Suites to Transport Layer Security
@@ -215,7 +215,7 @@ STARTTLS documents.
      EXPERIMENTAL)
 
 3039 Internet X.509 Public Key Infrastructure Qualified Certificates
-     Profile. S. Santesson, W. Polk, P. Barzin, M. Nystrom. January 2001.
+     BaseProfile. S. Santesson, W. Polk, P. Barzin, M. Nystrom. January 2001.
      (Format: TXT=67619 bytes) (Status: PROPOSED STANDARD)
 
 3058 Use of the IDEA Encryption Algorithm in CMS. S. Teiwes, P.
@@ -245,7 +245,7 @@ STARTTLS documents.
      Lambert. April 2002. (Format: TXT=33779 bytes) (Status:
      INFORMATIONAL)
 
-3281 An Internet Attribute Certificate Profile for Authorization. S.
+3281 An Internet Attribute Certificate BaseProfile for Authorization. S.
      Farrell, R. Housley. April 2002. (Format: TXT=90580 bytes) (Status:
      PROPOSED STANDARD)
 

@@ -42,13 +42,13 @@ class ClientAuditorServer(Thread):
     the same source IP address are considered to correspond to the same client.
     '''
 
-    def __init__(self, listen_on, auditor_sets, res_queue=None):
+    def __init__(self, listen_on, profiles, res_queue=None):
         Thread.__init__(self, target=self.run)
         self.daemon = True
 
         self.listen_on = listen_on
         self.clients = {}
-        self.auditor_sets = auditor_sets
+        self.profiles = profiles
 
         # create a local result queue unless one is already provided
         if res_queue == None:
@@ -70,11 +70,11 @@ class ClientAuditorServer(Thread):
         # find or create a session handler
         if not self.clients.has_key(client_id):
             logger.debug('new client %s [id %s]', conn, client_id)
-            self.clients[client_id] = ClientHandler(client_id, self.auditor_sets, self.res_queue)
+            self.clients[client_id] = ClientHandler(client_id, self.profiles, self.res_queue)
 
         # handle the request
         self.clients[client_id].handle(conn)
 
     def run(self):
-        logger.debug('running %s, listen_on %s, auditor_set %s', self, self.listen_on, self.auditor_sets)
+        logger.debug('running %s, listen_on %s, profiles %s', self, self.listen_on, self.profiles)
         self.tcp_server.serve_forever()
