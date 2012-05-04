@@ -10,7 +10,7 @@ from M2Crypto.SSL.timeout import timeout
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.modules.base.BaseServerHandler import BaseServerHandler
 
-READ_TIMEOUT = timeout(sec=1.0)
+READ_TIMEOUT = timeout(sec=3.0)
 MAX_SIZE = 1024
 
 # --- some classes and constants here should be moved elsewhere, to be shared between different modules

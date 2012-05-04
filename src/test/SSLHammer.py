@@ -8,14 +8,15 @@ import M2Crypto
 from src.test.TCPHammer import TCPHammer
 
 class SSLHammer(TCPHammer):
-    def __init__(self, name, verify):
+    def __init__(self, name, ca_cert_file = None):
         TCPHammer.__init__(self, name)
-        self.verify = verify
+        self.ca_cert_file = ca_cert_file
 
     def connect_l4(self, sock):
         self.ctx = M2Crypto.SSL.Context()
-        if self.verify:
+        if self.ca_cert_file != None:
             self.ctx.set_verify(M2Crypto.SSL.verify_peer | M2Crypto.SSL.verify_fail_if_no_peer_cert, depth=9)
+            self.ctx.load_verify_locations(self.ca_cert_file)
         ssl_conn = M2Crypto.SSL.Connection(ctx=self.ctx, sock=sock)
         ssl_conn.setup_ssl()
         ssl_conn.connect_ssl()
@@ -35,19 +36,21 @@ class NotVerifyingSSLHammer(SSLHammer):
     '''
 
     def __init__(self):
-        SSLHammer.__init__(self, name='NotVerifyingSSLHammer', verify=False)
+        SSLHammer.__init__(self, name='NotVerifyingSSLHammer')
 
 
-class VerifyingSSLHammer(SSLHammer):
+class ChainVerifyingSSLHammer(SSLHammer):
     '''
     This client only matches CN
     '''
 
-    def __init__(self, cn):
-        self.cn = cn
-        SSLHammer.__init__(self, name='VerifyingSSLHammer(cn=%s)' % (self.cn), verify=True)
+    def __init__(self, ca_cert_file):
+        SSLHammer.__init__(self, name='ChainVerifyingSSLHammer()', ca_cert_file=ca_cert_file)
 
-        self.init_ssl(M2Crypto.SSL.verify_peer | M2Crypto.SSL.verify_fail_if_no_peer_cert, 10, self.verify_callback)
+        self.init_ssl(
+            mode=M2Crypto.SSL.verify_peer | M2Crypto.SSL.verify_fail_if_no_peer_cert,
+            depth=10,
+            callback=self.verify_callback)
 
     def verify_callback(self):
         pass

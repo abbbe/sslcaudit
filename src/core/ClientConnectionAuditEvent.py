@@ -27,7 +27,7 @@ class ClientConnectionAuditResult(ClientConnectionAuditEvent):
         self.res = res
 
     def __str__(self):
-        return ' CCAR(%s, %s, %s)' % (self.conn.get_client_id(), self.profile, self.res)
+        return ' CCAR(%s[%s], %s)' % (self.profile, self.profile.certnkey.cert_filename, self.res)
 
 class ClientAuditStartEvent(ClientConnectionAuditEvent):
     '''

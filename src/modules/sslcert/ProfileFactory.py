@@ -30,7 +30,7 @@ class SSLProfileSpec_Signed(BaseProfileSpec):
         self.ca_cn = ca_cn
 
     def __str__(self):
-        return "signed(%s, %s)" % (self.cn, self.ca_cn)
+        return "signed1(%s, %s)" % (self.cn, self.ca_cn)
 
 class SSLProfileSpec_IMCA_Signed(BaseProfileSpec):
     def __init__(self, cn, im_ca_cn, ca_cn):
@@ -39,7 +39,7 @@ class SSLProfileSpec_IMCA_Signed(BaseProfileSpec):
         self.ca_cn = ca_cn
 
     def __str__(self):
-        return "signed(%s, %s, %s)" % (self.cn, self.im_ca_cn, self.ca_cn)
+        return "signed2(%s, %s, %s)" % (self.cn, self.im_ca_cn, self.ca_cn)
 
 class SSLServerCertProfile(BaseProfile):
     def __init__(self, profile_spec, certnkey):
