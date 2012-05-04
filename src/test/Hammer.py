@@ -20,12 +20,8 @@ class TCPHammer(Thread):
 
     RECONNECT_DELAY = 0.5
 
-    def __init__(self, name='TCPHammer'):
+    def __init__(self):
         Thread.__init__(self, target=self.run)
-        self.name = name
-
-    def __repr__(self):
-        return self.name
 
     def init_tcp(self, peer, nattempts):
         self.peer = peer
@@ -33,7 +29,7 @@ class TCPHammer(Thread):
         self.daemon = True
         self.should_stop = False
 
-        self.delay_before_close = DEFAULT_SOCK_READ_TIMEOUT.sec * 2
+        self.delay_before_close = 60 # DEFAULT_SOCK_READ_TIMEOUT.sec * 2
 
     def run(self):
         self.logger.debug("running %s", self)
@@ -46,10 +42,10 @@ class TCPHammer(Thread):
                 sock = socket()
                 sock.connect(self.peer)
                 self.logger.debug("connection %d to %s established, handshaking ...", i, self.peer)
-                self.connect_l4(sock)
-                self.logger.debug("waiting %.1fs before closing connect %i with %s ..",
-                    self.delay_before_close, i, self.peer)
-                time.sleep(self.delay_before_close)
+                if self.connect_l4(sock):
+                    self.logger.debug("waiting %.1fs before closing connect %i with %s ..",
+                        self.delay_before_close, i, self.peer)
+                    time.sleep(self.delay_before_close)
             except IOError as ex:
                 self.logger.error('connection %d failed: %s', i, ex)
             finally:
