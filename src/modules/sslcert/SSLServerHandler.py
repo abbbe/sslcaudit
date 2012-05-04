@@ -3,14 +3,14 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
-from time import time
 
 import M2Crypto
+from time import time
 from M2Crypto.SSL.timeout import timeout
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.modules.base.BaseServerHandler import BaseServerHandler
 
-READ_TIMEOUT = timeout(sec=3.0)
+DEFAULT_SOCK_READ_TIMEOUT = timeout(sec=3.0)
 MAX_SIZE = 1024
 
 # --- some classes and constants here should be moved elsewhere, to be shared between different modules
@@ -80,7 +80,7 @@ class SSLServerHandler(BaseServerHandler):
         try:
             # try to accept SSL connection
             ssl_conn = M2Crypto.SSL.Connection(ctx=ctx, sock=conn.sock)
-            ssl_conn.set_socket_read_timeout(READ_TIMEOUT)
+            ssl_conn.set_socket_read_timeout(DEFAULT_SOCK_READ_TIMEOUT)
             ssl_conn.setup_ssl()
             ssl_conn.accept_ssl()
 
