@@ -8,10 +8,10 @@ import time, logging, M2Crypto
 from M2Crypto.SSL.Checker import  SSLVerificationError
 from src.test.ConnectionHammer import ConnectionHammer
 
-#DEFAULT_VERIFY_MODE = M2Crypto.SSL.verify_peer | M2Crypto.SSL.verify_fail_if_no_peer_cert
-#DEFAULT_VERIFY_DEPTH = 9
-
 class CNVerifyingSSLConnectionHammer(ConnectionHammer):
+    '''
+    This client only matches CN
+    '''
     logger = logging.getLogger('CNVerifyingSSLConnectionHammer')
 
     def __init__(self, nattempts, hello):
@@ -46,13 +46,20 @@ class CNVerifyingSSLConnectionHammer(ConnectionHammer):
 
 class ChainVerifyingSSLConnectionHammer(CNVerifyingSSLConnectionHammer):
     '''
-    This client only matches CN
+    This client only matches CN and verifies the chain of trust
     '''
 
-#    def __init__(self, ca_cert_file):
-#        SSLConnectionHammer.__init__(self, ca_cert_file=ca_cert_file)
+    def __init__(self, nattempts, hello, ca_cert_file):
+        CNVerifyingSSLConnectionHammer.__init__(self, nattempts, hello)
+        self.ca_cert_file = ca_cert_file
 
-        #self.ca_cert_file = ca_cert_file
-        #self.ctx.load_verify_locations(self.ca_cert_file)
-        #self.ctx.set_verify(DEFAULT_VERIFY_MODE, depth=DEFAULT_VERIFY_DEPTH, callback=self.verify_callback)
-        #def verify_callback(self):        pass
+        #self.ctx.set_allow_unknown_ca(True)
+        self.ctx.load_verify_locations(self.ca_cert_file)
+        self.ctx.set_verify(
+            mode=M2Crypto.SSL.verify_peer | M2Crypto.SSL.verify_fail_if_no_peer_cert,
+            depth=9,
+            callback=self.verify_callback)
+
+    def verify_callback(self):
+        #self.logger.info('*** verify_callback called ***')
+        pass

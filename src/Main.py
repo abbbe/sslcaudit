@@ -13,6 +13,9 @@ from src.core.ClientAuditorServer import ClientAuditorServer
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientAuditResult
 from src.core.FileBag import FileBag
 
+FORMAT = '%(asctime)s %(name)s %(levelname)s   %(message)s'
+logging.basicConfig(level=logging.ERROR, format=FORMAT)
+
 logger = logging.getLogger('Main')
 
 DEFAULT_HOST = '0.0.0.0'

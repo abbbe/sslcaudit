@@ -6,19 +6,15 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging, unittest
 
-#FORMAT = '%(asctime)s %(name)-15s %(levelname)s %(message)s'
-#logging.basicConfig(level=logging.ERROR, format=FORMAT)
-
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.modules.sslcert.ProfileFactory import DEFAULT_CN, SSLProfileSpec_SelfSigned, SSLProfileSpec_IMCA_Signed, SSLProfileSpec_Signed, IM_CA_FALSE_CN, IM_CA_TRUE_CN, IM_CA_NONE_CN
-from src.modules.sslcert.SSLServerHandler import    ConnectedReadTimeout, UNEXPECTED_EOF, UNKNOWN_CA, ConnectedGotEOFBeforeTimeout, ConnectedGotRequest
+from src.modules.sslcert.SSLServerHandler import    ConnectedReadTimeout, UNEXPECTED_EOF, ALERT_UNKNOWN_CA, ConnectedGotEOFBeforeTimeout, ConnectedGotRequest, ALERT_CERT_UNKNOWN
 from src.Main import Main
 from src.test import TestConfig
 from src.test.SSLConnectionHammer import CNVerifyingSSLConnectionHammer, ChainVerifyingSSLConnectionHammer
 from src.test.TCPConnectionHammer import TCPConnectionHammer
 from src.test.TestConfig import *
 
-TEST_DEBUG = 0
 LOCALHOST = 'localhost'
 
 HAMMER_ATTEMPTS = 10
@@ -78,7 +74,6 @@ class TestMainSSL(unittest.TestCase):
     def test_cn_verifying_client(self):
         self._main_test(
             [
-                '-d', 1,
                 '--user-cn', LOCALHOST,
                 '--user-ca-cert', TEST_USER_CA_CERT_FILE,
                 '--user-ca-key', TEST_USER_CA_KEY_FILE
@@ -100,28 +95,28 @@ class TestMainSSL(unittest.TestCase):
                 ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotRequest(HAMMER_HELLO))
             ])
 
-    def xtest_client_verifying_cert_chain(self):
+    def test_chain_verifying_client(self):
         self._main_test(
             [
                 '--user-cn', LOCALHOST,
                 '--user-ca-cert', TEST_USER_CA_CERT_FILE,
                 '--user-ca-key', TEST_USER_CA_KEY_FILE
             ],
-            ChainVerifyingSSLConnectionHammer(TEST_USER_CA_CERT_FILE),
+            ChainVerifyingSSLConnectionHammer(HAMMER_ATTEMPTS, HAMMER_HELLO, TEST_USER_CA_CERT_FILE),
             [
-                ECCAR(SSLProfileSpec_SelfSigned(DEFAULT_CN), UNKNOWN_CA),
-                ECCAR(SSLProfileSpec_SelfSigned(LOCALHOST), UNKNOWN_CA),
+                ECCAR(SSLProfileSpec_SelfSigned(DEFAULT_CN), ALERT_UNKNOWN_CA),
+                ECCAR(SSLProfileSpec_SelfSigned(LOCALHOST), ALERT_UNKNOWN_CA),
 
-                ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CA_CN), ConnectedReadTimeout(None)),
-                ECCAR(SSLProfileSpec_Signed(LOCALHOST, TEST_USER_CA_CN), ConnectedReadTimeout(None)),
+                ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CA_CN), ALERT_CERT_UNKNOWN),
+                ECCAR(SSLProfileSpec_Signed(LOCALHOST, TEST_USER_CA_CN), ConnectedGotRequest(HAMMER_HELLO)),
 
-                ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_NONE_CN, TEST_USER_CA_CN), UNKNOWN_CA),
-                ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_FALSE_CN, TEST_USER_CA_CN), UNKNOWN_CA),
-                ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedReadTimeout(None)),
+                ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_NONE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
+                ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_FALSE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
+                ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), ALERT_CERT_UNKNOWN),
 
-                ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_NONE_CN, TEST_USER_CA_CN), UNKNOWN_CA),
-                ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_FALSE_CN, TEST_USER_CA_CN), UNKNOWN_CA),
-                ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedReadTimeout(None))
+                ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_NONE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
+                ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_FALSE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
+                ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotRequest(HAMMER_HELLO))
             ])
 
     # ------------------------------------------------------------------------------------

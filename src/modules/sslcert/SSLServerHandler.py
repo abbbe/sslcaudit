@@ -15,9 +15,9 @@ MAX_SIZE = 1024
 
 # --- some classes and constants here should be moved elsewhere, to be shared between different modules
 
-UNKNOWN_CA = 'tlsv1 alert unknown ca'
 UNEXPECTED_EOF = 'unexpected eof'
-CONNECTED = 'connected'
+ALERT_UNKNOWN_CA = 'tlsv1 alert unknown ca'
+ALERT_CERT_UNKNOWN = 'sslv3 alert certificate unknown'
 
 class Connected(object): pass
 
@@ -131,7 +131,7 @@ class SSLServerHandler(BaseServerHandler):
                     res = ConnectedGotRequest(client_req, dt)
         except Exception as ex:
             res = ex.message
-            self.logger.error('SSL accept failed: ', ex)
+            self.logger.error('SSL accept failed: %s', ex)
 
         # report the result
 
