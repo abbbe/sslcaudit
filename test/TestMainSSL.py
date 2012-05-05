@@ -21,6 +21,15 @@ LOCALHOST = 'localhost'
 HAMMER_ATTEMPTS = 10
 HAMMER_HELLO = 'hello'
 
+FULL_TEST_ARGS = [
+    '--user-cn', TEST_USER_CN,
+    '--user-cert', TEST_USER_CERT_FILE,
+    '--server', TEST_SERVER,
+    '--user-key', TEST_USER_KEY_FILE,
+    '--user-ca-cert', TEST_USER_CA_CERT_FILE,
+    '--user-ca-key', TEST_USER_CA_KEY_FILE
+]
+
 class ECCAR(object):
     def __init__(self, profile_spec, expected_res):
         self.profile_spec = profile_spec
@@ -84,14 +93,7 @@ class TestMainSSL(unittest.TestCase):
             ECCAR(SSLProfileSpec_IMCA_Signed(TEST_SERVER_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), UNEXPECTED_EOF)
         ]
         self._main_test(
-            [
-                '--user-cn', TEST_USER_CN,
-                '--user-cert', TEST_USER_CERT_FILE,
-                '--server', TEST_SERVER,
-                '--user-key', TEST_USER_KEY_FILE,
-                '--user-ca-cert', TEST_USER_CA_CERT_FILE,
-                '--user-ca-key', TEST_USER_CA_KEY_FILE
-            ],
+            FULL_TEST_ARGS,
             TCPConnectionHammer(len(eccars)),
             eccars
         )
@@ -153,13 +155,13 @@ class TestMainSSL(unittest.TestCase):
     def tearDown(self):
         if self.main != None: self.main.stop()
 
-    def _main_test(self, args, hammer, expected_results):
+    def _main_test(self, main_args, hammer, expected_results):
         '''
         This is a main worker function. It allocates external resources and launches threads,
         to make sure they are freed this function was to be called exactly once per test method,
         to allow tearDown() method to cleanup properly.
         '''
-        self._main_test_init(args, hammer)
+        self._main_test_init(main_args, hammer)
         self._main_test_do(expected_results)
 
     def _main_test_init(self, args, hammer):

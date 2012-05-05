@@ -8,6 +8,7 @@ import logging
 from optparse import OptionParser
 from src.core.BaseClientAuditController import BaseClientAuditController, PROG_NAME, PROG_VERSION, DEFAULT_MODULES
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from src.core.ConfigErrorException import ConfigErrorException
 
 FORMAT = '%(asctime)s %(name)s %(levelname)s   %(message)s'
 logging.basicConfig(level=logging.INFO, format=FORMAT)
