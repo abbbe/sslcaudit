@@ -60,7 +60,7 @@ class CertFactory(object):
     def load_certnkey_files(self, cert_file, key_file):
         '''
         This function loads the content of the certificate file
-        and initalizes pathes to the certificate and the key.
+        and initializes paths to the certificate and the key.
 	    '''
         cert = X509.load_cert(cert_file)
         pkey = EVP.load_key(key_file)
@@ -71,6 +71,7 @@ class CertFactory(object):
         This function creates a certificate request with following attributes:
          * given common name, organization, and country
          * maximum validity period
+         * given extensions
         Returns the certificate request and the keys as a tuple (X509, EVP, RSA)
         '''
         # subject
@@ -104,6 +105,11 @@ class CertFactory(object):
         return (cert_req, pkey, rsa_keypair)
 
     def sign_cert_req(self, certreq_n_keys, ca_certnkey):
+        '''
+        This function signs the certificate request.
+        Expects a tuple (X509, EVP, RSA) as returned by mk_certreq_n_keys().
+        Returns CertAndKey() object.
+        '''
         (cert_req, pkey, rsa_keypair) = certreq_n_keys
 
         # hardcoded parameters
