@@ -18,9 +18,9 @@ class TCPConnectionHammer(ConnectionHammer):
 
     def hammer(self, i):
         # connect to the peer, do something, disconnect
+        sock = socket()
         try:
             self.logger.debug("opening connection %d to %s ...", i, self.peer)
-            sock = socket()
             sock.connect(self.peer)
             self.logger.debug("connection %d to %s established, waiting for %.1fs before closing",
                 i, self.peer, self.delay_before_close)
@@ -29,5 +29,5 @@ class TCPConnectionHammer(ConnectionHammer):
         except IOError as ex:
             self.logger.error('connection %d failed: %s', i, ex)
         finally:
-            close()
+            sock.close()
             self.logger.debug("connection %d with %s closed", i, self.peer)

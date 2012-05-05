@@ -54,13 +54,15 @@ class ConnectedReadTimeout(Connected):
 
 
 class ConnectedGotRequest(Connected):
-    def __init__(self, req, dt=None):
+    def __init__(self, req=None, dt=None):
         self.req = req
         self.dt = dt
 
     def __eq__(self, other):
         # NB: ignore actual DT
-        return self.__class__ == other.__class__ and self.req == other.req
+        if self.__class__ != other.__class__: return False
+
+        return self.req == None or self.req == other.req
 
     def __str__(self):
         if self.dt != None:

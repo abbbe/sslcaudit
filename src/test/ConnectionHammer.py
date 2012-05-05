@@ -9,9 +9,9 @@ from src.test.Hammer import Hammer
 DEFAULT_DELAY_BEFORE_CLOSE = 2
 
 class ConnectionHammer(Hammer):
-    def __init__(self, nattempts, peer=None):
+    def __init__(self, nattempts):
         Hammer.__init__(self, nattempts)
-        self.peer = peer
+        self.peer = None
         self.delay_before_close = DEFAULT_DELAY_BEFORE_CLOSE
 
     def set_peer(self, peer):
