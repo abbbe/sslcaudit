@@ -38,10 +38,10 @@ class CNVerifyingSSLConnectionHammer(ConnectionHammer):
                 self.logger.debug('SSL connection %d to %s closed', i, self.peer)
                 return True
             else:
-                self.logger.error('SSL handshake failed: %s', ssl_conn.ssl_get_error(res))
+                self.logger.debug('SSL handshake failed: %s', ssl_conn.ssl_get_error(res))
                 return False
         except SSLVerificationError as ex:
-            self.logger.error('SSL handshake SSLVerificationError: %s', ex)
+            self.logger.debug('SSL handshake SSLVerificationError: %s', ex)
             return False
 
 class ChainVerifyingSSLConnectionHammer(CNVerifyingSSLConnectionHammer):
