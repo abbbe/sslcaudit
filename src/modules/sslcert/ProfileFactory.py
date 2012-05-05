@@ -135,9 +135,6 @@ class ProfileFactory(BaseProfileFactory):
             self.add_im_basic_constraints_profile(cert_req, basicConstraint_CA=False)
             self.add_im_basic_constraints_profile(cert_req, basicConstraint_CA=True)
 
-        if self.user_certnkey != None:
-            pass
-
         # XXX if no user-cn and defalt-cn is disabled the test will be not performed silently
 
     # ----------------------------------------------------------------------------------------------
