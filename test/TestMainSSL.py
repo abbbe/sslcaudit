@@ -141,34 +141,46 @@ class TestMainSSL(unittest.TestCase):
             eccars)
 
     def test_curl(self):
-        hammer = CurlHammer(HAMMER_ATTEMPTS, TEST_USER_CA_CERT_FILE)
+        eccars = [
+            # self-signed certificates
+            ECCAR(SSLProfileSpec_SelfSigned(DEFAULT_CN), ALERT_UNKNOWN_CA),
+            ECCAR(SSLProfileSpec_SelfSigned(LOCALHOST), ALERT_UNKNOWN_CA),
+            ECCAR(SSLProfileSpec_SelfSigned(TEST_SERVER_CN), ALERT_UNKNOWN_CA),
+
+            # user-supplied certificate
+            ECCAR(SSLProfileSpec_UserSupplied(TEST_USER_CERT_CN), ConnectedGotEOFBeforeTimeout()),
+
+            # signed by user-supplied certificate
+            ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CERT_CN), ALERT_UNKNOWN_CA),
+            ECCAR(SSLProfileSpec_Signed(LOCALHOST, TEST_USER_CERT_CN), ALERT_UNKNOWN_CA),
+            ECCAR(SSLProfileSpec_Signed(TEST_SERVER_CN, TEST_USER_CERT_CN), ALERT_UNKNOWN_CA),
+
+            # signed by user-supplied CA
+            ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
+            ECCAR(SSLProfileSpec_Signed(LOCALHOST, TEST_USER_CA_CN), ConnectedGotRequest()),
+            ECCAR(SSLProfileSpec_Signed(TEST_SERVER_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
+
+            # default CN, signed by user-supplied CA, with an intermediate CA
+            ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_NONE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
+            ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_FALSE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
+            ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
+
+            # user-supplied CN signed by user-supplied CA, with an intermediate CA
+            ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_NONE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
+            ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_FALSE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
+            ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotRequest()),
+
+            # replica of server certificate signed by user-supplied CA, with an intermediate CA
+            ECCAR(SSLProfileSpec_IMCA_Signed(TEST_SERVER_CN, IM_CA_NONE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
+            ECCAR(SSLProfileSpec_IMCA_Signed(TEST_SERVER_CN, IM_CA_FALSE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
+            ECCAR(SSLProfileSpec_IMCA_Signed(TEST_SERVER_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
+            ]
 
         self._main_test(
-            [
-                '--user-cn', LOCALHOST,
-                '--user-ca-cert', TEST_USER_CA_CERT_FILE,
-                '--user-ca-key', TEST_USER_CA_KEY_FILE
-            ],
-            hammer,
-            [
-                ECCAR(SSLProfileSpec_SelfSigned(DEFAULT_CN), ALERT_UNKNOWN_CA),
-                ECCAR(SSLProfileSpec_SelfSigned(LOCALHOST), ALERT_UNKNOWN_CA),
-
-                ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
-                ECCAR(SSLProfileSpec_Signed(LOCALHOST, TEST_USER_CA_CN), ConnectedGotRequest()),
-
-                ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_NONE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
-                ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_FALSE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
-                ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
-
-                ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_NONE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
-                ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_FALSE_CN, TEST_USER_CA_CN), ALERT_UNKNOWN_CA),
-                ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotRequest())
-            ])
-
-    # ------------------------------------------------------------------------------------
-    def setUp(self):
-        self.main = None
+            get_full_test_args(user_cn=LOCALHOST),
+            CurlHammer(len(eccars), TEST_USER_CA_CERT_FILE),
+            eccars
+        )
 
     def tearDown(self):
         if self.main != None: self.main.stop()

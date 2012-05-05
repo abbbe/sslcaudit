@@ -27,7 +27,7 @@ class ConnectedGotEOFBeforeTimeout(Connected):
 
     def __str__(self):
         if self.dt != None:
-            dt_str = " (in %.1fs)" % self.dt
+            dt_str = " (in %.3fs)" % self.dt
         else:
             dt_str = ''
         return "connected, got EOF before timeout%s" % dt_str
