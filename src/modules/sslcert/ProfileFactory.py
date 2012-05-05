@@ -11,9 +11,9 @@ from src.modules.base.BaseProfileFactory import BaseProfileFactory, BaseProfile,
 from src.modules.sslcert.SSLServerHandler import SSLServerHandler
 
 DEFAULT_CN = 'nonexistent.gremwell.com'
-IM_CA_NONE_CN = 'v3-ext-ca-none'
-IM_CA_FALSE_CN = 'v3-ext-ca-false'
-IM_CA_TRUE_CN = 'v3-ext-ca-true'
+IM_CA_NONE_CN = 'ca-none'
+IM_CA_FALSE_CN = 'ca-false'
+IM_CA_TRUE_CN = 'ca-true'
 
 sslcert_server_handler = SSLServerHandler('sslv23')
 

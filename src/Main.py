@@ -14,7 +14,7 @@ from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, Cli
 from src.core.FileBag import FileBag
 
 FORMAT = '%(asctime)s %(name)s %(levelname)s   %(message)s'
-logging.basicConfig(level=logging.ERROR, format=FORMAT)
+logging.basicConfig(level=logging.INFO, format=FORMAT)
 
 logger = logging.getLogger('Main')
 

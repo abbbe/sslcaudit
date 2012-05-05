@@ -105,7 +105,7 @@ class SSLServerHandler(BaseServerHandler):
             if ssl_conn_res == 1:
                 self.logger.debug('SSL connection accepted')
             else:
-                self.logger.error('SSL handshake failed: %s', ssl_conn.ssl_get_error(ssl_conn_res))
+                self.logger.debug('SSL handshake failed: %s', ssl_conn.ssl_get_error(ssl_conn_res))
                 res = ssl_conn.ssl_get_error(ssl_conn_res)
                 return ClientConnectionAuditResult(conn, profile, res)
 
@@ -131,7 +131,7 @@ class SSLServerHandler(BaseServerHandler):
                     res = ConnectedGotRequest(client_req, dt)
         except Exception as ex:
             res = ex.message
-            self.logger.error('SSL accept failed: %s', ex)
+            self.logger.debug('SSL accept failed: %s', ex)
 
         # report the result
 
