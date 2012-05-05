@@ -4,7 +4,7 @@ Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
-import logging
+import logging, time
 from socket import socket
 from src.test.ConnectionHammer import ConnectionHammer
 
