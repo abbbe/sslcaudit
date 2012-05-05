@@ -21,14 +21,15 @@ LOCALHOST = 'localhost'
 HAMMER_ATTEMPTS = 10
 HAMMER_HELLO = 'hello'
 
-FULL_TEST_ARGS = [
-    '--user-cn', TEST_USER_CN,
-    '--user-cert', TEST_USER_CERT_FILE,
-    '--server', TEST_SERVER,
-    '--user-key', TEST_USER_KEY_FILE,
-    '--user-ca-cert', TEST_USER_CA_CERT_FILE,
-    '--user-ca-key', TEST_USER_CA_KEY_FILE
-]
+def get_full_test_args(user_cn = TEST_USER_CN):
+    return [
+        '--user-cn', user_cn,
+        '--user-cert', TEST_USER_CERT_FILE,
+        '--server', TEST_SERVER,
+        '--user-key', TEST_USER_KEY_FILE,
+        '--user-ca-cert', TEST_USER_CA_CERT_FILE,
+        '--user-ca-key', TEST_USER_CA_KEY_FILE
+    ]
 
 class ECCAR(object):
     def __init__(self, profile_spec, expected_res):
@@ -93,34 +94,51 @@ class TestMainSSL(unittest.TestCase):
             ECCAR(SSLProfileSpec_IMCA_Signed(TEST_SERVER_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), UNEXPECTED_EOF)
         ]
         self._main_test(
-            FULL_TEST_ARGS,
+            get_full_test_args(),
             TCPConnectionHammer(len(eccars)),
             eccars
         )
 
     def test_cn_verifying_client(self):
+        eccars = [
+            # self-signed certificates
+            ECCAR(SSLProfileSpec_SelfSigned(DEFAULT_CN), ConnectedGotEOFBeforeTimeout()),
+            ECCAR(SSLProfileSpec_SelfSigned(LOCALHOST), ConnectedGotRequest(HAMMER_HELLO)),
+            ECCAR(SSLProfileSpec_SelfSigned(TEST_SERVER_CN), ConnectedGotEOFBeforeTimeout()),
+
+            # user-supplied certificate
+            ECCAR(SSLProfileSpec_UserSupplied(TEST_USER_CERT_CN), ConnectedGotEOFBeforeTimeout()),
+
+            # signed by user-supplied certificate
+            ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CERT_CN), ConnectedGotEOFBeforeTimeout()),
+            ECCAR(SSLProfileSpec_Signed(LOCALHOST, TEST_USER_CERT_CN), ConnectedGotRequest(HAMMER_HELLO)),
+            ECCAR(SSLProfileSpec_Signed(TEST_SERVER_CN, TEST_USER_CERT_CN), ConnectedGotEOFBeforeTimeout()),
+
+            # signed by user-supplied CA
+            ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
+            ECCAR(SSLProfileSpec_Signed(LOCALHOST, TEST_USER_CA_CN), ConnectedGotRequest(HAMMER_HELLO)),
+            ECCAR(SSLProfileSpec_Signed(TEST_SERVER_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
+
+            # default CN, signed by user-supplied CA, with an intermediate CA
+            ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_NONE_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
+            ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_FALSE_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
+            ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
+
+            # user-supplied CN signed by user-supplied CA, with an intermediate CA
+            ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_NONE_CN, TEST_USER_CA_CN), ConnectedGotRequest(HAMMER_HELLO)),
+            ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_FALSE_CN, TEST_USER_CA_CN), ConnectedGotRequest(HAMMER_HELLO)),
+            ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotRequest(HAMMER_HELLO)),
+
+            # replica of server certificate signed by user-supplied CA, with an intermediate CA
+            ECCAR(SSLProfileSpec_IMCA_Signed(TEST_SERVER_CN, IM_CA_NONE_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
+            ECCAR(SSLProfileSpec_IMCA_Signed(TEST_SERVER_CN, IM_CA_FALSE_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
+            ECCAR(SSLProfileSpec_IMCA_Signed(TEST_SERVER_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
+            ]
+
         self._main_test(
-            [
-                '--user-cn', LOCALHOST,
-                '--user-ca-cert', TEST_USER_CA_CERT_FILE,
-                '--user-ca-key', TEST_USER_CA_KEY_FILE
-            ],
-            CNVerifyingSSLConnectionHammer(HAMMER_ATTEMPTS, HAMMER_HELLO),
-            [
-                ECCAR(SSLProfileSpec_SelfSigned(DEFAULT_CN), ConnectedGotEOFBeforeTimeout()),
-                ECCAR(SSLProfileSpec_SelfSigned(LOCALHOST), ConnectedGotRequest(HAMMER_HELLO)),
-
-                ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
-                ECCAR(SSLProfileSpec_Signed(LOCALHOST, TEST_USER_CA_CN), ConnectedGotRequest(HAMMER_HELLO)),
-
-                ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_NONE_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
-                ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_FALSE_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
-                ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotEOFBeforeTimeout()),
-
-                ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_NONE_CN, TEST_USER_CA_CN), ConnectedGotRequest(HAMMER_HELLO)),
-                ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_FALSE_CN, TEST_USER_CA_CN), ConnectedGotRequest(HAMMER_HELLO)),
-                ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotRequest(HAMMER_HELLO))
-            ])
+            get_full_test_args(user_cn=LOCALHOST),
+            CNVerifyingSSLConnectionHammer(len(eccars), HAMMER_HELLO),
+            eccars)
 
     def test_curl(self):
         hammer = CurlHammer(HAMMER_ATTEMPTS, TEST_USER_CA_CERT_FILE)
