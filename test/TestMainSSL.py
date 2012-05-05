@@ -60,13 +60,13 @@ class TestMainSSL(unittest.TestCase):
     def test_plain_tcp_client(self):
         # Plain TCP client causes unexpected UNEXPECTED_EOF instead of UNKNOWN_CA
         eccars = [
+            # user-supplied certificate
+            ECCAR(SSLProfileSpec_UserSupplied(TEST_USER_CERT_CN), UNEXPECTED_EOF),
+
             # self-signed certificates
             ECCAR(SSLProfileSpec_SelfSigned(DEFAULT_CN), UNEXPECTED_EOF),
             ECCAR(SSLProfileSpec_SelfSigned(TEST_USER_CN), UNEXPECTED_EOF),
             ECCAR(SSLProfileSpec_SelfSigned(TEST_SERVER_CN), UNEXPECTED_EOF),
-
-            # user-supplied certificate
-            ECCAR(SSLProfileSpec_UserSupplied(TEST_USER_CERT_CN), UNEXPECTED_EOF),
 
             # signed by user-supplied certificate
             ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CERT_CN), UNEXPECTED_EOF),
@@ -101,13 +101,13 @@ class TestMainSSL(unittest.TestCase):
 
     def test_cn_verifying_client(self):
         eccars = [
+            # user-supplied certificate
+            ECCAR(SSLProfileSpec_UserSupplied(TEST_USER_CERT_CN), ConnectedGotEOFBeforeTimeout()),
+
             # self-signed certificates
             ECCAR(SSLProfileSpec_SelfSigned(DEFAULT_CN), ConnectedGotEOFBeforeTimeout()),
             ECCAR(SSLProfileSpec_SelfSigned(LOCALHOST), ConnectedGotRequest(HAMMER_HELLO)),
             ECCAR(SSLProfileSpec_SelfSigned(TEST_SERVER_CN), ConnectedGotEOFBeforeTimeout()),
-
-            # user-supplied certificate
-            ECCAR(SSLProfileSpec_UserSupplied(TEST_USER_CERT_CN), ConnectedGotEOFBeforeTimeout()),
 
             # signed by user-supplied certificate
             ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CERT_CN), ConnectedGotEOFBeforeTimeout()),
@@ -142,13 +142,13 @@ class TestMainSSL(unittest.TestCase):
 
     def test_curl(self):
         eccars = [
+            # user-supplied certificate
+            ECCAR(SSLProfileSpec_UserSupplied(TEST_USER_CERT_CN), ConnectedGotEOFBeforeTimeout()),
+
             # self-signed certificates
             ECCAR(SSLProfileSpec_SelfSigned(DEFAULT_CN), ALERT_UNKNOWN_CA),
             ECCAR(SSLProfileSpec_SelfSigned(LOCALHOST), ALERT_UNKNOWN_CA),
             ECCAR(SSLProfileSpec_SelfSigned(TEST_SERVER_CN), ALERT_UNKNOWN_CA),
-
-            # user-supplied certificate
-            ECCAR(SSLProfileSpec_UserSupplied(TEST_USER_CERT_CN), ConnectedGotEOFBeforeTimeout()),
 
             # signed by user-supplied certificate
             ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CERT_CN), ALERT_UNKNOWN_CA),

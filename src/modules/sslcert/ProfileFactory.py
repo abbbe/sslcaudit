@@ -110,11 +110,13 @@ class ProfileFactory(BaseProfileFactory):
             self.certreq_n_keyss.append(cert_req3)
 
     def add_profiles(self):
+        if self.user_certnkey != None:
+            self.add_raw_user_certnkey_profile()
+
         if not self.options.no_self_signed:
             self.add_signed_profiles(ca_certnkey=None)
 
         if self.user_certnkey != None:
-            self.add_raw_user_certnkey_profile()
             self.add_signed_profiles(ca_certnkey=self.user_certnkey)
 
         if self.user_ca_certnkey != None:
