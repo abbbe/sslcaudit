@@ -92,7 +92,7 @@ class TestMainSSL(unittest.TestCase):
                 '--user-ca-cert', TEST_USER_CA_CERT_FILE,
                 '--user-ca-key', TEST_USER_CA_KEY_FILE
             ],
-            TCPConnectionHammer(len(eccars) + 1),
+            TCPConnectionHammer(len(eccars)),
             eccars
         )
 
