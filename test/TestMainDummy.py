@@ -6,7 +6,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging
 import unittest
-from src.core import SSLCAuditCLI
+from src.core.SSLCAuditCLI import SSLCAuditCLI
 from src.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientConnectionAuditResult
 from src.core.ClientHandler import ClientAuditResult
 from src.test.TCPConnectionHammer import TCPConnectionHammer

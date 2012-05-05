@@ -8,6 +8,18 @@ import logging, itertools
 from exceptions import StopIteration
 from src.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientAuditResult
 
+def try_iterator_length(iter):
+    '''
+    Tries to traverse the iterator and returns sequence length
+    '''
+    length = 0
+    while True:
+        try:
+            iter.next()
+            length += 1
+        except StopIteration:
+            return length
+
 class ClientHandler(object):
     '''
     Instances of this class hold information about the progress and the results of an audit of a single client.
@@ -29,12 +41,15 @@ class ClientHandler(object):
 
     def __init__(self, client_id, profiles, res_queue):
         self.client_id = client_id
-        self.profiles_iterator = itertools.chain.from_iterable(profiles)
         self.result = ClientAuditResult(self.client_id)
         self.res_queue = res_queue
 
-        self.next_profile = None
+        self.nprofiles = try_iterator_length(itertools.chain.from_iterable(profiles))
+        self.profiles_iterator = itertools.chain.from_iterable(profiles)
         self.profiles_count = 0
+
+        self.next_profile = None
+
         self.done = False
 
     def handle(self, conn):
@@ -60,6 +75,8 @@ class ClientHandler(object):
         # handle this connection
         handler = self.next_profile.get_handler()
         res = handler.handle(conn, self.next_profile)
+        self.logger.debug('connection from %s using %s (%d/%d) resulted in %s',
+            conn, self.next_profile, self.profiles_count, self.nprofiles, res)
 
         # log and record the results of the test
         #self.logger.debug('testing client conn %s using %s resulted in %s', conn, self.next_auditor, res)

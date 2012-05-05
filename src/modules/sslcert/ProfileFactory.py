@@ -105,9 +105,9 @@ class ProfileFactory(BaseProfileFactory):
             req2 = self.cert_factory.mk_certreq_n_keys(cn=self.options.user_cn)
             self.certreq_n_keyss.append(req2)
 
-#        if self.options.server != None:
-#            cert_req3 = self.cert_factory.mk_cert_request_replicating_server(server=self.options.server)
-#            self.cert_requests.append(cert_req3)
+        if self.server_x509_cert != None:
+            cert_req3 = self.cert_factory.mk_replica_certreq_n_keys(self.server_x509_cert)
+            self.certreq_n_keyss.append(cert_req3)
 
     def add_profiles(self):
         if not self.options.no_self_signed:

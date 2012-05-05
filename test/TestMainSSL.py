@@ -53,6 +53,7 @@ class TestMainSSL(unittest.TestCase):
             # self-signed certificates
             ECCAR(SSLProfileSpec_SelfSigned(DEFAULT_CN), UNEXPECTED_EOF),
             ECCAR(SSLProfileSpec_SelfSigned(TEST_USER_CN), UNEXPECTED_EOF),
+            ECCAR(SSLProfileSpec_SelfSigned(TEST_SERVER_CN), UNEXPECTED_EOF),
 
             # user-supplied certificate
             ECCAR(SSLProfileSpec_UserSupplied(TEST_USER_CERT_CN), UNEXPECTED_EOF),
@@ -60,10 +61,12 @@ class TestMainSSL(unittest.TestCase):
             # signed by user-supplied certificate
             ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CERT_CN), UNEXPECTED_EOF),
             ECCAR(SSLProfileSpec_Signed(TEST_USER_CN, TEST_USER_CERT_CN), UNEXPECTED_EOF),
+            ECCAR(SSLProfileSpec_Signed(TEST_SERVER_CN, TEST_USER_CERT_CN), UNEXPECTED_EOF),
 
             # signed by user-supplied CA
             ECCAR(SSLProfileSpec_Signed(DEFAULT_CN, TEST_USER_CA_CN), UNEXPECTED_EOF),
             ECCAR(SSLProfileSpec_Signed(TEST_USER_CN, TEST_USER_CA_CN), UNEXPECTED_EOF),
+            ECCAR(SSLProfileSpec_Signed(TEST_SERVER_CN, TEST_USER_CA_CN), UNEXPECTED_EOF),
 
             # default CN, signed by user-supplied CA, with an intermediate CA
             ECCAR(SSLProfileSpec_IMCA_Signed(DEFAULT_CN, IM_CA_NONE_CN, TEST_USER_CA_CN), UNEXPECTED_EOF),
@@ -73,21 +76,27 @@ class TestMainSSL(unittest.TestCase):
             # user-supplied CN signed by user-supplied CA, with an intermediate CA
             ECCAR(SSLProfileSpec_IMCA_Signed(TEST_USER_CN, IM_CA_NONE_CN, TEST_USER_CA_CN), UNEXPECTED_EOF),
             ECCAR(SSLProfileSpec_IMCA_Signed(TEST_USER_CN, IM_CA_FALSE_CN, TEST_USER_CA_CN), UNEXPECTED_EOF),
-            ECCAR(SSLProfileSpec_IMCA_Signed(TEST_USER_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), UNEXPECTED_EOF)
+            ECCAR(SSLProfileSpec_IMCA_Signed(TEST_USER_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), UNEXPECTED_EOF),
+
+            # replica of server certificate signed by user-supplied CA, with an intermediate CA
+            ECCAR(SSLProfileSpec_IMCA_Signed(TEST_SERVER_CN, IM_CA_NONE_CN, TEST_USER_CA_CN), UNEXPECTED_EOF),
+            ECCAR(SSLProfileSpec_IMCA_Signed(TEST_SERVER_CN, IM_CA_FALSE_CN, TEST_USER_CA_CN), UNEXPECTED_EOF),
+            ECCAR(SSLProfileSpec_IMCA_Signed(TEST_SERVER_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), UNEXPECTED_EOF)
         ]
         self._main_test(
             [
                 '--user-cn', TEST_USER_CN,
                 '--user-cert', TEST_USER_CERT_FILE,
+                '--server', TEST_SERVER,
                 '--user-key', TEST_USER_KEY_FILE,
                 '--user-ca-cert', TEST_USER_CA_CERT_FILE,
                 '--user-ca-key', TEST_USER_CA_KEY_FILE
             ],
-            TCPConnectionHammer(len(eccars)),
+            TCPConnectionHammer(len(eccars) + 1),
             eccars
         )
 
-    def xtest_cn_verifying_client(self):
+    def test_cn_verifying_client(self):
         self._main_test(
             [
                 '--user-cn', LOCALHOST,
@@ -111,7 +120,7 @@ class TestMainSSL(unittest.TestCase):
                 ECCAR(SSLProfileSpec_IMCA_Signed(LOCALHOST, IM_CA_TRUE_CN, TEST_USER_CA_CN), ConnectedGotRequest(HAMMER_HELLO))
             ])
 
-    def xtest_curl(self):
+    def test_curl(self):
         hammer = CurlHammer(HAMMER_ATTEMPTS, TEST_USER_CA_CERT_FILE)
 
         self._main_test(

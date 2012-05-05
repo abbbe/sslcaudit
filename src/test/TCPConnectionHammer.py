@@ -24,7 +24,7 @@ class TCPConnectionHammer(ConnectionHammer):
             sock.connect(self.peer)
             self.logger.debug("connection %d to %s established, waiting for %.1fs before closing",
                 i, self.peer, self.delay_before_close)
-            time.sleep(self.daemon)
+            time.sleep(self.delay_before_close)
 
         except IOError as ex:
             self.logger.error('connection %d failed: %s', i, ex)

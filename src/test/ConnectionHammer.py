@@ -6,7 +6,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 from src.test.Hammer import Hammer
 
-DEFAULT_DELAY_BEFORE_CLOSE = 2
+DEFAULT_DELAY_BEFORE_CLOSE = 1
 
 class ConnectionHammer(Hammer):
     def __init__(self, nattempts):

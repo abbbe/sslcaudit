@@ -48,6 +48,8 @@ class CertAndKey(object):
         return str(self.name)
 
 
+DEFAULT_BITS = 1024
+
 class CertFactory(object):
     '''
     This class provides methods to generate new X509 certificates and corresponding
@@ -74,6 +76,8 @@ class CertFactory(object):
          * given extensions
         Returns the certificate request and the keys as a tuple (X509, EVP, RSA)
         '''
+        bits = DEFAULT_BITS
+
         # subject
         subj = X509.X509_Name()
         subj.CN = cn
@@ -86,14 +90,17 @@ class CertFactory(object):
         not_after = ASN1.ASN1_UTCTIME()
         not_after.set_time(2 ** 31 - 1)
 
+        return self.dododo(bits, subj, not_before, not_after, v3_exts)
+
+    def dododo(self, bits, subj, not_before, not_after, v3_exts, version=3):
         # create a new keypair
-        rsa_keypair = RSA.gen_key(BITS, 65537, util.no_passphrase_callback)
+        rsa_keypair = RSA.gen_key(bits, 65537, util.no_passphrase_callback)
         pkey = EVP.PKey()
         pkey.assign_rsa(rsa_keypair, capture=False)
 
         # create certificate request
         cert_req = X509.X509()
-        cert_req.set_version(3)
+        cert_req.set_version(version)
         cert_req.set_subject(subj)
         cert_req.set_pubkey(pkey)
         cert_req.set_not_before(not_before)
@@ -122,7 +129,7 @@ class CertFactory(object):
         if ca_certnkey != None:
             cert_req.set_issuer(ca_certnkey.cert.get_subject())
         else:
-            cert_req.set_issuer(cert_req.get_issuer())
+            cert_req.set_issuer(cert_req.get_subject())
 
         # sign
         if ca_certnkey != None:
@@ -147,5 +154,63 @@ class CertFactory(object):
 
         return CertAndKey((cert_req.get_subject().CN, signed_by), cert_file.name, key_file.name, cert_req, pkey)
 
-    def mk_cert_request_replicating_server(self, server):
-        raise NotImplemented()
+    def grab_server_x509_cert(self, server, protocol):
+        '''
+        This function connects to the specified server and grabs its certificate.
+        Expects (server, port) tuple as input.
+        '''
+        # create context
+        ctx = SSL.Context(protocol=protocol)
+        ctx.set_allow_unknown_ca(True)
+        ctx.set_verify(SSL.verify_none, 0)
+
+        # socket
+        if isinstance(server, basestring):
+            # not a tuple, expect HOST:PORT formatted string
+            (host, port) = server.split(':')
+            server = (host, int(port))
+
+        sock = socket.create_connection(server)
+
+        # establish connection
+        sslsock = SSL.Connection(ctx, sock=sock)
+        sslsock.set_post_connection_check_callback(None)
+        sslsock.setup_ssl()
+        sslsock.set_connect_state()
+        sslsock.connect_ssl()
+
+        # grab server certificate and shut the connection
+        server_cert = sslsock.get_peer_cert()
+        sslsock.close()
+
+        return server_cert
+
+    def mk_replica_certreq_n_keys(self, orig_cert):
+        '''
+        This function creates a certificate request replicating given certificate. It returns a tuple of certificate and
+        Most of the fields of the original certificates are replicated:
+         * key length
+         * subject
+         * validity dates
+         * serial number
+         * version
+         * extensions
+        Couple parameters don't get replicated (because I don't know where to find them in M2Crypto.X509 object):
+         * public key exponent which is fixed to 65537,
+         * signature algorithm which is fixed to sha1WithRSAEncryption.
+        '''
+
+        # copy certificate attributes
+        public_key = orig_cert.get_pubkey()
+
+        bits = public_key.get_rsa().__len__()
+        subj = orig_cert.get_subject()
+        not_before = orig_cert.get_not_before()
+        not_after = orig_cert.get_not_after()
+        version = orig_cert.get_version()
+
+        v3_exts = []
+        for i in range(orig_cert.get_ext_count()):
+            v3_exts.append(orig_cert.get_ext_at(i))
+
+        return self.dododo(bits, subj, not_before, not_after, v3_exts, version)
