@@ -4,51 +4,23 @@ Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
-import logging, sys
-from Queue import Empty
+import logging
 from optparse import OptionParser
-from threading import Thread
-from src.core.ConfigErrorException import ConfigErrorException
-from src.core.ClientAuditorServer import ClientAuditorServer
-from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientAuditResult
-from src.core.FileBag import FileBag
+from src.core.BaseClientAuditController import BaseClientAuditController, PROG_NAME, PROG_VERSION, DEFAULT_MODULES
+from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
 
 FORMAT = '%(asctime)s %(name)s %(levelname)s   %(message)s'
 logging.basicConfig(level=logging.INFO, format=FORMAT)
 
-logger = logging.getLogger('Main')
-
-DEFAULT_HOST = '0.0.0.0'
-DEFAULT_PORT = '8443'
-DEFAULT_MODULES = 'sslcert'
-
-MODULE_MODULE_NAME_PREFIX = 'src.modules'
-PROFILE_FACTORY_MODULE_NAME = 'ProfileFactory'
-PROFILE_FACTORY_CLASS_NAME = 'ProfileFactory'
-
-PROG_NAME = 'sslcaudit'
-PROG_VERSION = '1.0rc1'
+logger = logging.getLogger('SSLCAuditCLI')
 
 OUTPUT_FIELD_SEPARATOR = ' '
 
-class Main(Thread):
+class SSLCAuditCLI(BaseClientAuditController):
     def __init__(self, argv):
-        Thread.__init__(self, target=self.run)
+        BaseClientAuditController.__init__(self, self.parse_options(argv))
 
-        self.init_options(argv)
-
-        if self.options.debug_level > 0:
-            logging.getLogger().setLevel(logging.DEBUG)
-
-        self.file_bag = FileBag(self.options.test_name)
-
-        self.profile_factories = []
-        self.init_modules()
-
-        self.server = ClientAuditorServer(self.listen_on, self.profile_factories)
-        self.queue_read_timeout = 0.1
-
-    def init_options(self, argv):
+    def parse_options(self, argv):
         parser = OptionParser(usage=('%s [OPTIONS]' % PROG_NAME), version=("%s %s" % (PROG_NAME, PROG_VERSION)))
         parser.add_option("-l", dest="listen_on", default='0.0.0.0:8443',
             help="Specify IP address and TCP PORT to listen on, in format of [HOST:]PORT")
@@ -90,44 +62,26 @@ class Main(Thread):
         if len(args) > 0:
             raise ConfigErrorException("unexpected arguments: %s" % args)
 
-        self.options = options
-
         # transform listen_on string into a tuple
-        listen_on_parts = self.options.listen_on.split(':')
+        listen_on_parts = options.listen_on.split(':')
         if len(listen_on_parts) == 1:
             # convert "PORT" string to (DEFAULT_HOST, POST) tuple
-            self.listen_on = (DEFAULT_HOST, int(listen_on_parts[0]))
+            options.listen_on = (DEFAULT_HOST, int(listen_on_parts[0]))
         elif len(listen_on_parts) == 2:
             # convert "HOST:PORT" string to (HOST, PORT) tuple
-            self.listen_on = (listen_on_parts[0], int(listen_on_parts[1]))
+            options.listen_on = (listen_on_parts[0], int(listen_on_parts[1]))
         else:
             raise ConfigErrorException("invalid value for -l parameter '%s'" % self.options.listen_on.split(':'))
 
-    def init_modules(self):
-        for module_name in self.options.modules.split(','):
-            # load the module from under MODULE_NAME_PREFIX
-            module_name = MODULE_MODULE_NAME_PREFIX + "." + module_name + '.' + PROFILE_FACTORY_MODULE_NAME
-            try:
-                __import__(module_name, fromlist=[])
-            except Exception as ex:
-                raise ConfigErrorException("Cannot load module ", module_name, ", exception: ", ex)
+        return options
 
-            # find and instantiate the profile factory class
-            profile_factory_class = sys.modules[module_name].__dict__[PROFILE_FACTORY_CLASS_NAME]
-            self.profile_factories.append(profile_factory_class(self.file_bag, self.options))
-
-        # there must be some profile factories in the list, otherwise we die right here
-        if len(self.profile_factories) == 0:
-            raise ConfigErrorException("no single profile factory, nothing to do")
-
-    def start(self):
-        self.do_stop = False
-        self.server.start()
-        Thread.start(self)
-
-    def stop(self):
-        # signal the thread to stop
-        self.do_stop = True
+    def run(self):
+        '''
+        Print config info to the console before running the controller
+        '''
+        if self.options.verbose > 0:
+            print '# filebag location: %s' % str(self.file_bag.base_dir)
+        BaseClientAuditController.run(self)
 
     def handle_result(self, res):
         if isinstance(res, ClientConnectionAuditResult):
@@ -143,25 +97,3 @@ class Main(Thread):
             fields.append('%-60s' % (res.profile))
             fields.append(str(res.res))
             print OUTPUT_FIELD_SEPARATOR.join(fields)
-
-    def run(self):
-        '''
-        Main loop function. Will run until the desired number of clients is handled.
-        '''
-        nresults = 0
-
-        if self.options.verbose > 0:
-            print '# filebag location: %s' % str(self.file_bag.base_dir)
-
-        # loop until get all desired results, quit if stopped
-        while nresults < self.options.nclients and not self.do_stop:
-            try:
-                # wait for a message blocking for short intervals, check stop flag frequently
-                res = self.server.res_queue.get(True, self.queue_read_timeout)
-                logger.debug("got result %s", res)
-                self.handle_result(res)
-
-                if isinstance(res, ClientAuditResult):
-                    nresults = nresults + 1
-            except Empty:
-                pass

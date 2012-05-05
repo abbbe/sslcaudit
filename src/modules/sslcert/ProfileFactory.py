@@ -41,6 +41,13 @@ class SSLProfileSpec_IMCA_Signed(BaseProfileSpec):
     def __str__(self):
         return "signed2(%s, %s, %s)" % (self.cn, self.im_ca_cn, self.ca_cn)
 
+class SSLProfileSpec_UserSupplied(BaseProfileSpec):
+    def __init__(self, cn):
+        self.cn = cn
+
+    def __str__(self):
+        return "user-supplied(%s)" % (self.cn)
+
 class SSLServerCertProfile(BaseProfile):
     def __init__(self, profile_spec, certnkey):
         self.profile_spec = profile_spec
@@ -64,9 +71,7 @@ class ProfileFactory(BaseProfileFactory):
 
         self.init_options()
 
-#        self.init_user_cert()
         self.init_cert_requests()
-        self.add_user_cert_profile()
         self.add_profiles()
 
     def init_options(self):
@@ -104,23 +109,21 @@ class ProfileFactory(BaseProfileFactory):
 #            cert_req3 = self.cert_factory.mk_cert_request_replicating_server(server=self.options.server)
 #            self.cert_requests.append(cert_req3)
 
-    def add_user_cert_profile(self):
-        '''
-        This method initializes an auditor using user-supplied certificate as is
-        '''
-        if self.user_certnkey != None:
-            self.add_profile(SSLServerCertProfile(self.user_certnkey))
-
     def add_profiles(self):
         if not self.options.no_self_signed:
             self.add_signed_profiles(ca_certnkey=None)
 
         if self.user_certnkey != None:
+            self.add_raw_user_certnkey_profile()
             self.add_signed_profiles(ca_certnkey=self.user_certnkey)
 
         if self.user_ca_certnkey != None:
             self.add_signed_profiles(ca_certnkey=self.user_ca_certnkey)
             self.add_im_basic_constraints_profiles()
+
+    def add_raw_user_certnkey_profile(self):
+        spec = SSLProfileSpec_UserSupplied(self.user_certnkey.cert.get_subject().CN)
+        self.add_profile(SSLServerCertProfile(spec, self.user_certnkey))
 
     def add_im_basic_constraints_profiles(self):
         '''
@@ -132,7 +135,10 @@ class ProfileFactory(BaseProfileFactory):
             self.add_im_basic_constraints_profile(cert_req, basicConstraint_CA=False)
             self.add_im_basic_constraints_profile(cert_req, basicConstraint_CA=True)
 
-            # XXX if no user-cn and defalt-cn is disabled the test will not be performed silently
+        if self.user_certnkey != None:
+            pass
+
+        # XXX if no user-cn and defalt-cn is disabled the test will be not performed silently
 
     # ----------------------------------------------------------------------------------------------
 
@@ -151,7 +157,9 @@ class ProfileFactory(BaseProfileFactory):
         certnkey = self.cert_factory.sign_cert_req(certreq_n_keys=certreq_n_keys, ca_certnkey=ca_certnkey)
         self.add_profile(SSLServerCertProfile(cert_spec, certnkey))
 
-    def add_im_basic_constraints_profile(self, cert_req, basicConstraint_CA=None):
+    def add_im_basic_constraints_profile(self, cert_req, basicConstraint_CA):
+        ca_certnkey = self.user_ca_certnkey
+
         # create an intermediate authority, signed by user-supplied CA, possibly with proper constraints
         if basicConstraint_CA != None:
             if basicConstraint_CA:
@@ -169,14 +177,14 @@ class ProfileFactory(BaseProfileFactory):
 
         # create the intermediate CA
         im_ca_cert_req = self.cert_factory.mk_certreq_n_keys(cn=im_ca_cn, v3_exts=v3_exts)
-        im_ca_certnkey = self.cert_factory.sign_cert_req(im_ca_cert_req, ca_certnkey=self.user_ca_certnkey)
+        im_ca_certnkey = self.cert_factory.sign_cert_req(im_ca_cert_req, ca_certnkey=ca_certnkey)
 
         # create server certificate, signed by that authority
         certnkey = self.cert_factory.sign_cert_req(cert_req, ca_certnkey=im_ca_certnkey)
 
         # create auditor using that certificate
         cn = certnkey.cert.get_subject().CN
-        ca_cn = self.user_ca_certnkey.cert.get_subject().CN
+        ca_cn = ca_certnkey.cert.get_subject().CN
         spec = SSLProfileSpec_IMCA_Signed(cn, im_ca_cn, ca_cn)
         self.add_profile(SSLServerCertProfile(spec, certnkey))
 

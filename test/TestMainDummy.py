@@ -6,9 +6,9 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging
 import unittest
+from src.core import SSLCAuditCLI
 from src.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientConnectionAuditResult
 from src.core.ClientHandler import ClientAuditResult
-from src.Main import Main
 from src.test.TCPConnectionHammer import TCPConnectionHammer
 from src.test.TestConfig import get_next_listener_port, TEST_LISTENER_ADDR
 
@@ -55,7 +55,7 @@ class TestMainDummy(unittest.TestCase):
         self.hammer = TCPConnectionHammer(self.HAMMER_ATTEMPTS)
 
         # create main, the target of the test
-        self.main = Main(['-m', 'dummy', '-l', ("%s:%d" % (TEST_LISTENER_ADDR, port))])
+        self.main = SSLCAuditCLI(['-m', 'dummy', '-l', ("%s:%d" % (TEST_LISTENER_ADDR, port))])
         self.main.handle_result = main__handle_result
 
         # tell the hammer how many attempts to make exactly

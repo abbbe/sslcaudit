@@ -35,11 +35,13 @@ class ClientAuditorTCPServer(TCPServer):
 
 class ClientAuditorServer(Thread):
     '''
-    This class creates ClientAuditorTCPServer server and uses it to handle incoming connection from clients. Each
-    client is expected to establish a number of connections to the server.
-
-    The server distinguishes between connections from different clients by source IP address. All connections from
-    the same source IP address are considered to correspond to the same client.
+    This class with specification of listen port, a list of profiles, and result queue.
+    It works in a separate Thread and uses ClientAuditorTCPServer server to receive connections from clients under test.
+    It distinguishes between different clients by their IP addresses. It creates an instance of ClientHandler class
+    for each individual client and calls ClientHandler.handle() for each incoming connection.
+    By itself this class does not interpret the content of 'profiles' in any way, just passes it to the constructor of
+    ClientHandler. If res_queue is None, this class will create its own Queue and make accessible to users of this class
+    via ClientAuditorServer res_queue.
     '''
 
     def __init__(self, listen_on, profiles, res_queue=None):

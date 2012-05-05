@@ -7,10 +7,10 @@
 # ----------------------------------------------------------------------
 
 import sys, logging
-from src.Main import Main
+from src.core.SSLCAuditCLI import SSLCAuditCLI
 
 def main(argv):
-	main = Main(argv[1:])
+	main = SSLCAuditCLI(argv[1:])
 	main.start()
 	main.join()
 	return 0

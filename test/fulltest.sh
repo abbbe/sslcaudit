@@ -7,5 +7,6 @@
 #	--user-ca-cert test/certs/sslcaudit-test-cacert.pem --user-ca-key test/certs/sslcaudit-test-cakey.pem
 
 ./sslcaudit --user-cn localhost \
+	--user-cert test/certs/sslcaudit-test.gremwell.com-cert.pem --user-key test/certs/sslcaudit-test.gremwell.com-key.pem \
 	--user-ca-cert test/certs/sslcaudit-test-cacert.pem --user-ca-key test/certs/sslcaudit-test-cakey.pem $*
 
