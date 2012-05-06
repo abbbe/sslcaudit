@@ -48,6 +48,7 @@ class ChainVerifyingSSLConnectionHammer(CNVerifyingSSLConnectionHammer):
     '''
     This client only matches CN and verifies the chain of trust
     '''
+    logger = logging.getLogger('ChainVerifyingSSLConnectionHammer')
 
     def __init__(self, nattempts, hello, ca_cert_file):
         CNVerifyingSSLConnectionHammer.__init__(self, nattempts, hello)

@@ -3,11 +3,14 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
+import logging
 import os
 from src.test.ConnectionHammer import ConnectionHammer
 from subprocess import call
 
 class ExternalCommandHammer(ConnectionHammer):
+    logger = logging.getLogger('ConnectionHammer')
+
     def __init__(self, nattempts, ca_cert_file):
         ConnectionHammer.__init__(self, nattempts)
         self.ca_cert_file = ca_cert_file
@@ -28,6 +31,8 @@ class ExternalCommandHammer(ConnectionHammer):
             devnull.close()
 
 class CurlHammer(ExternalCommandHammer):
+    logger = logging.getLogger('CurlHammer')
+
     def get_command(self):
         server = 'https://%s:%d' % (self.peer[0], self.peer[1])
         return ['curl', '--cacert', self.ca_cert_file, server]

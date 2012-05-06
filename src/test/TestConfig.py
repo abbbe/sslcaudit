@@ -34,13 +34,13 @@ elif os.path.exists('certs'): TEST_CERT_DIR = 'certs'
 else: raise RuntimeError("*** can't find test files")
 TEST_CERT_DIR += os.sep
 
-TEST_USER_CERT_CN = 'sslcaudit-test.gremwell.com'
-TEST_USER_CERT_FILE = TEST_CERT_DIR + 'sslcaudit-test.gremwell.com-cert.pem'
-TEST_USER_KEY_FILE = TEST_CERT_DIR + 'sslcaudit-test.gremwell.com-key.pem'
+TEST_USER_CERT_CN = 'www.example.com'
+TEST_USER_CERT_FILE = TEST_CERT_DIR + 'www.example.com-cert.pem'
+TEST_USER_KEY_FILE = TEST_CERT_DIR + 'www.example.com-key.pem'
 
-TEST_USER_CA_CN = 'sslcaudit-test'
-TEST_USER_CA_CERT_FILE = TEST_CERT_DIR + 'sslcaudit-test-cacert.pem'
-TEST_USER_CA_KEY_FILE = TEST_CERT_DIR + 'sslcaudit-test-cakey.pem'
+TEST_USER_CA_CN = 'test-ca'
+TEST_USER_CA_CERT_FILE = TEST_CERT_DIR + 'test-ca-cacert.pem'
+TEST_USER_CA_KEY_FILE = TEST_CERT_DIR + 'test-ca-cakey.pem'
 
 def get_next_listener_port():
     '''
