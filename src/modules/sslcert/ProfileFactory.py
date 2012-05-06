@@ -10,7 +10,7 @@ from src.core.CertFactory import CertFactory
 from src.modules.base.BaseProfileFactory import BaseProfileFactory, BaseProfile, BaseProfileSpec
 from src.modules.sslcert.SSLServerHandler import SSLServerHandler
 
-DEFAULT_CN = 'nonexistent.gremwell.com'
+DEFAULT_CN = 'www.gremwell.com'
 IM_CA_NONE_CN = 'ca-none'
 IM_CA_FALSE_CN = 'ca-false'
 IM_CA_TRUE_CN = 'ca-true'
