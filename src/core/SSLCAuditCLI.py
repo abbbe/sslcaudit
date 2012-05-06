@@ -44,7 +44,7 @@ class SSLCAuditCLI(BaseClientAuditController):
         parser.add_option("-N", dest="test_name",
             help="Set the name of the test. If specified will appear in the leftmost column in the output.")
         parser.add_option('-T', type='int', dest='self_test',
-            help='Launch self-test.')
+            help='Launch self-test. 0 - plain TCP client, 1 - CN verifying client, 2 - curl.')
 
         parser.add_option("--user-cn", dest="user_cn",
             help="Set user-specified CN.")
