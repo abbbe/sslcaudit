@@ -60,6 +60,8 @@ class ChainVerifyingSSLConnectionHammer(CNVerifyingSSLConnectionHammer):
             depth=9,
             callback=self.verify_callback)
 
+        self.logger.info('initialized with ca_cert_file %s' % self.ca_cert_file)
+
     def verify_callback(self):
         #self.logger.info('*** verify_callback called ***')
         pass

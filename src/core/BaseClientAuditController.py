@@ -7,10 +7,11 @@ from src.core.ClientAuditorServer import ClientAuditorServer
 from src.core.ClientConnectionAuditEvent import ClientAuditResult
 from src.core.ConfigErrorException import ConfigErrorException
 from src.core.FileBag import FileBag
+from src.test.ExternalCommandHammer import CurlHammer
+from src.test.SSLConnectionHammer import ChainVerifyingSSLConnectionHammer, CNVerifyingSSLConnectionHammer
+from src.test.TCPConnectionHammer import TCPConnectionHammer
 
-DEFAULT_HOST = '0.0.0.0'
-DEFAULT_PORT = '8443'
-DEFAULT_MODULES = 'sslcert'
+HOST_ADDR_ANY = '0.0.0.0'
 
 MODULE_MODULE_NAME_PREFIX = 'src.modules'
 PROFILE_FACTORY_MODULE_NAME = 'ProfileFactory'
@@ -25,6 +26,7 @@ class BaseClientAuditController(Thread):
     def __init__(self, options):
         Thread.__init__(self, target=self.run)
         self.options = options
+        self.queue_read_timeout = 0.1
 
         if self.options.debug_level > 0:
             logging.getLogger().setLevel(logging.DEBUG)
@@ -36,7 +38,7 @@ class BaseClientAuditController(Thread):
         self.server = ClientAuditorServer(self.options.listen_on, self.profile_factories)
         self.res_queue = self.server.res_queue
 
-        self.queue_read_timeout = 0.1
+        self.init_self_tests()
 
     def init_profile_factories(self):
         self.profile_factories = []
@@ -62,8 +64,11 @@ class BaseClientAuditController(Thread):
         self.server.start()
         Thread.start(self)
 
+        if self.selftest_hammer is not None:
+            self.selftest_hammer.start()
+
     def stop(self):
-        # signal the thread to stop
+        # signal the controller thread to stop
         self.do_stop = True
 
     def run(self):
@@ -87,3 +92,35 @@ class BaseClientAuditController(Thread):
 
     def handle_result(self, res):
         raise NotImplemented('subclasses must override this method')
+
+    def init_self_tests(self):
+        # determine where to connect to
+        if self.options.listen_on_addr == HOST_ADDR_ANY:
+            peer_host = 'localhost'
+        else:
+            peer_host = self.options.listen_on_addr
+        peer = (peer_host, self.options.listen_on_port)
+
+        # instantiate hammer class
+        if self.options.self_test is None:
+            self.selftest_hammer = None
+        else:
+            if self.options.self_test == 0:
+                self.selftest_hammer = TCPConnectionHammer(-1)
+
+            elif self.options.self_test == 1:
+                if self.options.user_cn is not None:
+                    self.selftest_hammer = CNVerifyingSSLConnectionHammer(-1, 'hello')
+                else:
+                    raise ConfigErrorException('test mode 1 requires --user-cn')
+
+            elif self.options.self_test == 2:
+                if self.options.user_ca_cert_file is not None:
+                    self.selftest_hammer = CurlHammer(-1, self.options.user_ca_cert_file)
+                else:
+                    raise ConfigErrorException('test mode 2 requires --user-ca-cert/--user-ca-key')
+            else:
+                raise ConfigErrorException('Invalid selftest number %d' % self.options.self_test)
+
+            # set the peer for the hammer
+            self.selftest_hammer.set_peer(peer)

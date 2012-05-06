@@ -6,7 +6,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging
 from optparse import OptionParser
-from src.core.BaseClientAuditController import BaseClientAuditController, PROG_NAME, PROG_VERSION, DEFAULT_MODULES
+from src.core.BaseClientAuditController import BaseClientAuditController, PROG_NAME, PROG_VERSION, HOST_ADDR_ANY
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from src.core.ConfigErrorException import ConfigErrorException
 
@@ -15,6 +15,10 @@ logging.basicConfig(level=logging.INFO, format=FORMAT)
 
 logger = logging.getLogger('SSLCAuditCLI')
 
+DEFAULT_HOST = HOST_ADDR_ANY
+DEFAULT_PORT = 8443
+DEFAULT_MODULES = 'sslcert'
+DEFAULT_LISTEN_ON = '%s:%d' % (DEFAULT_HOST, DEFAULT_PORT)
 OUTPUT_FIELD_SEPARATOR = ' '
 
 class SSLCAuditCLI(BaseClientAuditController):
@@ -23,12 +27,13 @@ class SSLCAuditCLI(BaseClientAuditController):
 
     def parse_options(self, argv):
         parser = OptionParser(usage=('%s [OPTIONS]' % PROG_NAME), version=("%s %s" % (PROG_NAME, PROG_VERSION)))
-        parser.add_option("-l", dest="listen_on", default='0.0.0.0:8443',
-            help="Specify IP address and TCP PORT to listen on, in format of [HOST:]PORT")
+        parser.add_option("-l", dest="listen_on", default=DEFAULT_LISTEN_ON,
+            help='Specify IP address and TCP PORT to listen on, in format of [HOST:]PORT. '
+                + 'Default is %s' % DEFAULT_LISTEN_ON)
         parser.add_option("-m", dest="modules", default=DEFAULT_MODULES,
             help="Launch specific modules. For now the only functional module is 'sslcert'. "
-                 + "There is also 'dummy' module used for internal testing or as a template code for "
-            + "new modules. Default is %s" % DEFAULT_MODULES)
+                + "There is also 'dummy' module used for internal testing or as a template code for "
+                + "new modules. Default is %s" % DEFAULT_MODULES)
         parser.add_option("-v", dest="verbose", default=0,
             help="Increase verbosity level. Default is 0. Try 1.")
         parser.add_option("-d", dest="debug_level", default=0,
@@ -38,6 +43,8 @@ class SSLCAuditCLI(BaseClientAuditController):
             + "it gets one client fully processed.")
         parser.add_option("-N", dest="test_name",
             help="Set the name of the test. If specified will appear in the leftmost column in the output.")
+        parser.add_option('-T', type='int', dest='self_test',
+            help='Launch self-test.')
 
         parser.add_option("--user-cn", dest="user_cn",
             help="Set user-specified CN.")
@@ -67,12 +74,15 @@ class SSLCAuditCLI(BaseClientAuditController):
         listen_on_parts = options.listen_on.split(':')
         if len(listen_on_parts) == 1:
             # convert "PORT" string to (DEFAULT_HOST, POST) tuple
-            options.listen_on = (DEFAULT_HOST, int(listen_on_parts[0]))
+            options.listen_on_addr = DEFAULT_HOST
+            options.listen_on_port = int(listen_on_parts[0])
         elif len(listen_on_parts) == 2:
             # convert "HOST:PORT" string to (HOST, PORT) tuple
-            options.listen_on = (listen_on_parts[0], int(listen_on_parts[1]))
+            options.listen_on_addr = listen_on_parts[0]
+            options.listen_on_port = int(listen_on_parts[1])
         else:
             raise ConfigErrorException("invalid value for -l parameter '%s'" % self.options.listen_on.split(':'))
+        options.listen_on = (options.listen_on_addr, options.listen_on_port)
 
         return options
 

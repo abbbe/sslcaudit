@@ -16,3 +16,5 @@ class ConnectionHammer(Hammer):
 
     def set_peer(self, peer):
         self.peer = peer
+        self.logger.info('initialized with peer %s' % str(self.peer))
+
