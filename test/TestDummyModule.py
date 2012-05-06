@@ -12,11 +12,11 @@ from src.core.ClientHandler import ClientAuditResult
 from src.test.TCPConnectionHammer import TCPConnectionHammer
 from src.test.TestConfig import get_next_listener_port, TEST_LISTENER_ADDR
 
-class TestMainDummy(unittest.TestCase):
+class TestDummyModule(unittest.TestCase):
     '''
     test dummy client / auditor, no SSL whatsoever
     '''
-    logger = logging.getLogger('TestMainDummy')
+    logger = logging.getLogger('TestDummyModule')
     MAIN_JOIN_TIMEOUT = 5
     HAMMER_ATTEMPTS = 3
 

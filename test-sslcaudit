@@ -7,17 +7,17 @@
 # ----------------------------------------------------------------------
 
 import sys
-sys.path.insert(0, 'test')
+#sys.path.insert(0, 'test')
 
 import unittest
 
 from test.TestCertFactory import TestCertFactory
-from test.TestMainDummy import TestMainDummy
-from test.TestMainSSL import TestMainSSL
+from test.TestDummyModule import TestDummyModule
+from test.TestSSLCertModule import TestSSLCertModule
 
 if __name__ == '__main__':
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestCertFactory))
-    suite.addTest(unittest.makeSuite(TestMainDummy))
-    suite.addTest(unittest.makeSuite(TestMainSSL))
+    suite.addTest(unittest.makeSuite(TestDummyModule))
+    suite.addTest(unittest.makeSuite(TestSSLCertModule))
     unittest.TextTestRunner(verbosity=2).run(suite)
