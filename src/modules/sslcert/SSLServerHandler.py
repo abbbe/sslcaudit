@@ -30,7 +30,7 @@ class ConnectedGotEOFBeforeTimeout(Connected):
             dt_str = " (in %.3fs)" % self.dt
         else:
             dt_str = ''
-        return "connected, got EOF before timeout%s" % dt_str
+        return "connected, EOF before timeout%s" % dt_str
 
     def __eq__(self, other):
         # NB: ignore actual DT
@@ -46,7 +46,7 @@ class ConnectedReadTimeout(Connected):
             dt_str = " (in %.1fs)" % self.dt
         else:
             dt_str = ''
-        return "connected, got timeout while reading%s" % dt_str
+        return "connected, read timeout%s" % dt_str
 
     def __eq__(self, other):
         # NB: ignore actual DT
@@ -68,12 +68,12 @@ class ConnectedGotRequest(Connected):
         if self.dt != None:
             dt_str = '%.1fs' % self.dt
         else:
-            dt_str = '?'
+            dt_str = '?s'
         if self.req != None:
             noctets_str = '%d' % len(self.req)
         else:
             noctets_str = '?'
-        return 'connected, got %s octets after %s' % (noctets_str, dt_str)
+        return 'connected, got %s octets in %s' % (noctets_str, dt_str)
 
 # ------------------
 
@@ -118,15 +118,15 @@ class SSLServerHandler(BaseServerHandler):
             dt = end_time - start_time
 
             if client_req == None:
-                # read timeout (not clear if it ever happens)
-                raise RuntimeError('never happens?')
-                #res = ConnectedReadTimeout(dt)
+                # read timeout
+                res = ConnectedReadTimeout(dt)
             else:
                 if len(client_req) == 0:
-                    # EOF
+                    # EOF or timeout? XXX
                     if dt < self.sock_read_timeout:
                         res = ConnectedGotEOFBeforeTimeout(dt)
                     else:
+
                         res = ConnectedReadTimeout(dt)
                 else:
                     # got data

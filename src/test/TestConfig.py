@@ -8,7 +8,7 @@ import os
 
 TEST_MAIN_JOIN_TIMEOUT = 60
 
-TEST_USER_CN = 'user-cn.nonexistent.gremwell.com'
+TEST_USER_CN = 'user-cn.example.com'
 
 TEST_SERVER_HOST = '62.213.200.252'
 TEST_SERVER_PORT = 443
