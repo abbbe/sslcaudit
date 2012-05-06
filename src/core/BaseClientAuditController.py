@@ -3,6 +3,7 @@ from exceptions import Exception
 import logging
 import sys
 from threading import Thread
+from time import sleep
 from src.core.ClientAuditorServer import ClientAuditorServer
 from src.core.ClientConnectionAuditEvent import ClientAuditResult
 from src.core.ConfigErrorException import ConfigErrorException
@@ -58,9 +59,14 @@ class BaseClientAuditController(Thread):
             raise ConfigErrorException("no single profile factory, nothing to do")
 
     def start(self):
-        self.do_stop = False
-        self.server.start()
-        Thread.start(self)
+        try:
+            self.do_stop = False
+            self.server.start()
+            Thread.start(self)
+            print 'thread started'
+            while True: sleep(100) #trapping keyboard interrupt'
+        except KeyboardInterrupt:
+            self.stop()
 
     def stop(self):
         # signal the thread to stop
