@@ -7,6 +7,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 import socket
 
 from M2Crypto import X509, ASN1, RSA, EVP, util, SSL
+from M2Crypto.SSL import SSLError
 
 DEFAULT_X509_C = 'BE'
 DEFAULT_X509_ORG = 'Gremwell bvba'
@@ -177,11 +178,23 @@ class CertFactory(object):
         sslsock.set_post_connection_check_callback(None)
         sslsock.setup_ssl()
         sslsock.set_connect_state()
-        sslsock.connect_ssl()
+
+        # try to establish SSL connection
+        try:
+            sslsock.connect_ssl()
+            ssl_connect_ex = None
+        except SSLError as ex:
+            # this exception is not necessarily a deal breaker
+            # save it until we check if server certificate is available
+            ssl_connect_ex = ex
 
         # grab server certificate and shut the connection
         server_cert = sslsock.get_peer_cert()
         sslsock.close()
+
+        if server_cert is None:
+            # failed to grab the certificate, rethrow the exception
+            raise ssl_connect_ex
 
         return server_cert
 
