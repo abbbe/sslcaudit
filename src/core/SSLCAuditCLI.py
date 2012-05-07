@@ -94,6 +94,9 @@ class SSLCAuditCLI(BaseClientAuditController):
             print '# filebag location: %s' % str(self.file_bag.base_dir)
         BaseClientAuditController.run(self)
 
+    def die(self):
+	BaseClientAuditController.stop(self)
+	
     def handle_result(self, res):
         if isinstance(res, ClientConnectionAuditResult):
             # dump:

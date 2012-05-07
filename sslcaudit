@@ -10,9 +10,17 @@ import sys, logging
 from src.core.SSLCAuditCLI import SSLCAuditCLI
 
 def main(argv):
+	isbusy=True
 	main = SSLCAuditCLI(argv[1:])
 	main.start()
-	main.join()
+	while isbusy:
+		try:
+			main.join(1)
+			isbusy = main.isAlive()
+		except KeyboardInterrupt:
+			main.die() #graceful death
+			main.join(10)
+			isbusy=False
 	return 0
 
 if __name__ == "__main__":
