@@ -13,8 +13,12 @@ import sys, logging
 from src.core.SSLCAuditCLI import SSLCAuditCLI
 
 def main(argv):
-    main = SSLCAuditCLI(argv[1:])
-    main.start()
+    try:
+        main = SSLCAuditCLI(argv[1:])
+        main.start()
+    except KeyboardInterrupt as ex:
+        print 'Got KeyboardInterrupt exception before main loop started, exiting'
+        return 1
 
     # wait for the main thread to finish, handle Ctrl-C if any
     interrupted_by_user = False
