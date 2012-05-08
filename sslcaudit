@@ -5,25 +5,34 @@
 # Released under terms of GPLv3, see COPYING.TXT
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
+# Code handling keyboard interrupts contributed by Raf Somers (raf.somers@telenet.be)
+# ----------------------------------------------------------------------
+
 
 import sys, logging
 from src.core.SSLCAuditCLI import SSLCAuditCLI
 
 def main(argv):
-	isbusy=True
-	main = SSLCAuditCLI(argv[1:])
-	main.start()
-	while isbusy:
-		try:
-			main.join(1)
-			isbusy = main.isAlive()
-		except KeyboardInterrupt:
-			main.die() #graceful death
-			main.join(10)
-			isbusy=False
-	return 0
+    main = SSLCAuditCLI(argv[1:])
+    main.start()
+
+    # wait for the main thread to finish, handle Ctrl-C if any
+    interrupted_by_user = False
+    while main.isAlive():
+        try:
+            main.join(1)
+        except KeyboardInterrupt:
+            print 'Got KeyboardInterrupt exception, aborting the program ...'
+            main.stop() # graceful death
+            interrupted_by_user = True
+ 
+    # if the program is aborted by the user, return exitcode 1
+    if interrupted_by_user:
+        return 1
+    else:
+        return 0
 
 if __name__ == "__main__":
-	logging.basicConfig()
-	sys.exit(main(sys.argv))
+    logging.basicConfig()
+    sys.exit(main(sys.argv))
 

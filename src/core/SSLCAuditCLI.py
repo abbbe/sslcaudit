@@ -29,11 +29,11 @@ class SSLCAuditCLI(BaseClientAuditController):
         parser = OptionParser(usage=('%s [OPTIONS]' % PROG_NAME), version=("%s %s" % (PROG_NAME, PROG_VERSION)))
         parser.add_option("-l", dest="listen_on", default=DEFAULT_LISTEN_ON,
             help='Specify IP address and TCP PORT to listen on, in format of [HOST:]PORT. '
-                + 'Default is %s' % DEFAULT_LISTEN_ON)
+            + 'Default is %s' % DEFAULT_LISTEN_ON)
         parser.add_option("-m", dest="modules", default=DEFAULT_MODULES,
             help="Launch specific modules. For now the only functional module is 'sslcert'. "
-                + "There is also 'dummy' module used for internal testing or as a template code for "
-                + "new modules. Default is %s" % DEFAULT_MODULES)
+                 + "There is also 'dummy' module used for internal testing or as a template code for "
+            + "new modules. Default is %s" % DEFAULT_MODULES)
         parser.add_option("-v", dest="verbose", default=0,
             help="Increase verbosity level. Default is 0. Try 1.")
         parser.add_option("-d", dest="debug_level", default=0,
@@ -94,9 +94,6 @@ class SSLCAuditCLI(BaseClientAuditController):
             print '# filebag location: %s' % str(self.file_bag.base_dir)
         BaseClientAuditController.run(self)
 
-    def die(self):
-	BaseClientAuditController.stop(self)
-	
     def handle_result(self, res):
         if isinstance(res, ClientConnectionAuditResult):
             # dump:
