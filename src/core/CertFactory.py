@@ -7,7 +7,9 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 import socket
 
 from M2Crypto import X509, ASN1, RSA, EVP, util, SSL
+import M2Crypto
 from M2Crypto.SSL import SSLError
+from src.core.ConfigError import ConfigError
 
 DEFAULT_X509_C = 'BE'
 DEFAULT_X509_ORG = 'Gremwell bvba'
@@ -65,8 +67,16 @@ class CertFactory(object):
         This function loads the content of the certificate file
         and initializes paths to the certificate and the key.
 	    '''
-        cert = X509.load_cert(cert_file)
-        pkey = EVP.load_key(key_file)
+        try:
+            cert = X509.load_cert(cert_file)
+        except M2Crypto.X509.X509Error as ex:
+            raise ConfigError('failed to parse cert file %s, exception: %s' % (cert_file, ex))
+
+        try:
+            pkey = EVP.load_key(key_file)
+        except M2Crypto.EVP.EVPError as ex:
+            raise ConfigError('failed to parse key file %s, exception: %s' % (key_file, ex))
+
         return CertAndKey(cert.get_subject().CN, cert_file, key_file, cert, pkey)
 
     def mk_certreq_n_keys(self, cn, v3_exts=[]):

@@ -5,6 +5,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 import socket
 from M2Crypto import X509
+import M2Crypto
 from src.core import Utils
 
 from src.core.ConfigError import ConfigError
@@ -211,4 +212,3 @@ class ProfileFactory(BaseProfileFactory):
             return self.cert_factory.load_certnkey_files(cert_file, key_file)
         except IOError as ex:
             raise ConfigError('failed to load cert/key file, exception: %s' % ex)
-
