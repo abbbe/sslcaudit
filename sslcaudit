@@ -13,12 +13,14 @@ import sys, logging
 from src.core.ConfigError import ConfigError
 from src.core.SSLCAuditCLI import SSLCAuditCLI
 
-def main(argv):
+def init_controller(argv):
+    # initialize the controller
     try:
-        main = SSLCAuditCLI(argv[1:])
-        main.start()
+        controller = SSLCAuditCLI(argv[1:])
+        controller.start()
+        return controller
     except KeyboardInterrupt as ex:
-        print 'Got KeyboardInterrupt exception before main loop started, exiting'
+        print 'Got KeyboardInterrupt exception before controller loop started, exiting'
         return 1
     except ConfigError as ex:
         print 'Configuration error: %s' % ex
@@ -27,14 +29,15 @@ def main(argv):
         print 'Runtime error: %s' % ex
         return 1
 
+def run(controller):
     # wait for the main thread to finish, handle Ctrl-C if any
     interrupted_by_user = False
-    while main.isAlive():
+    while controller.isAlive():
         try:
-            main.join(1)
+            controller.join(1)
         except KeyboardInterrupt:
             print 'Got KeyboardInterrupt exception, aborting the program ...'
-            main.stop() # graceful death
+            controller.stop() # graceful death
             interrupted_by_user = True
  
     # if the program is aborted by the user, return exitcode 1
@@ -42,6 +45,10 @@ def main(argv):
         return 1
     else:
         return 0
+
+def main(argv):
+    c = init_controller(argv)
+    return run(c)
 
 if __name__ == "__main__":
     logging.basicConfig()
