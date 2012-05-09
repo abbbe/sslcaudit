@@ -42,7 +42,7 @@ class FileBag(object):
             return
 
         # was unable to create any directory
-        raise Exception("Can't find a free revision number for basename %s" % basename)
+        raise RuntimeError("can't find a free numeric suffix for basename %s" % basename)
 
     def mk_file(self, suffix='', prefix=tempfile.template):
         return NamedTemporaryFile(dir=self.base_dir, prefix=prefix, suffix=suffix, delete=False)

@@ -5,7 +5,7 @@ import sys
 from threading import Thread
 from src.core.ClientAuditorServer import ClientAuditorServer
 from src.core.ClientConnectionAuditEvent import ClientAuditResult
-from src.core.ConfigErrorException import ConfigErrorException
+from src.core.ConfigError import ConfigError
 from src.core.FileBag import FileBag
 from src.test.ExternalCommandHammer import CurlHammer
 from src.test.SSLConnectionHammer import ChainVerifyingSSLConnectionHammer, CNVerifyingSSLConnectionHammer
@@ -51,7 +51,7 @@ class BaseClientAuditController(Thread):
             try:
                 __import__(module_name, fromlist=[])
             except Exception as ex:
-                raise ConfigErrorException("Cannot load module ", module_name, ", exception: ", ex)
+                raise ConfigError("cannot load module %s, exception: %s" % (module_name, ex))
 
             # find and instantiate the profile factory class
             profile_factory_class = sys.modules[module_name].__dict__[PROFILE_FACTORY_CLASS_NAME]
@@ -59,7 +59,7 @@ class BaseClientAuditController(Thread):
 
         # there must be some profile factories in the list, otherwise we die right here
         if len(self.profile_factories) == 0:
-            raise ConfigErrorException("no single profile factory, nothing to do")
+            raise ConfigError("no single profile factory configured, nothing to do")
 
     def start(self):
         self.do_stop = False
@@ -97,11 +97,11 @@ class BaseClientAuditController(Thread):
 
     def init_self_tests(self):
         # determine where to connect to
-        if self.options.listen_on_addr == HOST_ADDR_ANY:
+        if self.options.listen_on[0] == HOST_ADDR_ANY:
             peer_host = 'localhost'
         else:
-            peer_host = self.options.listen_on_addr
-        peer = (peer_host, self.options.listen_on_port)
+            peer_host = self.options.listen_on[0]
+        peer = (peer_host, self.options.listen_on[1])
 
         # instantiate hammer class
         if self.options.self_test is None:
@@ -114,15 +114,15 @@ class BaseClientAuditController(Thread):
                 if self.options.user_cn is not None:
                     self.selftest_hammer = CNVerifyingSSLConnectionHammer(-1, 'hello')
                 else:
-                    raise ConfigErrorException('test mode 1 requires --user-cn')
+                    raise ConfigError('test mode 1 requires --user-cn')
 
             elif self.options.self_test == 2:
                 if self.options.user_ca_cert_file is not None:
                     self.selftest_hammer = CurlHammer(-1, self.options.user_ca_cert_file)
                 else:
-                    raise ConfigErrorException('test mode 2 requires --user-ca-cert/--user-ca-key')
+                    raise ConfigError('test mode 2 requires --user-ca-cert/--user-ca-key')
             else:
-                raise ConfigErrorException('Invalid selftest number %d' % self.options.self_test)
+                raise ConfigError('invalid selftest number %d' % self.options.self_test)
 
             # set the peer for the hammer
             self.selftest_hammer.set_peer(peer)

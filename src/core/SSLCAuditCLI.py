@@ -6,9 +6,10 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging
 from optparse import OptionParser
+from src.core import Utils
 from src.core.BaseClientAuditController import BaseClientAuditController, PROG_NAME, PROG_VERSION, HOST_ADDR_ANY
 from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.core.ConfigErrorException import ConfigErrorException
+from src.core.ConfigError import ConfigError
 
 FORMAT = '%(asctime)s %(name)s %(levelname)s   %(message)s'
 logging.basicConfig(level=logging.INFO, format=FORMAT)
@@ -28,7 +29,7 @@ class SSLCAuditCLI(BaseClientAuditController):
     def parse_options(self, argv):
         parser = OptionParser(usage=('%s [OPTIONS]' % PROG_NAME), version=("%s %s" % (PROG_NAME, PROG_VERSION)))
         parser.add_option("-l", dest="listen_on", default=DEFAULT_LISTEN_ON,
-            help='Specify IP address and TCP PORT to listen on, in format of [HOST:]PORT. '
+            help='Specify IP address and TCP PORT to listen on, in format of HOST:PORT. '
             + 'Default is %s' % DEFAULT_LISTEN_ON)
         parser.add_option("-m", dest="modules", default=DEFAULT_MODULES,
             help="Launch specific modules. For now the only functional module is 'sslcert'. "
@@ -68,21 +69,20 @@ class SSLCAuditCLI(BaseClientAuditController):
 
         (options, args) = parser.parse_args(argv)
         if len(args) > 0:
-            raise ConfigErrorException("unexpected arguments: %s" % args)
+            raise ConfigError("unexpected arguments: %s" % args)
 
         # transform listen_on string into a tuple
-        listen_on_parts = options.listen_on.split(':')
-        if len(listen_on_parts) == 1:
-            # convert "PORT" string to (DEFAULT_HOST, POST) tuple
-            options.listen_on_addr = DEFAULT_HOST
-            options.listen_on_port = int(listen_on_parts[0])
-        elif len(listen_on_parts) == 2:
-            # convert "HOST:PORT" string to (HOST, PORT) tuple
-            options.listen_on_addr = listen_on_parts[0]
-            options.listen_on_port = int(listen_on_parts[1])
-        else:
-            raise ConfigErrorException("invalid value for -l parameter '%s'" % self.options.listen_on.split(':'))
-        options.listen_on = (options.listen_on_addr, options.listen_on_port)
+        try:
+            options.listen_on = Utils.parse_hostport(options.listen_on)
+        except ValueError as ex:
+            raise ConfigError("invalid value for -l parameter, exception: %s" % ex)
+
+        # transform server string into a tuple
+        if options.server is not None:
+            try:
+                options.server = Utils.parse_hostport(options.server)
+            except ValueError as ex:
+                raise ConfigError("invalid value for --server parameter, exception: %s" % ex)
 
         return options
 

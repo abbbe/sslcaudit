@@ -3,9 +3,11 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
+import socket
 from M2Crypto import X509
+from src.core import Utils
 
-from src.core.ConfigErrorException import ConfigErrorException
+from src.core.ConfigError import ConfigError
 from src.core.CertFactory import CertFactory
 from src.modules.base.BaseProfileFactory import BaseProfileFactory, BaseProfile, BaseProfileSpec
 from src.modules.sslcert.SSLServerHandler import SSLServerHandler
@@ -78,7 +80,10 @@ class ProfileFactory(BaseProfileFactory):
         # handle --server= option
         if self.options.server != None:
             # fetch X.509 certificate from user-specified server
-            self.server_x509_cert = self.cert_factory.grab_server_x509_cert(self.options.server, protocol=self.protocol)
+            try:
+                self.server_x509_cert = self.cert_factory.grab_server_x509_cert(self.options.server, protocol=self.protocol)
+            except socket.error as ex:
+                raise RuntimeError('failed to fetch certificate from server %s, exception: %s' % (self.options.server, ex))
         else:
             self.server_x509_cert = None
 
@@ -197,12 +202,13 @@ class ProfileFactory(BaseProfileFactory):
             return None
 
         if key_file == None:
-            raise ConfigErrorException("If %s is set, %s must be set too" % (cert_param, key_param))
+            raise ConfigError("if %s is set, %s must be set too" % (cert_param, key_param))
 
         if cert_file == None:
-            raise ConfigErrorException("If %s is set, %s must be set too" % (key_param, cert_param))
+            raise ConfigError("if %s is set, %s must be set too" % (key_param, cert_param))
 
         try:
             return self.cert_factory.load_certnkey_files(cert_file, key_file)
         except IOError as ex:
-            raise ConfigErrorException(ex)
+            raise ConfigError('failed to load cert/key file, exception: %s' % ex)
+

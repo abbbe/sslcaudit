@@ -10,6 +10,7 @@
 
 
 import sys, logging
+from src.core.ConfigError import ConfigError
 from src.core.SSLCAuditCLI import SSLCAuditCLI
 
 def main(argv):
@@ -18,6 +19,12 @@ def main(argv):
         main.start()
     except KeyboardInterrupt as ex:
         print 'Got KeyboardInterrupt exception before main loop started, exiting'
+        return 1
+    except ConfigError as ex:
+        print 'Configuration error: %s' % ex
+        return 1
+    except RuntimeError as ex:
+        print 'Runtime error: %s' % ex
         return 1
 
     # wait for the main thread to finish, handle Ctrl-C if any

@@ -18,19 +18,10 @@ TEST_SERVER_CN = 'brufeprd1.hackingmachines.com'
 TEST_LISTENER_ADDR = 'localhost'
 TEST_LISTENER_BASEPORT = 10000
 
-#def get_testfile_path(filename):
-#    ''' This function finds proper path to a file under test/ directory. Needed to ensure unittests work regardless of workdir '''
-#
-#    if os.path.isfile(filename): return filename
-#    else:
-#        filename2 = 'test/' + filename
-#        if os.path.isfile(filename2): return filename2
-#        else: raise RuntimeError("Can't find location of test file %s", filename)
-
 ## figure out path to test/certs directory
 if os.path.exists(os.path.join('test', 'certs')): TEST_CERT_DIR = os.path.join('test', 'certs')
 elif os.path.exists('certs'): TEST_CERT_DIR = 'certs'
-else: raise RuntimeError("*** can't find test files")
+else: raise RuntimeError('cannot find test/certs or certs/ directory')
 TEST_CERT_DIR += os.sep
 
 TEST_USER_CERT_CN = 'www.example.com'

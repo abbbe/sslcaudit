@@ -6,6 +6,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import  logging
 from SocketServer import TCPServer
+import socket
 from threading import Thread
 from Queue import Queue
 from src.core.ClientConnection import ClientConnection
@@ -27,8 +28,8 @@ class ClientAuditorTCPServer(TCPServer):
 
         try:
             self.server_bind()
-        except Exception as ex:
-            raise Exception('Caught exception while binding to %s: %s' % (listen_on, ex))
+        except socket.error as ex:
+            raise RuntimeError('failed to bind to %s, exception: %s' % (listen_on, ex))
 
         self.server_activate()
 

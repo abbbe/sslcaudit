@@ -165,15 +165,10 @@ class CertFactory(object):
         ctx.set_allow_unknown_ca(True)
         ctx.set_verify(SSL.verify_none, 0)
 
-        # socket
-        if isinstance(server, basestring):
-            # not a tuple, expect HOST:PORT formatted string
-            (host, port) = server.split(':')
-            server = (host, int(port))
-
+        # establish TCP connection to the server
         sock = socket.create_connection(server)
 
-        # establish connection
+        # prepare SSL context
         sslsock = SSL.Connection(ctx, sock=sock)
         sslsock.set_post_connection_check_callback(None)
         sslsock.setup_ssl()

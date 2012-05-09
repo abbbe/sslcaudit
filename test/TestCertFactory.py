@@ -70,14 +70,8 @@ class TestCertFactory(unittest.TestCase):
             ca_certnkey.cert.get_subject().as_text(),
             ss_replica_certnkey.cert.get_issuer().as_text())
 
-    def test__grab_server_x509_cert1(self):
+    def test__grab_server_x509_cert(self):
         server_cert = self.cert_factory.grab_server_x509_cert((TEST_SERVER_HOST, TEST_SERVER_PORT), SSL_PROTO)
-        # check CN of server certificate
-        self.assertEqual(server_cert.get_subject().CN, TEST_SERVER_CN)
-
-    def test__grab_server_x509_cert2(self):
-        server = "%s:%d" % (TEST_SERVER_HOST, TEST_SERVER_PORT)
-        server_cert = self.cert_factory.grab_server_x509_cert(server, SSL_PROTO)
         # check CN of server certificate
         self.assertEqual(server_cert.get_subject().CN, TEST_SERVER_CN)
 
