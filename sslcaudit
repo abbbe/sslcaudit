@@ -13,6 +13,18 @@ import sys, logging
 from src.core.ConfigError import ConfigError
 from src.core.SSLCAuditCLI import SSLCAuditCLI
 
+def check_dependencies():
+    # make sure M2Crypto is installed
+    try:
+        import M2Crypto
+        return True
+    except ImportError as ex:
+        print 'Failed to load M2Crypto: %s' % ex
+        print
+        print 'Sslcaudit requires M2Crypto library. Please install your OS package or see'
+        print 'website http://chandlerproject.org/bin/view/Projects/MeTooCrypto.'
+        return False
+
 def init_controller(argv):
     # initialize the controller
     try:
@@ -47,6 +59,8 @@ def run(controller):
         return 0
 
 def main(argv):
+    if not check_dependencies():
+        return 1
     c = init_controller(argv)
     return run(c)
 
