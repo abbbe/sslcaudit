@@ -33,13 +33,13 @@ def init_controller(argv):
         return controller
     except KeyboardInterrupt as ex:
         print 'Got KeyboardInterrupt exception before controller loop started, exiting'
-        return 1
+        return None
     except ConfigError as ex:
         print 'Configuration error: %s' % ex
-        return 1
+        return None
     except RuntimeError as ex:
         print 'Runtime error: %s' % ex
-        return 1
+        return None
 
 def run(controller):
     # wait for the main thread to finish, handle Ctrl-C if any
@@ -62,6 +62,8 @@ def main(argv):
     if not check_dependencies():
         return 1
     c = init_controller(argv)
+    if c is None:
+        return 1
     return run(c)
 
 if __name__ == "__main__":
