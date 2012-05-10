@@ -5,9 +5,8 @@ setup(name='sslcaudit',
       version='1.0',
       license = "GPL3",
       scripts=['sslcaudit'],
-      data_files=['test-sslcaudit'],
-      package_dir={'sslcaudit': 'src'},
-      packages = ['sslcaudit', 'sslcaudit.core', 'sslcaudit.modules',
-		  'sslcaudit.modules.base', 'sslcaudit.modules.dummy',
-		  'sslcaudit.modules.sslcert', 'sslcaudit.profile', 'sslcaudit.test']
+      package_dir={'src': 'src'},
+      packages = ['src', 'src.core', 'src.modules',
+		  'src.modules.base', 'src.modules.dummy',
+		  'src.modules.sslcert', 'src.profile', 'src.test']
       )
