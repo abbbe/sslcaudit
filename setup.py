@@ -10,9 +10,9 @@ setup(name='sslcaudit',
     url='http://www.gremwell.com/sslcaudit_v1_0',
     version='1.0',
     license='GPLv3',
-    scripts=['sslcaudit'],
-    package_dir={'src': 'src'},
-    packages=['src', 'src.core', 'src.modules',
-              'src.modules.base', 'src.modules.dummy',
-              'src.modules.sslcert', 'src.profile', 'src.test']
+    scripts=['bin/sslcaudit'],
+    package_dir={'sslcaudit': 'sslcaudit'},
+    packages=['sslcaudit', 'sslcaudit.core', 'sslcaudit.modules',
+              'sslcaudit.modules.base', 'sslcaudit.modules.dummy',
+              'sslcaudit.modules.sslcert', 'sslcaudit.profile', 'sslcaudit.test']
 )

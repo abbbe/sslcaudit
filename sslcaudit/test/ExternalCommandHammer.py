@@ -5,7 +5,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 import logging
 import os
-from src.test.ConnectionHammer import ConnectionHammer
+from sslcaudit.test.ConnectionHammer import ConnectionHammer
 from subprocess import call
 
 class ExternalCommandHammer(ConnectionHammer):

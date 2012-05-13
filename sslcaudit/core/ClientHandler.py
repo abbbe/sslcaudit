@@ -6,7 +6,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging, itertools
 from exceptions import StopIteration
-from src.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientAuditResult
+from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientAuditResult
 
 def try_iterator_length(iter):
     '''

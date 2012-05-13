@@ -5,16 +5,16 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 import logging, unittest
-from src.core.SSLCAuditCLI import SSLCAuditCLI
+from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
 
-from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.modules.sslcert.ProfileFactory import DEFAULT_CN, SSLProfileSpec_SelfSigned, SSLProfileSpec_IMCA_Signed, SSLProfileSpec_Signed, IM_CA_FALSE_CN, IM_CA_TRUE_CN, IM_CA_NONE_CN, SSLProfileSpec_UserSupplied
-from src.modules.sslcert.SSLServerHandler import     UNEXPECTED_EOF, ALERT_UNKNOWN_CA, ConnectedGotEOFBeforeTimeout, ConnectedGotRequest
-from src.test import TestConfig
-from src.test.SSLConnectionHammer import CNVerifyingSSLConnectionHammer
-from src.test.TCPConnectionHammer import TCPConnectionHammer
-from src.test.TestConfig import *
-from src.test.ExternalCommandHammer import CurlHammer
+from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from sslcaudit.modules.sslcert.ProfileFactory import DEFAULT_CN, SSLProfileSpec_SelfSigned, SSLProfileSpec_IMCA_Signed, SSLProfileSpec_Signed, IM_CA_FALSE_CN, IM_CA_TRUE_CN, IM_CA_NONE_CN, SSLProfileSpec_UserSupplied
+from sslcaudit.modules.sslcert.SSLServerHandler import     UNEXPECTED_EOF, ALERT_UNKNOWN_CA, ConnectedGotEOFBeforeTimeout, ConnectedGotRequest
+from sslcaudit.test import TestConfig
+from sslcaudit.test.SSLConnectionHammer import CNVerifyingSSLConnectionHammer
+from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
+from sslcaudit.test.TestConfig import *
+from sslcaudit.test.ExternalCommandHammer import CurlHammer
 
 LOCALHOST = 'localhost'
 HAMMER_HELLO = 'hello'

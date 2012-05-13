@@ -5,7 +5,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 import unittest, tempfile
-from src.core.FileBag import FileBag
+from sslcaudit.core.FileBag import FileBag
 
 class TestFileBag(unittest.TestCase):
     def setUp(self):

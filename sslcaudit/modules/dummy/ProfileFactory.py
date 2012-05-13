@@ -4,9 +4,9 @@ Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
-from src.modules.base.BaseProfileFactory import BaseProfileFactory
-from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.modules.base.BaseServerHandler import BaseServerHandler
+from sslcaudit.modules.base.BaseProfileFactory import BaseProfileFactory
+from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from sslcaudit.modules.base.BaseServerHandler import BaseServerHandler
 
 class DummyServerProfile(object):
     '''

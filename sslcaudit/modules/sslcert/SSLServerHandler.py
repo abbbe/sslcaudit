@@ -7,8 +7,8 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 import M2Crypto, logging
 from time import time
 from M2Crypto.SSL.timeout import timeout
-from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.modules.base.BaseServerHandler import BaseServerHandler
+from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from sslcaudit.modules.base.BaseServerHandler import BaseServerHandler
 
 DEFAULT_SOCK_READ_TIMEOUT = 3.0
 MAX_SIZE = 1024

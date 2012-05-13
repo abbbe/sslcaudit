@@ -6,11 +6,11 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging
 import unittest
-from src.core.SSLCAuditCLI import SSLCAuditCLI
-from src.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientConnectionAuditResult
-from src.core.ClientHandler import ClientAuditResult
-from src.test.TCPConnectionHammer import TCPConnectionHammer
-from src.test.TestConfig import get_next_listener_port, TEST_LISTENER_ADDR
+from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
+from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientConnectionAuditResult
+from sslcaudit.core.ClientHandler import ClientAuditResult
+from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
+from sslcaudit.test.TestConfig import get_next_listener_port, TEST_LISTENER_ADDR
 
 class TestDummyModule(unittest.TestCase):
     '''

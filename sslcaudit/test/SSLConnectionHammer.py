@@ -6,7 +6,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import time, logging, M2Crypto
 from M2Crypto.SSL.Checker import  SSLVerificationError
-from src.test.ConnectionHammer import ConnectionHammer
+from sslcaudit.test.ConnectionHammer import ConnectionHammer
 
 class CNVerifyingSSLConnectionHammer(ConnectionHammer):
     '''

@@ -6,10 +6,10 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging
 from optparse import OptionParser
-from src.core import Utils
-from src.core.BaseClientAuditController import BaseClientAuditController, PROG_NAME, PROG_VERSION, HOST_ADDR_ANY
-from src.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
-from src.core.ConfigError import ConfigError
+from sslcaudit.core import Utils
+from sslcaudit.core.BaseClientAuditController import BaseClientAuditController, PROG_NAME, PROG_VERSION, HOST_ADDR_ANY
+from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from sslcaudit.core.ConfigError import ConfigError
 
 FORMAT = '%(asctime)s %(name)s %(levelname)s   %(message)s'
 logging.basicConfig(level=logging.INFO, format=FORMAT)

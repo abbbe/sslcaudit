@@ -9,7 +9,7 @@ import socket
 from M2Crypto import X509, ASN1, RSA, EVP, util, SSL
 import M2Crypto
 from M2Crypto.SSL import SSLError
-from src.core.ConfigError import ConfigError
+from sslcaudit.core.ConfigError import ConfigError
 
 DEFAULT_X509_C = 'BE'
 DEFAULT_X509_ORG = 'Gremwell bvba'

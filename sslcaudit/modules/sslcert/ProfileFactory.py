@@ -6,12 +6,12 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 import socket
 from M2Crypto import X509
 import M2Crypto
-from src.core import Utils
+from sslcaudit.core import Utils
 
-from src.core.ConfigError import ConfigError
-from src.core.CertFactory import CertFactory
-from src.modules.base.BaseProfileFactory import BaseProfileFactory, BaseProfile, BaseProfileSpec
-from src.modules.sslcert.SSLServerHandler import SSLServerHandler
+from sslcaudit.core.ConfigError import ConfigError
+from sslcaudit.core.CertFactory import CertFactory
+from sslcaudit.modules.base.BaseProfileFactory import BaseProfileFactory, BaseProfile, BaseProfileSpec
+from sslcaudit.modules.sslcert.SSLServerHandler import SSLServerHandler
 
 DEFAULT_CN = 'www.example.com'
 IM_CA_NONE_CN = 'ca-none'

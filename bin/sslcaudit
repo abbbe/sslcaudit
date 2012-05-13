@@ -9,9 +9,16 @@
 # ----------------------------------------------------------------------
 
 
-import sys, logging
-from src.core.ConfigError import ConfigError
-from src.core.SSLCAuditCLI import SSLCAuditCLI
+import os, sys
+
+# if the script is launched from sources, make sure it uses modules located in the same place
+base_dir = os.path.join(os.path.dirname(__file__), '..')
+src_dir = os.path.join(base_dir, 'sslcaudit')
+if os.path.exists(src_dir): sys.path.insert(0, base_dir)
+
+import logging
+from sslcaudit.core.ConfigError import ConfigError
+from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
 
 def check_dependencies():
     # make sure M2Crypto is installed
@@ -24,6 +31,7 @@ def check_dependencies():
         print 'Sslcaudit requires M2Crypto library. Please install your OS package or see'
         print 'website http://chandlerproject.org/bin/view/Projects/MeTooCrypto.'
         return False
+
 
 def init_controller(argv):
     # initialize the controller
@@ -41,6 +49,7 @@ def init_controller(argv):
         print 'Runtime error: %s' % ex
         return None
 
+
 def run(controller):
     # wait for the main thread to finish, handle Ctrl-C if any
     interrupted_by_user = False
@@ -51,12 +60,13 @@ def run(controller):
             print 'Got KeyboardInterrupt exception, aborting the program ...'
             controller.stop() # graceful death
             interrupted_by_user = True
- 
+
     # if the program is aborted by the user, return exitcode 1
     if interrupted_by_user:
         return 1
     else:
         return 0
+
 
 def main(argv):
     if not check_dependencies():

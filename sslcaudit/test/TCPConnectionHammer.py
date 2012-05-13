@@ -6,7 +6,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging, time
 from socket import socket
-from src.test.ConnectionHammer import ConnectionHammer
+from sslcaudit.test.ConnectionHammer import ConnectionHammer
 
 class TCPConnectionHammer(ConnectionHammer):
     '''

@@ -9,8 +9,8 @@ from SocketServer import TCPServer
 import socket
 from threading import Thread
 from Queue import Queue
-from src.core.ClientConnection import ClientConnection
-from src.core.ClientHandler import ClientHandler
+from sslcaudit.core.ClientConnection import ClientConnection
+from sslcaudit.core.ClientHandler import ClientHandler
 
 logger = logging.getLogger('ClientAuditorTCPServer')
 

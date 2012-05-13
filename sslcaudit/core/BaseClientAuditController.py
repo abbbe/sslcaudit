@@ -3,17 +3,17 @@ from exceptions import Exception
 import logging
 import sys
 from threading import Thread
-from src.core.ClientAuditorServer import ClientAuditorServer
-from src.core.ClientConnectionAuditEvent import ClientAuditResult
-from src.core.ConfigError import ConfigError
-from src.core.FileBag import FileBag
-from src.test.ExternalCommandHammer import CurlHammer
-from src.test.SSLConnectionHammer import ChainVerifyingSSLConnectionHammer, CNVerifyingSSLConnectionHammer
-from src.test.TCPConnectionHammer import TCPConnectionHammer
+from sslcaudit.core.ClientAuditorServer import ClientAuditorServer
+from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditResult
+from sslcaudit.core.ConfigError import ConfigError
+from sslcaudit.core.FileBag import FileBag
+from sslcaudit.test.ExternalCommandHammer import CurlHammer
+from sslcaudit.test.SSLConnectionHammer import ChainVerifyingSSLConnectionHammer, CNVerifyingSSLConnectionHammer
+from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
 
 HOST_ADDR_ANY = '0.0.0.0'
 
-MODULE_MODULE_NAME_PREFIX = 'src.modules'
+MODULE_MODULE_NAME_PREFIX = 'sslcaudit.modules'
 PROFILE_FACTORY_MODULE_NAME = 'ProfileFactory'
 PROFILE_FACTORY_CLASS_NAME = 'ProfileFactory'
 

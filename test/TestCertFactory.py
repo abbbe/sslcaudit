@@ -6,9 +6,9 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 import tempfile
 
 import unittest
-from src.core.CertFactory import *
-from src.core.FileBag import FileBag
-from src.test.TestConfig import *
+from sslcaudit.core.CertFactory import *
+from sslcaudit.core.FileBag import FileBag
+from sslcaudit.test.TestConfig import *
 
 SSL_PROTO = 'sslv23'
 
