@@ -5,7 +5,8 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 import logging, unittest
-from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
+from sslcaudit.core import SSLCAuditUI
+from sslcaudit.core.BaseClientAuditController import BaseClientAuditController
 
 from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from sslcaudit.modules.sslcert.ProfileFactory import DEFAULT_CN, SSLProfileSpec_SelfSigned, SSLProfileSpec_IMCA_Signed, SSLProfileSpec_Signed, IM_CA_FALSE_CN, IM_CA_TRUE_CN, IM_CA_NONE_CN, SSLProfileSpec_UserSupplied
@@ -195,9 +196,12 @@ class TestSSLCertModule(unittest.TestCase):
             eccars
         )
 
+    def setUp(self):
+        self.controller = None
+
     def tearDown(self):
-        if self.main != None:
-            self.main.stop()
+        if self.controller != None:
+            self.controller.stop()
 
     def _main_test(self, main_args, hammer, expected_results):
         '''
@@ -212,24 +216,23 @@ class TestSSLCertModule(unittest.TestCase):
         # allocate port
         port = TestConfig.get_next_listener_port()
 
-        # create main, the target of the test
-        test_name = "%s %s" % (hammer, args)
-        main_args = ['-l', '%s:%d' % (TestConfig.TEST_LISTENER_ADDR, port)]
-        main_args.extend(args)
-        self.main = SSLCAuditCLI(main_args)
-
         # collect classes of observed audit results
         self.actual_results = []
-        self.orig_main__handle_result = self.main.handle_result
-
         def main__handle_result(res):
-            self.orig_main__handle_result(res)
+            #self.orig_main__handle_result(res)
             if isinstance(res, ClientConnectionAuditResult):
                 self.actual_results.append(res)
             else:
-                pass # ignore events print res
+                pass # ignore other events
 
-        self.main.handle_result = main__handle_result
+        # create optrions for the controller
+        test_name = "%s %s" % (hammer, args)
+        main_args = ['-l', '%s:%d' % (TestConfig.TEST_LISTENER_ADDR, port)]
+        main_args.extend(args)
+        options = SSLCAuditUI.parse_options(main_args)
+
+        # create controller
+        self.controller = BaseClientAuditController(options, event_handler=main__handle_result)
 
         self.hammer = hammer
         if self.hammer != None:
@@ -237,23 +240,23 @@ class TestSSLCertModule(unittest.TestCase):
 
     def _main_test_do(self, expected_results):
         # run the server
-        self.main.start()
+        self.controller.start()
 
         # start the hammer if any
         if self.hammer != None:
             self.hammer.start()
 
         # wait for main to finish its job
-        self.main.join(timeout=TestConfig.TEST_MAIN_JOIN_TIMEOUT)
+        self.controller.join(timeout=TestConfig.TEST_MAIN_JOIN_TIMEOUT)
         # on timeout throws exception, which we let propagate after we shut the hammer and the main thread
 
-        self.assertFalse(self.main.is_alive(), 'main thread is still alive')
+        self.assertFalse(self.controller.is_alive(), 'main thread is still alive')
 
         # stop the hammer if any
         if self.hammer != None:    self.hammer.stop()
 
         # stop the server
-        self.main.stop()
+        self.controller.stop()
 
         # check if the actual results match expected ones
         if len(expected_results) != len(self.actual_results):

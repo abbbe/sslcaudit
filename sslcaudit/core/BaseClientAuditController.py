@@ -23,9 +23,10 @@ PROG_VERSION = '1.0'
 class BaseClientAuditController(Thread):
     logger = logging.getLogger('BaseClientAuditController')
 
-    def __init__(self, options):
+    def __init__(self, options, event_handler):
         Thread.__init__(self, target=self.run)
         self.options = options
+        self.event_handler = event_handler
         self.queue_read_timeout = 0.1
 
         if self.options.debug_level > 0:
@@ -85,15 +86,12 @@ class BaseClientAuditController(Thread):
                 # wait for a message blocking for short intervals, check stop flag frequently
                 res = self.server.res_queue.get(True, self.queue_read_timeout)
                 self.logger.debug("got result %s", res)
-                self.handle_result(res)
+                self.event_handler(res)
 
                 if isinstance(res, ClientAuditResult):
                     nresults = nresults + 1
             except Empty:
                 pass
-
-    def handle_result(self, res):
-        raise NotImplemented('subclasses must override this method')
 
     def init_self_tests(self):
         # determine where to connect to

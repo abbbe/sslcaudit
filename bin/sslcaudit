@@ -11,19 +11,24 @@
 
 import os, sys
 
-# if the script is launched from sources, make sure it uses modules located in the same place
+# if the script is launched from sources, make sure it uses modules located in the
+# same place
 base_dir = os.path.join(os.path.dirname(__file__), '..')
 src_dir = os.path.join(base_dir, 'sslcaudit')
 if os.path.exists(src_dir): sys.path.insert(0, base_dir)
 
 import logging
 from sslcaudit.core.ConfigError import ConfigError
+from sslcaudit.core import SSLCAuditUI
+from sslcaudit.core.SSLCAuditGUI import SSLCAuditGUI
 from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
+
 
 def check_dependencies():
     # make sure M2Crypto is installed
     try:
         import M2Crypto
+
         return True
     except ImportError as ex:
         print 'Failed to load M2Crypto: %s' % ex
@@ -33,48 +38,26 @@ def check_dependencies():
         return False
 
 
-def init_controller(argv):
-    # initialize the controller
-    try:
-        controller = SSLCAuditCLI(argv[1:])
-        controller.start()
-        return controller
-    except KeyboardInterrupt as ex:
-        print 'Got KeyboardInterrupt exception before controller loop started, exiting'
-        return None
-    except ConfigError as ex:
-        print 'Configuration error: %s' % ex
-        return None
-    except RuntimeError as ex:
-        print 'Runtime error: %s' % ex
-        return None
-
-
-def run(controller):
-    # wait for the main thread to finish, handle Ctrl-C if any
-    interrupted_by_user = False
-    while controller.isAlive():
-        try:
-            controller.join(1)
-        except KeyboardInterrupt:
-            print 'Got KeyboardInterrupt exception, aborting the program ...'
-            controller.stop() # graceful death
-            interrupted_by_user = True
-
-    # if the program is aborted by the user, return exitcode 1
-    if interrupted_by_user:
-        return 1
-    else:
-        return 0
-
-
 def main(argv):
     if not check_dependencies():
         return 1
-    c = init_controller(argv)
-    if c is None:
+
+    try:
+        options = SSLCAuditUI.parse_options(argv[1:])
+        if options.gui:
+            ui = SSLCAuditGUI(options)
+        else:
+            ui = SSLCAuditCLI(options)
+        return ui.run()
+    except KeyboardInterrupt as ex:
+        print 'Got KeyboardInterrupt exception before controller loop started, exiting'
         return 1
-    return run(c)
+    except ConfigError as ex:
+        print 'Configuration error: %s' % ex
+        return 1
+    except RuntimeError as ex:
+        print 'Runtime error: %s' % ex
+        return 1
 
 if __name__ == "__main__":
     logging.basicConfig()

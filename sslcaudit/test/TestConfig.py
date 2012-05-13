@@ -19,6 +19,7 @@ TEST_LISTENER_ADDR = 'localhost'
 TEST_LISTENER_BASEPORT = 10000
 
 ## figure out path to test/certs directory
+if os.path.exists(os.path.join('..', 'test', 'certs')): TEST_CERT_DIR = os.path.join('..', 'test', 'certs')
 if os.path.exists(os.path.join('test', 'certs')): TEST_CERT_DIR = os.path.join('test', 'certs')
 elif os.path.exists('certs'): TEST_CERT_DIR = 'certs'
 else: raise RuntimeError('cannot find test/certs or certs/ directory')

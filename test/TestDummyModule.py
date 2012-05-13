@@ -5,10 +5,14 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 import logging
+from threading import Thread
 import unittest
+from sslcaudit.core import SSLCAuditUI
+from sslcaudit.core.BaseClientAuditController import BaseClientAuditController
 from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
 from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientConnectionAuditResult
 from sslcaudit.core.ClientHandler import ClientAuditResult
+from sslcaudit.core.SSLCAuditUI import parse_options
 from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
 from sslcaudit.test.TestConfig import get_next_listener_port, TEST_LISTENER_ADDR
 
@@ -55,19 +59,19 @@ class TestDummyModule(unittest.TestCase):
         self.hammer = TCPConnectionHammer(self.HAMMER_ATTEMPTS)
 
         # create main, the target of the test
-        self.main = SSLCAuditCLI(['-m', 'dummy', '-l', ("%s:%d" % (TEST_LISTENER_ADDR, port))])
-        self.main.handle_result = main__handle_result
+        main_args = ['-m', 'dummy', '-l', ("%s:%d" % (TEST_LISTENER_ADDR, port))]
+        options = SSLCAuditUI.parse_options(main_args)
+        controller = BaseClientAuditController(options, event_handler=main__handle_result)
 
         # tell the hammer how many attempts to make exactly
         self.hammer.set_peer((TEST_LISTENER_ADDR, port))
 
         # start server and client
-        self.main.start()
+        controller.start()
         self.hammer.start()
 
-        self.main.join(timeout=5)
+        controller.join(timeout=5)
         self.hammer.stop()
-        self.main.stop()
 
         # make sure we have received expected number of results
         self.assertEquals(self.got_result_start, 1)

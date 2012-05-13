@@ -17,7 +17,7 @@ class DummyServerProfile(object):
         self.value = value
 
     def __str__(self):
-        return 'dummy(%s)' % (value)
+        return 'dummy(%s)' % (self.value)
 
     def get_handler(self):
         return dummy_server_handler
