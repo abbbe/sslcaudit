@@ -10,7 +10,7 @@ setup(
     name='sslcaudit',
     author='Alexandre Bezroutchko',
     author_email='abb@gremwell.com',
-    description='Utility to automate testing SSL/TLS clients for resistance against MITM attacks',
+    description='Utility to perform security audits of SSL/TLS clients',
     url='http://www.gremwell.com/sslcaudit_v1_0',
     version='1.0',
     license='GPLv3',
