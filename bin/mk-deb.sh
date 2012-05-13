@@ -8,4 +8,4 @@
 
 python setup.py --command-packages=stdeb.command bdist_deb
 
-ls -l deb_dist/python-sslcaudit_1.0-1_all.deb
+dpkg -I deb_dist/python-sslcaudit_1.0-1_all.deb
