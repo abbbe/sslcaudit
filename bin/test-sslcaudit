@@ -6,8 +6,12 @@
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
 
-import sys
-#sys.path.insert(0, 'test')
+import os, sys
+
+# if the script is launched from sources, make sure it uses modules located in the same place
+base_dir = os.path.join(os.path.dirname(__file__), '..')
+src_dir = os.path.join(base_dir, 'sslcaudit')
+if os.path.exists(src_dir): sys.path.insert(0, base_dir)
 
 import unittest
 
