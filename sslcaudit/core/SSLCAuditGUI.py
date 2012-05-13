@@ -16,6 +16,7 @@ class SSLCAuditGUI(object):
         '''
         self.options = options
 
+        # initialize dummy GUI
         self.app = QtGui.QApplication(sys.argv)
         self.w = QtGui.QWidget()
         self.w.resize(250, 150)
