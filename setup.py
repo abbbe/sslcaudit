@@ -6,7 +6,8 @@
 
 from distutils.core import setup
 
-setup(name='sslcaudit',
+setup(
+    name='sslcaudit',
     url='http://www.gremwell.com/sslcaudit_v1_0',
     version='1.0',
     license='GPLv3',
