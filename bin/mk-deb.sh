@@ -1,1 +1,1 @@
-dpkg-buildpackage -rfakeroot -uc -us
+dpkg-buildpackage -rfakeroot -uc -us -tc
