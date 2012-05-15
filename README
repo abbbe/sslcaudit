@@ -7,33 +7,23 @@ SSL/TLS over TCP.
 
 INSTALLATION
 
-There is no procedure for installation yet. Just grab the code:
+There is no proper installation procedure yet (Debian package and distutils-based
+Python installer are coming soon). For now just fetch the release from GIT repository:
 
-* Download ZIP archive at https://github.com/grwl/sslcaudit/zipball/release_1_0_rc1
-* Or clone leading edge master GIT repository: git clone git://github.com/grwl/sslcaudit.git
-* Find sslcaudit in the top level directory and run it with -h option.
+	$ git clone -b release_1_0 https://github.com/grwl/sslcaudit.git
+	Cloning into sslcaudit...
 
-To terminate an instance of sslcaudit running on the console, press Ctrl-\.
+Then find sslcaudit in the top level directory and run it with -h option. PDF
+user-guide is available at doc/sslcaudit-user-guide-1.0.pdf.
 
-PDF user guide is available under doc/ or online at
-http://www.gremwell.com/sites/default/files/sslcaudit/doc/sslcaudit-guide-20120501.pdf,
-you should consider reading it.
-
-Sslcaudit uses M2Crypto Python library. If you dependencies problem, you might see
-following:
-
-	$ ./sslcaudit
-	Traceback (most recent call last):
-	...
-	ImportError: No module named M2Crypto
-
-On Debian system M2Crypto library can be installed with the following command:
+Sslcaudit uses M2Crypto Python library. On Debian system M2Crypto library can be
+installed with the following command:
 
 	$ sudo apt-get install python-m2crypto
 
 MORE INFORMATION
 
-See doc/ folder for more information or run 'sslcaudit -h'.
+See the user guide for more information or run 'sslcaudit -h'.
 
 LICENSING
 
