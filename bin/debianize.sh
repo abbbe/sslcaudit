@@ -6,5 +6,13 @@
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
 
-rm -rf debian/source
+rm -rf debian
 python setup.py --command-packages=stdeb.command debianize
+
+cp COPYING.TXT debian/copyright
+patch debian/control <<'END'
+10c10
+< Depends: ${misc:Depends}, ${python:Depends}
+---
+> Depends: ${misc:Depends}, ${python:Depends}, python-m2crypto
+END
