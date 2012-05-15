@@ -7,6 +7,6 @@ Standards-Version: 3.9.1
 
 Package: python-sslcaudit
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}
+Depends: ${misc:Depends}, ${python:Depends}, python-m2crypto
 Description: Utility to perform security audits of SSL/TLS clients
 
