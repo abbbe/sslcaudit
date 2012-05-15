@@ -6,4 +6,5 @@
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
 
+rm -rf debian/source
 python setup.py --command-packages=stdeb.command debianize
