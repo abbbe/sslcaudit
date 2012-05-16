@@ -227,10 +227,13 @@
           <item row="0" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_3">
             <item>
-             <widget class="QLineEdit" name="lineEdit_2"/>
+             <widget class="QLineEdit" name="certificateEdit1"/>
             </item>
             <item>
              <widget class="QPushButton" name="certificateBrowse1">
+              <property name="statusTip">
+               <string>Select a certificate file</string>
+              </property>
               <property name="text">
                <string>Browse</string>
               </property>
@@ -248,10 +251,13 @@
           <item row="1" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_4">
             <item>
-             <widget class="QLineEdit" name="lineEdit_3"/>
+             <widget class="QLineEdit" name="keyEdit1"/>
             </item>
             <item>
              <widget class="QPushButton" name="keyBrowse1">
+              <property name="statusTip">
+               <string>Select a key file</string>
+              </property>
               <property name="text">
                <string>Browse</string>
               </property>
@@ -287,10 +293,13 @@
           <item row="0" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_5">
             <item>
-             <widget class="QLineEdit" name="lineEdit_4"/>
+             <widget class="QLineEdit" name="certificateEdit2"/>
             </item>
             <item>
              <widget class="QPushButton" name="certificateBrowse2">
+              <property name="statusTip">
+               <string>Select a certificate file</string>
+              </property>
               <property name="text">
                <string>Browse</string>
               </property>
@@ -308,10 +317,13 @@
           <item row="1" column="1">
            <layout class="QHBoxLayout" name="horizontalLayout_6">
             <item>
-             <widget class="QLineEdit" name="lineEdit_5"/>
+             <widget class="QLineEdit" name="keyEdit2"/>
             </item>
             <item>
              <widget class="QPushButton" name="keyBrowse2">
+              <property name="statusTip">
+               <string>Select a key file</string>
+              </property>
               <property name="text">
                <string>Browse</string>
               </property>

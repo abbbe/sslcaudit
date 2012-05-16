@@ -37,6 +37,7 @@ class SSLCauditGUIWindow(QMainWindow):
         QMainWindow.__init__(self, parent)
         
         self.options = options
+        self.settings = QSettings('SSLCAudit')
         
         # Initialize the UI and store it within the self.ui variable
         self.ui = SSLCAuditGUIGenerated.Ui_MainWindow()
@@ -53,12 +54,13 @@ class SSLCauditGUIWindow(QMainWindow):
         
         # Gives each of the "Browse" buttons an icon and set their appropriate actions
         for control in [
-          self.ui.certificateBrowse1,
-          self.ui.certificateBrowse2,
-          self.ui.keyBrowse1,
-          self.ui.keyBrowse2
+            self.ui.certificateBrowse1,
+            self.ui.certificateBrowse2,
+            self.ui.keyBrowse1,
+            self.ui.keyBrowse2
         ]:
-          control.setIcon(QIcon.fromTheme('document-open'))
+            control.setIcon(QIcon.fromTheme('document-open'))
+            self.connect(control, SIGNAL('clicked()'), lambda control=control: self.browseButtonClicked(control.objectName()))
         
         # Validates the IP address box via regex
         ip_validator = QRegExpValidator(self)
@@ -85,3 +87,21 @@ class SSLCauditGUIWindow(QMainWindow):
     
     def childIterator(self, element):
         return [element.item(i) for i in range(element.count())]
+
+    def validateKeyFile(self, filename):
+        return True
+
+    def validateCertificateFile(self, filename):
+        return True
+
+    def browseButtonClicked(self, name):
+        textbox = getattr(self.ui, str(name).replace('Browse', 'Edit'))
+        filename = QFileDialog.getOpenFileName(
+          self,
+          getattr(self.ui, str(name)).statusTip(),
+          self.settings.value('startup/{}'.format(name), QDir.homePath()).toString()
+        )
+        
+        if filename:
+            self.settings.setValue('startup/{}'.format(name), filename)
+            textbox.setText(filename)
