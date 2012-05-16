@@ -53,4 +53,19 @@ class SSLCauditGUIWindow(QMainWindow):
           self.ui.keyBrowse2
         ]:
           control.setIcon(QIcon.fromTheme('document-open'))
-          
+        
+        # Validates the IP address box via regex
+        ip_validator = QRegExpValidator(self)
+        ip_validator.setRegExp(QRegExp(
+            r'^([01]?\d\d?|2[0-4]\d|25[0-5])\.' +
+             r'([01]?\d\d?|2[0-4]\d|25[0-5])\.' +
+             r'([01]?\d\d?|2[0-4]\d|25[0-5])\.' +
+             r'([01]?\d\d?|2[0-4]\d|25[0-5])$'
+        ))
+        self.ui.ipAddressLineEdit.setValidator(ip_validator)
+        
+        # Validates the port box via an integer validator
+        port_validator = QIntValidator(self)
+        port_validator.setRange(0, 65535)
+        self.ui.portLineEdit.setValidator(port_validator)
+        

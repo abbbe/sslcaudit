@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Tue May 15 20:26:13 2012
+# Created: Tue May 15 20:49:49 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -36,16 +36,16 @@ class Ui_MainWindow(object):
     self.formLayout.setWidget(0, QtGui.QFormLayout.LabelRole, self.listenOnLabel)
     self.horizontalLayout_8 = QtGui.QHBoxLayout()
     self.horizontalLayout_8.setObjectName(_fromUtf8("horizontalLayout_8"))
-    self.listenOnLineEdit = QtGui.QLineEdit(self.widget)
-    self.listenOnLineEdit.setText(_fromUtf8(""))
-    self.listenOnLineEdit.setMaxLength(15)
-    self.listenOnLineEdit.setObjectName(_fromUtf8("listenOnLineEdit"))
-    self.horizontalLayout_8.addWidget(self.listenOnLineEdit)
-    self.listenOnLineEdit_2 = QtGui.QLineEdit(self.widget)
-    self.listenOnLineEdit_2.setMaximumSize(QtCore.QSize(50, 16777215))
-    self.listenOnLineEdit_2.setMaxLength(5)
-    self.listenOnLineEdit_2.setObjectName(_fromUtf8("listenOnLineEdit_2"))
-    self.horizontalLayout_8.addWidget(self.listenOnLineEdit_2)
+    self.ipAddressLineEdit = QtGui.QLineEdit(self.widget)
+    self.ipAddressLineEdit.setText(_fromUtf8(""))
+    self.ipAddressLineEdit.setMaxLength(15)
+    self.ipAddressLineEdit.setObjectName(_fromUtf8("ipAddressLineEdit"))
+    self.horizontalLayout_8.addWidget(self.ipAddressLineEdit)
+    self.portLineEdit = QtGui.QLineEdit(self.widget)
+    self.portLineEdit.setMaximumSize(QtCore.QSize(50, 16777215))
+    self.portLineEdit.setMaxLength(5)
+    self.portLineEdit.setObjectName(_fromUtf8("portLineEdit"))
+    self.horizontalLayout_8.addWidget(self.portLineEdit)
     self.formLayout.setLayout(0, QtGui.QFormLayout.FieldRole, self.horizontalLayout_8)
     self.selfTestLabel = QtGui.QLabel(self.widget)
     self.selfTestLabel.setObjectName(_fromUtf8("selfTestLabel"))
@@ -249,8 +249,8 @@ class Ui_MainWindow(object):
   def retranslateUi(self, MainWindow):
     MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "sslcaudit", None, QtGui.QApplication.UnicodeUTF8))
     self.listenOnLabel.setText(QtGui.QApplication.translate("MainWindow", "Listen on", None, QtGui.QApplication.UnicodeUTF8))
-    self.listenOnLineEdit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "IP Address", None, QtGui.QApplication.UnicodeUTF8))
-    self.listenOnLineEdit_2.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "Port", None, QtGui.QApplication.UnicodeUTF8))
+    self.ipAddressLineEdit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "IP Address", None, QtGui.QApplication.UnicodeUTF8))
+    self.portLineEdit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "Port", None, QtGui.QApplication.UnicodeUTF8))
     self.selfTestLabel.setText(QtGui.QApplication.translate("MainWindow", "Self Test", None, QtGui.QApplication.UnicodeUTF8))
     self.selfTestComboBox.setItemText(0, QtGui.QApplication.translate("MainWindow", "None", None, QtGui.QApplication.UnicodeUTF8))
     self.selfTestComboBox.setItemText(1, QtGui.QApplication.translate("MainWindow", "TCP client", None, QtGui.QApplication.UnicodeUTF8))

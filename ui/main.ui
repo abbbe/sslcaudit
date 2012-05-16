@@ -40,7 +40,7 @@
         <item row="0" column="1">
          <layout class="QHBoxLayout" name="horizontalLayout_8">
           <item>
-           <widget class="QLineEdit" name="listenOnLineEdit">
+           <widget class="QLineEdit" name="ipAddressLineEdit">
             <property name="text">
              <string/>
             </property>
@@ -53,7 +53,7 @@
            </widget>
           </item>
           <item>
-           <widget class="QLineEdit" name="listenOnLineEdit_2">
+           <widget class="QLineEdit" name="portLineEdit">
             <property name="maximumSize">
              <size>
               <width>50</width>
