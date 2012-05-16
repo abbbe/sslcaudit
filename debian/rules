@@ -17,6 +17,6 @@ unexport LDFLAGS
 
 
 %:
-	dh $@ --with python2 --buildsystem=python_distutils
+	dh $@ --buildsystem=python_distutils
 
 
