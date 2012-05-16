@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Tue May 15 23:57:29 2012
+# Created: Wed May 16 01:32:18 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -37,12 +37,14 @@ class Ui_MainWindow(object):
     self.formLayout.setWidget(0, QtGui.QFormLayout.LabelRole, self.listenOnLabel)
     self.horizontalLayout_8 = QtGui.QHBoxLayout()
     self.horizontalLayout_8.setObjectName(_fromUtf8("horizontalLayout_8"))
-    self.ipAddressLineEdit = QtGui.QLineEdit(self.widget)
-    self.ipAddressLineEdit.setText(_fromUtf8(""))
-    self.ipAddressLineEdit.setMaxLength(15)
-    self.ipAddressLineEdit.setObjectName(_fromUtf8("ipAddressLineEdit"))
-    self.horizontalLayout_8.addWidget(self.ipAddressLineEdit)
+    self.hostnameLineEdit = QtGui.QLineEdit(self.widget)
+    self.hostnameLineEdit.setMinimumSize(QtCore.QSize(175, 0))
+    self.hostnameLineEdit.setText(_fromUtf8(""))
+    self.hostnameLineEdit.setMaxLength(15)
+    self.hostnameLineEdit.setObjectName(_fromUtf8("hostnameLineEdit"))
+    self.horizontalLayout_8.addWidget(self.hostnameLineEdit)
     self.portLineEdit = QtGui.QLineEdit(self.widget)
+    self.portLineEdit.setMinimumSize(QtCore.QSize(50, 0))
     self.portLineEdit.setMaximumSize(QtCore.QSize(50, 16777215))
     self.portLineEdit.setMaxLength(5)
     self.portLineEdit.setObjectName(_fromUtf8("portLineEdit"))
@@ -236,12 +238,12 @@ class Ui_MainWindow(object):
     self.tab_4.setObjectName(_fromUtf8("tab_4"))
     self.gridLayout_2 = QtGui.QGridLayout(self.tab_4)
     self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
-    self.checkBox = QtGui.QCheckBox(self.tab_4)
-    self.checkBox.setObjectName(_fromUtf8("checkBox"))
-    self.gridLayout_2.addWidget(self.checkBox, 1, 0, 1, 1)
-    self.listWidget = QtGui.QListWidget(self.tab_4)
-    self.listWidget.setObjectName(_fromUtf8("listWidget"))
-    self.gridLayout_2.addWidget(self.listWidget, 0, 0, 1, 1)
+    self.showDebugMessagesCheckBox = QtGui.QCheckBox(self.tab_4)
+    self.showDebugMessagesCheckBox.setObjectName(_fromUtf8("showDebugMessagesCheckBox"))
+    self.gridLayout_2.addWidget(self.showDebugMessagesCheckBox, 1, 0, 1, 1)
+    self.testLog = QtGui.QListWidget(self.tab_4)
+    self.testLog.setObjectName(_fromUtf8("testLog"))
+    self.gridLayout_2.addWidget(self.testLog, 0, 0, 1, 1)
     self.tabWidget.addTab(self.tab_4, _fromUtf8(""))
     self.tab_5 = QtGui.QWidget()
     self.tab_5.setObjectName(_fromUtf8("tab_5"))
@@ -261,14 +263,15 @@ class Ui_MainWindow(object):
     MainWindow.setCentralWidget(self.centralwidget)
 
     self.retranslateUi(MainWindow)
-    self.tabWidget.setCurrentIndex(0)
+    self.tabWidget.setCurrentIndex(3)
     QtCore.QObject.connect(self.customCommonNameRadioButton, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.customCommonName.setEnabled)
     QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
   def retranslateUi(self, MainWindow):
     MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "sslcaudit", None, QtGui.QApplication.UnicodeUTF8))
     self.listenOnLabel.setText(QtGui.QApplication.translate("MainWindow", "Listen on", None, QtGui.QApplication.UnicodeUTF8))
-    self.ipAddressLineEdit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "IP Address", None, QtGui.QApplication.UnicodeUTF8))
+    self.hostnameLineEdit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "Hostname (defaults to any)", None, QtGui.QApplication.UnicodeUTF8))
+    self.portLineEdit.setText(QtGui.QApplication.translate("MainWindow", "8443", None, QtGui.QApplication.UnicodeUTF8))
     self.portLineEdit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "Port", None, QtGui.QApplication.UnicodeUTF8))
     self.selfTestLabel.setText(QtGui.QApplication.translate("MainWindow", "Self Test", None, QtGui.QApplication.UnicodeUTF8))
     self.selfTestComboBox.setItemText(0, QtGui.QApplication.translate("MainWindow", "None", None, QtGui.QApplication.UnicodeUTF8))
@@ -323,9 +326,11 @@ class Ui_MainWindow(object):
     item.setText(QtGui.QApplication.translate("MainWindow", "Cipher D", None, QtGui.QApplication.UnicodeUTF8))
     self.cipherList.setSortingEnabled(__sortingEnabled)
     self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("MainWindow", "SSLProto", None, QtGui.QApplication.UnicodeUTF8))
-    self.treeWidget.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "Address", None, QtGui.QApplication.UnicodeUTF8))
+    self.treeWidget.headerItem().setText(0, QtGui.QApplication.translate("MainWindow", "Client Address", None, QtGui.QApplication.UnicodeUTF8))
+    self.treeWidget.headerItem().setText(1, QtGui.QApplication.translate("MainWindow", "Server Profile", None, QtGui.QApplication.UnicodeUTF8))
+    self.treeWidget.headerItem().setText(2, QtGui.QApplication.translate("MainWindow", "Report", None, QtGui.QApplication.UnicodeUTF8))
     self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QtGui.QApplication.translate("MainWindow", "Connections", None, QtGui.QApplication.UnicodeUTF8))
-    self.checkBox.setText(QtGui.QApplication.translate("MainWindow", "Show debug messages", None, QtGui.QApplication.UnicodeUTF8))
+    self.showDebugMessagesCheckBox.setText(QtGui.QApplication.translate("MainWindow", "Show debug messages", None, QtGui.QApplication.UnicodeUTF8))
     self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QtGui.QApplication.translate("MainWindow", "Test Log", None, QtGui.QApplication.UnicodeUTF8))
     self.copyToClipboardButton.setText(QtGui.QApplication.translate("MainWindow", "Copy to clipboard", None, QtGui.QApplication.UnicodeUTF8))
     self.reportText.setHtml(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
