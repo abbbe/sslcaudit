@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Tue May 15 23:49:30 2012
+# Created: Tue May 15 23:57:29 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -20,8 +20,9 @@ class Ui_MainWindow(object):
     MainWindow.resize(800, 600)
     self.centralwidget = QtGui.QWidget(MainWindow)
     self.centralwidget.setObjectName(_fromUtf8("centralwidget"))
+    self.gridLayout_7 = QtGui.QGridLayout(self.centralwidget)
+    self.gridLayout_7.setObjectName(_fromUtf8("gridLayout_7"))
     self.splitter = QtGui.QSplitter(self.centralwidget)
-    self.splitter.setGeometry(QtCore.QRect(10, 9, 780, 578))
     self.splitter.setOrientation(QtCore.Qt.Horizontal)
     self.splitter.setObjectName(_fromUtf8("splitter"))
     self.widget = QtGui.QWidget(self.splitter)
@@ -246,15 +247,17 @@ class Ui_MainWindow(object):
     self.tab_5.setObjectName(_fromUtf8("tab_5"))
     self.gridLayout = QtGui.QGridLayout(self.tab_5)
     self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-    self.textBrowser_2 = QtGui.QTextBrowser(self.tab_5)
-    self.textBrowser_2.setObjectName(_fromUtf8("textBrowser_2"))
-    self.gridLayout.addWidget(self.textBrowser_2, 0, 0, 1, 2)
     spacerItem2 = QtGui.QSpacerItem(250, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
     self.gridLayout.addItem(spacerItem2, 1, 0, 1, 1)
     self.copyToClipboardButton = QtGui.QPushButton(self.tab_5)
     self.copyToClipboardButton.setObjectName(_fromUtf8("copyToClipboardButton"))
     self.gridLayout.addWidget(self.copyToClipboardButton, 1, 1, 1, 1)
+    self.reportText = QtGui.QTextEdit(self.tab_5)
+    self.reportText.setReadOnly(True)
+    self.reportText.setObjectName(_fromUtf8("reportText"))
+    self.gridLayout.addWidget(self.reportText, 0, 0, 1, 2)
     self.tabWidget.addTab(self.tab_5, _fromUtf8(""))
+    self.gridLayout_7.addWidget(self.splitter, 0, 0, 1, 1)
     MainWindow.setCentralWidget(self.centralwidget)
 
     self.retranslateUi(MainWindow)
@@ -325,5 +328,10 @@ class Ui_MainWindow(object):
     self.checkBox.setText(QtGui.QApplication.translate("MainWindow", "Show debug messages", None, QtGui.QApplication.UnicodeUTF8))
     self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QtGui.QApplication.translate("MainWindow", "Test Log", None, QtGui.QApplication.UnicodeUTF8))
     self.copyToClipboardButton.setText(QtGui.QApplication.translate("MainWindow", "Copy to clipboard", None, QtGui.QApplication.UnicodeUTF8))
+    self.reportText.setHtml(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
+"<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
+"p, li { white-space: pre-wrap; }\n"
+"</style></head><body style=\" font-family:\'Droid Sans\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'monospace\';\">This is the report text. It will be copied to your clipboard.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
     self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QtGui.QApplication.translate("MainWindow", "Report", None, QtGui.QApplication.UnicodeUTF8))
 

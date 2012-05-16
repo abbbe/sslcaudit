@@ -80,14 +80,18 @@ class SSLCauditGUIWindow(QMainWindow):
         # Sets the check state of every item in both QListWidgets. This is
         # needed for the checkboxes to appear, so add the ciphers and
         # protocols via Qt Designer.
-
         for item in self.childIterator(self.ui.protocolList) + self.childIterator(self.ui.cipherList):
             item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
             item.setCheckState(Qt.Checked)
+        
+        self.ui.copyToClipboardButton.clicked.connect(self.copyReportToClipboard)
     
     def childIterator(self, element):
         return [element.item(i) for i in range(element.count())]
-
+    
+    def copyReportToClipboard(self):
+        QApplication.clipboard().setText(self.ui.reportText.toPlainText())
+    
     def validateKeyFile(self, filename):
         return True
 
