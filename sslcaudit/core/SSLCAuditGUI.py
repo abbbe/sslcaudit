@@ -9,7 +9,7 @@ import sys, logging
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-import SSLCauditGUIGenerated
+import SSLCAuditGUIGenerated
 
 logger = logging.getLogger('SSLCAuditGUI')
 
@@ -25,6 +25,7 @@ class SSLCAuditGUI(object):
 
     def run(self):
         self.window.show()
+        
         return self.app.exec_()
 
 
@@ -36,12 +37,15 @@ class SSLCauditGUIWindow(QMainWindow):
         QMainWindow.__init__(self, parent)
         
         self.options = options
-
-        self.ui = SSLCauditGUIGenerated.Ui_MainWindow()
-        self.ui.setupUi(self)
-
-        self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-start'))
         
+        # Initialize the UI and store it within the self.ui variable
+        self.ui = SSLCAuditGUIGenerated.Ui_MainWindow()
+        self.ui.setupUi(self)
+        
+        # Gives the "Start" button an icon.
+        self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-start'))
+
+        # Gives each of the "Browse" buttons an icon.
         for control in [
           self.ui.certificateBrowse1,
           self.ui.certificateBrowse2,
