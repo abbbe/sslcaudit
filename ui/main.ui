@@ -105,6 +105,12 @@
          <layout class="QHBoxLayout" name="horizontalLayout">
           <item>
            <widget class="QProgressBar" name="progressBar">
+            <property name="minimumSize">
+             <size>
+              <width>185</width>
+              <height>0</height>
+             </size>
+            </property>
             <property name="value">
              <number>24</number>
             </property>
@@ -149,14 +155,14 @@
             <item row="1" column="0">
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
-               <widget class="QRadioButton" name="radioButton_2">
+               <widget class="QRadioButton" name="customCommonNameRadioButton">
                 <property name="text">
                  <string/>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit">
+               <widget class="QLineEdit" name="customCommonName">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -192,7 +198,7 @@
                <widget class="QLineEdit" name="lineEdit_2"/>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_2">
+               <widget class="QPushButton" name="certificateBrowse1">
                 <property name="text">
                  <string>Browse</string>
                 </property>
@@ -213,7 +219,7 @@
                <widget class="QLineEdit" name="lineEdit_3"/>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_3">
+               <widget class="QPushButton" name="keyBrowse1">
                 <property name="text">
                  <string>Browse</string>
                 </property>
@@ -252,7 +258,7 @@
                <widget class="QLineEdit" name="lineEdit_4"/>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_4">
+               <widget class="QPushButton" name="certificateBrowse2">
                 <property name="text">
                  <string>Browse</string>
                 </property>
@@ -273,7 +279,7 @@
                <widget class="QLineEdit" name="lineEdit_5"/>
               </item>
               <item>
-               <widget class="QPushButton" name="pushButton_5">
+               <widget class="QPushButton" name="keyBrowse2">
                 <property name="text">
                  <string>Browse</string>
                 </property>
@@ -434,18 +440,18 @@
  <resources/>
  <connections>
   <connection>
-   <sender>radioButton_2</sender>
+   <sender>customCommonNameRadioButton</sender>
    <signal>toggled(bool)</signal>
-   <receiver>lineEdit</receiver>
+   <receiver>customCommonName</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>386</x>
-     <y>167</y>
+     <x>335</x>
+     <y>116</y>
     </hint>
     <hint type="destinationlabel">
-     <x>442</x>
-     <y>164</y>
+     <x>391</x>
+     <y>113</y>
     </hint>
    </hints>
   </connection>
