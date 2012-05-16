@@ -81,3 +81,7 @@ class ClientAuditorServer(Thread):
     def run(self):
         logger.debug('running %s, listen_on %s, profiles %s', self, self.listen_on, self.profiles)
         self.tcp_server.serve_forever()
+
+    def stop(self):
+        self.tcp_server.shutdown()
+        self.tcp_server.server_close()

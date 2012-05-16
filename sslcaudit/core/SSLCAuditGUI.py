@@ -32,25 +32,37 @@ class SSLCAuditGUI(object):
     return self.app.exec_()
 
 
-class SSLCAuditThreadedInterface(QThread):
+class SSLCAuditThreadedInterface(QObject):
   sendLog = pyqtSignal(str)
   sendError = pyqtSignal(str)
   sendConnection = pyqtSignal(ClientConnectionAuditResult)
-  
+
+  def __init__(self):
+    QObject.__init__(self)
+    self.is_running = False
+
   def parseOptions(self, options):
     self.controller = BaseClientAuditController(options, event_handler=self.event_handler)
     self.options = options
     
-  def run(self):
+  def start(self):
     try:
       self.controller.start()
+      self.is_running = True
     except:
       self.sendError.emit(str(sys.exc_info()[1]))
 
   def stop(self):
     self.controller.stop()
+    self.is_running = False
+
+  def isRunning(self):
+    return self.is_running
 
   def event_handler(self, response):
+    '''
+    This method gets invoked asyncronously by BaseClientAuditController thread
+    '''
     if isinstance(response, ClientConnectionAuditResult):
       self.sendConnection.emit(response)
 
@@ -132,7 +144,21 @@ class SSLCAuditGUIWindow(QMainWindow):
     QApplication.clipboard().setText(self.ui.reportText.toPlainText())
 
   @pyqtSlot(name='on_startButton_clicked')
-  def startAudit(self):
+  def startStopAudit(self):
+      if self.controller.isRunning():
+        self._stopAudit()
+      else:
+        self._startAudit()
+
+  def _stopAudit(self):
+    try:
+      self.controller.stop()
+      self.ui.startButton.setText('Start')
+      self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-start'))
+    except:
+      self.sendError(str(sys.exc_info()[1]))
+
+  def _startAudit(self):
     self.ui.startButton.setText('Stop')
     self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-stop'))
     

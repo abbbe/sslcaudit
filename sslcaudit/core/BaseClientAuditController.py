@@ -79,6 +79,7 @@ class BaseClientAuditController(Thread):
         SSLCAuditCLI loop function. Will run until the desired number of clients is handled.
         '''
         nresults = 0
+        self.logger.debug('entering main loop in run()')
 
         # loop until get all desired results, quit if stopped
         while nresults < self.options.nclients and not self.do_stop:
@@ -92,6 +93,9 @@ class BaseClientAuditController(Thread):
                     nresults = nresults + 1
             except Empty:
                 pass
+
+        self.server.stop()
+        self.logger.debug('exited main loop in run()')
 
     def init_self_tests(self):
         # determine where to connect to
