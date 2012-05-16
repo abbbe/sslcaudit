@@ -381,7 +381,28 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_4">
           <item row="0" column="0">
-           <widget class="QListWidget" name="listWidget"/>
+           <widget class="QListWidget" name="protocolList">
+            <item>
+             <property name="text">
+              <string>Protocol A</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Protocol B</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Protocol C</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Protocol D</string>
+             </property>
+            </item>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -393,7 +414,28 @@
          </property>
          <layout class="QGridLayout" name="gridLayout_5">
           <item row="0" column="0">
-           <widget class="QListWidget" name="listWidget_2"/>
+           <widget class="QListWidget" name="cipherList">
+            <item>
+             <property name="text">
+              <string>Cipher A</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Cipher B</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Cipher C</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Cipher D</string>
+             </property>
+            </item>
+           </widget>
           </item>
          </layout>
         </widget>
@@ -421,15 +463,15 @@
        <string>Test Log</string>
       </attribute>
       <layout class="QGridLayout" name="gridLayout_2">
-       <item row="0" column="0">
-        <widget class="QTextBrowser" name="textBrowser"/>
-       </item>
        <item row="1" column="0">
         <widget class="QCheckBox" name="checkBox">
          <property name="text">
           <string>Show debug messages</string>
          </property>
         </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QListWidget" name="listWidget"/>
        </item>
       </layout>
      </widget>
@@ -455,7 +497,7 @@
         </spacer>
        </item>
        <item row="1" column="1">
-        <widget class="QPushButton" name="pushButton">
+        <widget class="QPushButton" name="copyToClipboardButton">
          <property name="text">
           <string>Copy to clipboard</string>
          </property>

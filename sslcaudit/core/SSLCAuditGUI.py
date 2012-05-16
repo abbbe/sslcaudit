@@ -42,10 +42,16 @@ class SSLCauditGUIWindow(QMainWindow):
         self.ui = SSLCAuditGUIGenerated.Ui_MainWindow()
         self.ui.setupUi(self)
         
+        # Remove focus from the input box. We need the placeholder text.
+        self.setFocus()
+        
         # Gives the "Start" button an icon.
         self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-start'))
-
-        # Gives each of the "Browse" buttons an icon.
+        
+        # Gives the "Copy to Cliboard" button an icon.
+        self.ui.copyToClipboardButton.setIcon(QIcon.fromTheme('edit-copy'))
+        
+        # Gives each of the "Browse" buttons an icon and set their appropriate actions
         for control in [
           self.ui.certificateBrowse1,
           self.ui.certificateBrowse2,
@@ -69,3 +75,13 @@ class SSLCauditGUIWindow(QMainWindow):
         port_validator.setRange(0, 65535)
         self.ui.portLineEdit.setValidator(port_validator)
         
+        # Sets the check state of every item in both QListWidgets. This is
+        # needed for the checkboxes to appear, so add the ciphers and
+        # protocols via Qt Designer.
+
+        for item in self.childIterator(self.ui.protocolList) + self.childIterator(self.ui.cipherList):
+            item.setFlags(item.flags() | Qt.ItemIsUserCheckable)
+            item.setCheckState(Qt.Checked)
+    
+    def childIterator(self, element):
+        return [element.item(i) for i in range(element.count())]
