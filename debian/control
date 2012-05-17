@@ -8,7 +8,7 @@ XS-Python-Version: >=2.6
 
 Package: python-sslcaudit
 Architecture: all
-Depends: ${misc:Depends}, ${python:Depends}, python-m2crypto
+Depends: python (>=2.6), python-m2crypto
 XB-Python-Version: >=2.6
 Provides: ${python:Provides}
 Description: Utility to perform security audits of SSL/TLS clients
