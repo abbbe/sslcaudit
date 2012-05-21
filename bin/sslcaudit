@@ -1,4 +1,4 @@
-#!/usr/bin/env python2
+#!/usr/bin/env python
 
 # ----------------------------------------------------------------------
 # SSLCAUDIT - a tool for automating security audit of SSL clients
@@ -19,9 +19,6 @@ if os.path.exists(src_dir): sys.path.insert(0, base_dir)
 
 import logging
 from sslcaudit.core.ConfigError import ConfigError
-from sslcaudit.core import SSLCAuditUI
-from sslcaudit.core.SSLCAuditGUI import SSLCAuditGUI
-from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
 
 
 def check_dependencies():
@@ -43,10 +40,16 @@ def main(argv):
         return 1
 
     try:
+        from sslcaudit.core import SSLCAuditUI
+
         options = SSLCAuditUI.parse_options(argv[1:])
         if options.gui:
+            from sslcaudit.core.SSLCAuditGUI import SSLCAuditGUI
+
             ui = SSLCAuditGUI(options)
         else:
+            from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
+
             ui = SSLCAuditCLI(options)
         return ui.run()
     except KeyboardInterrupt as ex:
