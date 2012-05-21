@@ -18,7 +18,6 @@ if os.path.exists(src_dir): sys.path.insert(0, base_dir)
 
 import logging
 from sslcaudit.core.ConfigError import ConfigError
-from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
 
 def check_dependencies():
     # make sure M2Crypto is installed
@@ -36,6 +35,7 @@ def check_dependencies():
 def init_controller(argv):
     # initialize the controller
     try:
+        from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
         controller = SSLCAuditCLI(argv[1:])
         controller.start()
         return controller
