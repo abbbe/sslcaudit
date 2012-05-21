@@ -1,0 +1,11 @@
+sslcaudit (1.0-2) precise; urgency=low
+
+  * relaxed python version restriction to >=2.6 (to make BT installation straightforward) 
+
+ -- Alexandre Bezroutchko <abb@gremwell.com>  Tue, 15 May 2012 21:36:58 +0200
+
+sslcaudit (1.0-1) unstable; urgency=low
+
+  * source package automatically created by stdeb 0.6.0+git
+
+ -- Alexandre Bezroutchko <abb@gremwell.com>  Tue, 15 May 2012 20:36:38 +0200

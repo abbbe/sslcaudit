@@ -1,0 +1,15 @@
+Source: sslcaudit
+Maintainer: Alexandre Bezroutchko <abb@gremwell.com>
+Section: python
+Priority: optional
+Build-Depends: debhelper (>= 7), python-support (>= 0.8.4)
+Standards-Version: 3.8.4
+XS-Python-Version: >=2.6
+
+Package: python-sslcaudit
+Architecture: all
+Depends: python (>=2.6), python-m2crypto
+XB-Python-Version: >=2.6
+Provides: ${python:Provides}
+Description: Utility to perform security audits of SSL/TLS clients
+

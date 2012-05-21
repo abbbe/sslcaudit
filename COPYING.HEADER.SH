@@ -4,6 +4,3 @@
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
 
-[DEFAULT]
-Depends: python-m2crypto
-Debian-Version: 2
