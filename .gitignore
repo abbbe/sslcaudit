@@ -1,5 +1,6 @@
 *.pyc
 .idea/workspace.xml
+.idea/misc.xml
 .*.swp
 .~lock.*#
 deb_dist
