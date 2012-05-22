@@ -1,4 +1,9 @@
-Logging strategy:
+Logging strategy
+================
 
-* DEBUG: internal workings of the tool
-* INFO: displayed during normal operation, unless -q is given
+The tool uses logging facility to convey information about the progress of the test.
+There is a log file in the filebag directory which contains full debug info.
+In normal mode it displays informational-level messages to the console (to be changed for GUI probably).
+In quiet mode it will only display warnings and other higher level messages. In any non-zero debug mode
+it will display debug messages to the console.
+

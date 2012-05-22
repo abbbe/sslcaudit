@@ -9,10 +9,9 @@ from threading import Thread
 import unittest
 from sslcaudit.core import SSLCAuditUI
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController
-from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
+from sslcaudit.core.FileBag import FileBag
 from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientConnectionAuditResult
 from sslcaudit.core.ClientHandler import ClientAuditResult
-from sslcaudit.core.SSLCAuditUI import parse_options
 from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
 from sslcaudit.test.TestConfig import get_next_listener_port, TEST_LISTENER_ADDR
 
@@ -61,7 +60,8 @@ class TestDummyModule(unittest.TestCase):
         # create main, the target of the test
         main_args = ['-m', 'dummy', '-l', ("%s:%d" % (TEST_LISTENER_ADDR, port))]
         options = SSLCAuditUI.parse_options(main_args)
-        controller = BaseClientAuditController(options, event_handler=main__handle_result)
+        file_bag = FileBag(basename='test-sslcaudit', use_tempdir=True)
+        controller = BaseClientAuditController(options, file_bag, event_handler=main__handle_result)
 
         # tell the hammer how many attempts to make exactly
         self.hammer.set_peer((TEST_LISTENER_ADDR, port))

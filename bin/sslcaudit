@@ -35,7 +35,7 @@ def check_dependencies():
         return False
 
 
-def init_logging(debug_level, file_bag):
+def init_logging(options, file_bag):
     FORMAT = '%(asctime)s %(name)s %(levelname)s   %(message)s'
     formatter = logging.Formatter(FORMAT)
 
@@ -46,13 +46,19 @@ def init_logging(debug_level, file_bag):
     logging.getLogger().addHandler(debugLogFileHandler)
 
     consoleLogger = logging.StreamHandler()
-    if debug_level > 0:
+    if options.debug_level > 0:
+        # debugging
         consoleLogger.setLevel(logging.DEBUG)
+    elif options.quiet:
+        # quiet mode of operation, display warnings and errors only
+        consoleLogger.setLevel(logging.WARN)
     else:
+        # normal, reasonalby verbose mode of operation
         consoleLogger.setLevel(logging.INFO)
     consoleLogger.setFormatter(formatter)
     logging.getLogger().addHandler(consoleLogger)
-    logging.getLogger().debug('logging initialized, debug_level %d' % debug_level)
+    logging.getLogger().debug('logging initialized, debug_level=%d, verbose=%s' \
+        % (options.debug_level, str(options.quiet)))
     logging.getLogger().setLevel(logging.DEBUG)
 
 
@@ -66,7 +72,7 @@ def main(argv):
         options = SSLCAuditUI.parse_options(argv[1:])
         file_bag = FileBag(options.test_name)
 
-        init_logging(options.debug_level, file_bag)
+        init_logging(options, file_bag)
 
         if options.gui:
             from sslcaudit.core.SSLCAuditGUI import SSLCAuditGUI

@@ -6,7 +6,6 @@ from threading import Thread
 from sslcaudit.core.ClientAuditorServer import ClientAuditorServer
 from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditResult
 from sslcaudit.core.ConfigError import ConfigError
-from sslcaudit.core.FileBag import FileBag
 from sslcaudit.test.ExternalCommandHammer import CurlHammer
 from sslcaudit.test.SSLConnectionHammer import ChainVerifyingSSLConnectionHammer, CNVerifyingSSLConnectionHammer
 from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
@@ -20,8 +19,9 @@ PROFILE_FACTORY_CLASS_NAME = 'ProfileFactory'
 PROG_NAME = 'sslcaudit'
 PROG_VERSION = '1.0'
 
+logger = logging.getLogger('BaseClientAuditController')
+
 class BaseClientAuditController(Thread):
-    logger = logging.getLogger('BaseClientAuditController')
 
     def __init__(self, options, file_bag, event_handler):
         Thread.__init__(self, target=self.run)
@@ -76,14 +76,14 @@ class BaseClientAuditController(Thread):
         SSLCAuditCLI loop function. Will run until the desired number of clients is handled.
         '''
         nresults = 0
-        self.logger.debug('entering main loop in run()')
+        logger.debug('entering main loop in run()')
 
         # loop until get all desired results, quit if stopped
         while nresults < self.options.nclients and not self.do_stop:
             try:
                 # wait for a message blocking for short intervals, check stop flag frequently
                 res = self.server.res_queue.get(True, self.queue_read_timeout)
-                self.logger.debug("got result %s", res)
+                logger.debug("got result %s", res)
                 self.event_handler(res)
 
                 if isinstance(res, ClientAuditResult):
@@ -92,7 +92,7 @@ class BaseClientAuditController(Thread):
                 pass
 
         self.server.stop()
-        self.logger.debug('exited main loop in run()')
+        logger.debug('exited main loop in run()')
 
     def init_self_tests(self):
         # determine where to connect to

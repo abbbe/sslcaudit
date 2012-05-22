@@ -7,6 +7,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 import logging, unittest
 from sslcaudit.core import SSLCAuditUI
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController
+from sslcaudit.core.FileBag import FileBag
 
 from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
 from sslcaudit.modules.sslcert.ProfileFactory import DEFAULT_CN, SSLProfileSpec_SelfSigned, SSLProfileSpec_IMCA_Signed, SSLProfileSpec_Signed, IM_CA_FALSE_CN, IM_CA_TRUE_CN, IM_CA_NONE_CN, SSLProfileSpec_UserSupplied
@@ -225,14 +226,14 @@ class TestSSLCertModule(unittest.TestCase):
             else:
                 pass # ignore other events
 
-        # create optrions for the controller
-        test_name = "%s %s" % (hammer, args)
+        # create options for the controller
         main_args = ['-l', '%s:%d' % (TestConfig.TEST_LISTENER_ADDR, port)]
         main_args.extend(args)
         options = SSLCAuditUI.parse_options(main_args)
 
-        # create controller
-        self.controller = BaseClientAuditController(options, event_handler=main__handle_result)
+        # create file_bag and controller
+        file_bag = FileBag(basename='test-sslcaudit', use_tempdir=True)
+        self.controller = BaseClientAuditController(options, file_bag, event_handler=main__handle_result)
 
         self.hammer = hammer
         if self.hammer != None:

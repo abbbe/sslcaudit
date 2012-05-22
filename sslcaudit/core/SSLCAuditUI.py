@@ -23,8 +23,8 @@ def parse_options(argv):
         + "new modules. Default is %s" % DEFAULT_MODULES)
     parser.add_option("-g", dest="gui", action="store_true", default=False,
         help="Use graphical UI")
-    parser.add_option("-v", type='int', dest="verbose", default=0,
-        help="Increase verbosity level. Default is 0. Try 1.")
+    parser.add_option("-q", action="store_true", dest="quiet", default=False,
+        help="Quiet mode of operations, only display warnings and errors.")
     parser.add_option("-d", type='int', dest="debug_level", default=0,
         help="Set debug level. Default is 0, which disables debugging output. Try 1 to enable it.")
     parser.add_option("-c", type='int', dest="nclients", default=1,

@@ -24,8 +24,7 @@ class SSLCAuditCLI(object):
 
     def run(self):
         # print config info to the console before running the controller
-        if self.options.verbose > 0:
-            print '# filebag location: %s' % str(self.controller.file_bag.base_dir)
+        logger.info('filebag location: %s' % str(self.controller.file_bag.base_dir))
 
         self.controller.start()
 
@@ -51,7 +50,6 @@ class SSLCAuditCLI(object):
     def event_handler(self, res):
         if isinstance(res, ClientConnectionAuditResult):
             # dump:
-            # * filebag path (only in verbose mode),
             # * client address and port,
             # * server profile
             # * result
