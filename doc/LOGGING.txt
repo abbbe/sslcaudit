@@ -1,0 +1,4 @@
+Logging strategy:
+
+* DEBUG: internal workings of the tool
+* INFO: displayed during normal operation, unless -q is given
