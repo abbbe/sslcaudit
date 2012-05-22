@@ -29,9 +29,6 @@ class BaseClientAuditController(Thread):
         self.event_handler = event_handler
         self.queue_read_timeout = 0.1
 
-        if self.options.debug_level > 0:
-            logging.getLogger().setLevel(logging.DEBUG)
-
         self.file_bag = FileBag(self.options.test_name)
 
         self.init_profile_factories()

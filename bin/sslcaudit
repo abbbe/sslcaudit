@@ -9,7 +9,7 @@
 # ----------------------------------------------------------------------
 
 
-import os, sys
+import os, sys, logging
 
 # if the script is launched from sources, make sure it uses modules located in the
 # same place
@@ -17,7 +17,6 @@ base_dir = os.path.join(os.path.dirname(__file__), '..')
 src_dir = os.path.join(base_dir, 'sslcaudit')
 if os.path.exists(src_dir): sys.path.insert(0, base_dir)
 
-import logging
 from sslcaudit.core.ConfigError import ConfigError
 
 
@@ -35,6 +34,26 @@ def check_dependencies():
         return False
 
 
+def init_logging(debug_level):
+    FORMAT = '%(asctime)s %(name)s %(levelname)s   %(message)s'
+    formatter = logging.Formatter(FORMAT)
+
+    debugLogFileHandler = logging.FileHandler(filename='debug.log')
+    debugLogFileHandler.setLevel(logging.DEBUG)
+    debugLogFileHandler.setFormatter(formatter)
+    logging.getLogger().addHandler(debugLogFileHandler)
+
+    consoleLogger = logging.StreamHandler()
+    if debug_level > 0:
+        consoleLogger.setLevel(logging.DEBUG)
+    else:
+        consoleLogger.setLevel(logging.INFO)
+    consoleLogger.setFormatter(formatter)
+    logging.getLogger().addHandler(consoleLogger)
+    logging.getLogger().debug('logging initialized, debug_level %d' % debug_level)
+    logging.getLogger().setLevel(logging.DEBUG)
+
+
 def main(argv):
     if not check_dependencies():
         return 1
@@ -43,6 +62,9 @@ def main(argv):
         from sslcaudit.core import SSLCAuditUI
 
         options = SSLCAuditUI.parse_options(argv[1:])
+
+        init_logging(options.debug_level)
+
         if options.gui:
             from sslcaudit.core.SSLCAuditGUI import SSLCAuditGUI
 
@@ -51,6 +73,7 @@ def main(argv):
             from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
 
             ui = SSLCAuditCLI(options)
+
         return ui.run()
     except KeyboardInterrupt as ex:
         print 'Got KeyboardInterrupt exception before controller loop started, exiting'
@@ -63,6 +86,5 @@ def main(argv):
         return 1
 
 if __name__ == "__main__":
-    logging.basicConfig()
     sys.exit(main(sys.argv))
 

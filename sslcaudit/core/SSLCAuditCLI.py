@@ -8,9 +8,6 @@ import logging
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController, HOST_ADDR_ANY
 from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
 
-FORMAT = '%(asctime)s %(name)s %(levelname)s   %(message)s'
-logging.basicConfig(level=logging.INFO, format=FORMAT)
-
 logger = logging.getLogger('SSLCAuditCLI')
 
 DEFAULT_HOST = HOST_ADDR_ANY
@@ -38,7 +35,7 @@ class SSLCAuditCLI(object):
             try:
                 self.controller.join(1)
             except KeyboardInterrupt:
-                print 'Got KeyboardInterrupt exception, aborting the program ...'
+                logger.info('Got KeyboardInterrupt exception, aborting the program ...')
                 self.controller.stop() # graceful death
                 interrupted_by_user = True
 
