@@ -18,9 +18,9 @@ OUTPUT_FIELD_SEPARATOR = ' '
 
 
 class SSLCAuditCLI(object):
-    def __init__(self, options):
+    def __init__(self, options, file_bag):
         self.options = options
-        self.controller = BaseClientAuditController(self.options, event_handler=self.event_handler)
+        self.controller = BaseClientAuditController(self.options, file_bag, event_handler=self.event_handler)
 
     def run(self):
         # print config info to the console before running the controller

@@ -11,7 +11,6 @@ import tempfile
 
 DEFAULT_BASENAME = 'sslcaudit'
 MAX_REV = 1000000
-DEFAULT_TMPDIR_PREFIX = 'filebag'
 
 class FileBag(object):
     '''
@@ -22,7 +21,7 @@ class FileBag(object):
             basename = DEFAULT_BASENAME
 
         if use_tempdir:
-            basename = os.path.join(tempfile.mkdtemp(prefix=DEFAULT_TMPDIR_PREFIX), basename)
+            basename = os.path.join(tempfile.mkdtemp(prefix=DEFAULT_BASENAME), basename)
 
         for rev in range(0, MAX_REV):
             # create a path based on the base name and revision number
@@ -46,6 +45,12 @@ class FileBag(object):
 
     def mk_file(self, suffix='', prefix=tempfile.template):
         return NamedTemporaryFile(dir=self.base_dir, prefix=prefix, suffix=suffix, delete=False)
+
+    def mk_filename(self, suffix='', prefix=tempfile.template):
+        ''' Create a file in the filebag and return its name. '''
+        f = self.mk_file(suffix, prefix)
+        f.close()
+        return f.name
 
     def mk_two_files(self, suffix1, suffix2, prefix=tempfile.template):
         while True:

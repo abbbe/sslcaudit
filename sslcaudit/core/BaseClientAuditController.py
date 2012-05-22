@@ -23,13 +23,13 @@ PROG_VERSION = '1.0'
 class BaseClientAuditController(Thread):
     logger = logging.getLogger('BaseClientAuditController')
 
-    def __init__(self, options, event_handler):
+    def __init__(self, options, file_bag, event_handler):
         Thread.__init__(self, target=self.run)
         self.options = options
         self.event_handler = event_handler
         self.queue_read_timeout = 0.1
 
-        self.file_bag = FileBag(self.options.test_name)
+        self.file_bag = file_bag
 
         self.init_profile_factories()
 

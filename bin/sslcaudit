@@ -18,6 +18,7 @@ src_dir = os.path.join(base_dir, 'sslcaudit')
 if os.path.exists(src_dir): sys.path.insert(0, base_dir)
 
 from sslcaudit.core.ConfigError import ConfigError
+from sslcaudit.core.FileBag import FileBag
 
 
 def check_dependencies():
@@ -34,11 +35,12 @@ def check_dependencies():
         return False
 
 
-def init_logging(debug_level):
+def init_logging(debug_level, file_bag):
     FORMAT = '%(asctime)s %(name)s %(levelname)s   %(message)s'
     formatter = logging.Formatter(FORMAT)
 
-    debugLogFileHandler = logging.FileHandler(filename='debug.log')
+    debugLogFile = file_bag.mk_filename(suffix='.log')
+    debugLogFileHandler = logging.FileHandler(filename=debugLogFile)
     debugLogFileHandler.setLevel(logging.DEBUG)
     debugLogFileHandler.setFormatter(formatter)
     logging.getLogger().addHandler(debugLogFileHandler)
@@ -62,17 +64,18 @@ def main(argv):
         from sslcaudit.core import SSLCAuditUI
 
         options = SSLCAuditUI.parse_options(argv[1:])
+        file_bag = FileBag(options.test_name)
 
-        init_logging(options.debug_level)
+        init_logging(options.debug_level, file_bag)
 
         if options.gui:
             from sslcaudit.core.SSLCAuditGUI import SSLCAuditGUI
 
-            ui = SSLCAuditGUI(options)
+            ui = SSLCAuditGUI(options, file_bag)
         else:
             from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
 
-            ui = SSLCAuditCLI(options)
+            ui = SSLCAuditCLI(options, file_bag)
 
         return ui.run()
     except KeyboardInterrupt as ex:

@@ -17,14 +17,14 @@ import SSLCAuditGUIGenerated
 logger = logging.getLogger('SSLCAuditGUI')
 
 class SSLCAuditGUI(object):
-  def __init__(self, options):
+  def __init__(self, options, file_bag):
     '''
     Initialize UI. Dictionary 'options' comes from SSLCAuditUI.parse_options().
     '''
     self.options = options
 
     self.app = QApplication(sys.argv)
-    self.window = SSLCAuditGUIWindow(self.options)
+    self.window = SSLCAuditGUIWindow(self.options, file_bag)
 
   def run(self):
     self.window.show()
@@ -37,14 +37,15 @@ class SSLCAuditThreadedInterface(QObject):
   sendError = pyqtSignal(str)
   sendConnection = pyqtSignal(ClientConnectionAuditResult)
 
-  def __init__(self):
+  def __init__(self, file_bag):
     QObject.__init__(self)
+    self.file_bag = file_bag
     self.is_running = False
 
-  def parseOptions(self, options):
-    self.controller = BaseClientAuditController(options, event_handler=self.event_handler)
+  def init_controller(self, options):
     self.options = options
-    
+    self.controller = BaseClientAuditController(self.options, self.file_bag, event_handler=self.event_handler)
+
   def start(self):
     try:
       self.controller.start()
@@ -68,15 +69,16 @@ class SSLCAuditThreadedInterface(QObject):
 
 
 class SSLCAuditGUIWindow(QMainWindow):
-  def __init__(self, options, parent=None):
+  def __init__(self, options, file_bag, parent=None):
     '''
     Initialize UI. Dictionary 'options' comes from SSLCAuditUI.parse_options().
     '''
     QMainWindow.__init__(self, parent)
     
     self.options = options
+    self.file_bag = file_bag
     self.settings = QSettings('SSLCAudit')
-    self.controller = SSLCAuditThreadedInterface()
+    self.controller = SSLCAuditThreadedInterface(file_bag)
     
     self.controller.sendLog.connect(self.controllerSentLog)
     #self.controller.sendError.connect(self.controllerSentError)
@@ -173,7 +175,7 @@ class SSLCAuditGUIWindow(QMainWindow):
       port
     )
     try:
-      self.controller.parseOptions(self.options)
+      self.controller.init_controller(self.options)
       self.controller.start()
     except:
       self.sendError(str(sys.exc_info()[1]))
