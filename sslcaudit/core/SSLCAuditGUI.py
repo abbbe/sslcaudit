@@ -14,7 +14,19 @@ from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResul
 
 import SSLCAuditGUIGenerated
 
-logger = logging.getLogger('SSLCAuditGUI')
+class PyQt4Handler(logging.Handler, QObject):
+  sendLog = pyqtSignal(str)
+  sendError = pyqtSignal(str)
+  
+  def __init__(self, *args, **kwargs):
+    logging.Handler.__init__(self, *args, **kwargs)
+    QObject.__init__(self, *args, **kwargs)
+
+  def emit(self, record):
+    if record.levelname == 'DEBUG':
+      self.sendLog.emit(record.getMessage())
+    elif record.levelname == 'ERROR':
+      self.sendError.emit(record.getMessage())
 
 class SSLCAuditGUI(object):
   def __init__(self, options):
@@ -35,11 +47,13 @@ class SSLCAuditGUI(object):
 class SSLCAuditThreadedInterface(QObject):
   sendLog = pyqtSignal(str)
   sendError = pyqtSignal(str)
-  sendConnection = pyqtSignal(ClientConnectionAuditResult)
+  sendConnection = pyqtSignal(str)
 
   def __init__(self):
     QObject.__init__(self)
+    
     self.is_running = False
+
 
   def parseOptions(self, options):
     self.controller = BaseClientAuditController(options, event_handler=self.event_handler)
@@ -60,11 +74,7 @@ class SSLCAuditThreadedInterface(QObject):
     return self.is_running
 
   def event_handler(self, response):
-    '''
-    This method gets invoked asyncronously by BaseClientAuditController thread
-    '''
-    if isinstance(response, ClientConnectionAuditResult):
-      self.sendConnection.emit(response)
+    self.sendConnection.emit(response)
 
 
 class SSLCAuditGUIWindow(QMainWindow):
@@ -79,9 +89,19 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.controller = SSLCAuditThreadedInterface()
     
     self.controller.sendLog.connect(self.controllerSentLog)
-    #self.controller.sendError.connect(self.controllerSentError)
+    self.controller.sendError.connect(self.controllerSentError)
     #self.controller.sendConnection.connect(self.controllerSentConnection)
     
+    self.log_handler = PyQt4Handler()
+    self.log_handler.sendLog.connect(self.controllerSentLog)
+    self.log_handler.sendError.connect(self.controllerSentError)
+
+    ClientAuditorTCPServerLogger = logging.getLogger('ClientAuditorTCPServer')
+    BaseClientAuditControllerLogger = logging.getLogger('BaseClientAuditController')
+
+    ClientAuditorTCPServerLogger.addHandler(self.log_handler)
+    BaseClientAuditControllerLogger.addHandler(self.log_handler)
+
     # Initialize the UI and store it within the self.ui variable
     self.ui = SSLCAuditGUIGenerated.Ui_MainWindow()
     self.ui.setupUi(self)
@@ -133,6 +153,13 @@ class SSLCAuditGUIWindow(QMainWindow):
     
     if self.ui.showDebugMessagesCheckBox.checkState() != Qt.Checked:
       message.setHidden(True)
+
+  def controllerSentError(self, message):
+    message = QListWidgetItem(message)
+    message.setToolTip('Error message')
+    message.setForeground(QBrush(QColor('Red')))
+
+    self.ui.testLog.addItem(message)
 
   def changeDebugMessageVisibility(self):
     for item in self.childIterator(self.ui.testLog):
