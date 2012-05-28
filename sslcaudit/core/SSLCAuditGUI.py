@@ -62,7 +62,7 @@ class SSLCAuditThreadedInterface(QObject):
 
   def event_handler(self, response):
     '''
-    This method gets invoked asyncronously by BaseClientAuditController thread
+    This method gets invoked asynchronously by BaseClientAuditController thread
     '''
     if isinstance(response, ClientConnectionAuditResult):
       self.sendConnection.emit(response)
