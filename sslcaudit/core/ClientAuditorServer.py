@@ -5,33 +5,14 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 import  logging
-from SocketServer import TCPServer
 import socket
 from threading import Thread
 from Queue import Queue
 from sslcaudit.core.ClientConnection import ClientConnection
 from sslcaudit.core.ClientHandler import ClientHandler
+from sslcaudit.core.ThreadingTCPServer import ThreadingTCPServer
 
 logger = logging.getLogger('ClientAuditorTCPServer')
-
-#class ClientAuditorTCPServer(ThreadingMixIn, TCPServer):
-class ClientAuditorTCPServer(TCPServer):
-    '''
-    This class extends TCPServer to enforce address reuse, enforce daemon threads, and allow threading.
-    '''
-
-    def __init__(self, listen_on):
-        TCPServer.__init__(self, listen_on, None, bind_and_activate=False)
-        self.daemon_threads = True
-        # make sure SO_REUSE_ADDR socket option is set
-        self.allow_reuse_address = True
-
-        try:
-            self.server_bind()
-        except socket.error as ex:
-            raise RuntimeError('failed to bind to %s, exception: %s' % (listen_on, ex))
-
-        self.server_activate()
 
 
 class ClientAuditorServer(Thread):
@@ -60,7 +41,7 @@ class ClientAuditorServer(Thread):
             self.res_queue = res_queue
 
         # create TCP server and make it use our method to handle the requests
-        self.tcp_server = ClientAuditorTCPServer(self.listen_on)
+        self.tcp_server = ThreadingTCPServer(self.listen_on)
         self.tcp_server.finish_request = self.finish_request
 
     def finish_request(self, sock, client_address):
