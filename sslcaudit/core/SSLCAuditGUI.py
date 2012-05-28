@@ -10,7 +10,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController, HOST_ADDR_ANY
-from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientConnectionAuditEvent
 
 import SSLCAuditGUIGenerated
 from sslcaudit.core.ClientServerTestResultTreeTableModel import ClientServerTestResultTreeTableModel
@@ -52,7 +52,7 @@ class SSLCAuditGUI(object):
 class SSLCAuditThreadedInterface(QObject):
   sendLog = pyqtSignal(str)
   sendError = pyqtSignal(str)
-  sendConnection = pyqtSignal(str)
+  sendConnection = pyqtSignal(ClientConnectionAuditEvent)
 
   def __init__(self, file_bag):
     QObject.__init__(self)
@@ -82,7 +82,7 @@ class SSLCAuditThreadedInterface(QObject):
     '''
     This method gets invoked asynchronously by BaseClientAuditController thread
     '''
-    if isinstance(response, ClientConnectionAuditResult):
+    if isinstance(response, ClientConnectionAuditEvent):
       self.sendConnection.emit(response)
 
 
