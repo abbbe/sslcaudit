@@ -5,7 +5,6 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
 import  logging
-import socket
 from threading import Thread
 from Queue import Queue
 from sslcaudit.core.ClientConnection import ClientConnection
