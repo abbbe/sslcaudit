@@ -15,6 +15,10 @@ from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResul
 import SSLCAuditGUIGenerated
 
 class PyQt4Handler(logging.Handler, QObject):
+  '''
+  This is a custom logging handler that emits PyQt4 signals when it intercepts messages
+  '''
+
   sendLog = pyqtSignal(str)
   sendError = pyqtSignal(str)
   
@@ -88,18 +92,18 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.settings = QSettings('SSLCAudit')
     self.controller = SSLCAuditThreadedInterface()
     
-    self.controller.sendLog.connect(self.controllerSentLog)
-    self.controller.sendError.connect(self.controllerSentError)
-    #self.controller.sendConnection.connect(self.controllerSentConnection)
+    # Bind connection debugging to the appropriate function
+    self.controller.sendConnection.connect(self.controllerSentConnection)
     
+    # Setup and bind the logging handler to the appropriate functions
     self.log_handler = PyQt4Handler()
     self.log_handler.sendLog.connect(self.controllerSentLog)
     self.log_handler.sendError.connect(self.controllerSentError)
 
     ClientAuditorTCPServerLogger = logging.getLogger('ClientAuditorTCPServer')
-    BaseClientAuditControllerLogger = logging.getLogger('BaseClientAuditController')
-
     ClientAuditorTCPServerLogger.addHandler(self.log_handler)
+
+    BaseClientAuditControllerLogger = logging.getLogger('BaseClientAuditController')
     BaseClientAuditControllerLogger.addHandler(self.log_handler)
 
     # Initialize the UI and store it within the self.ui variable
@@ -140,6 +144,7 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.ui.showDebugMessagesCheckBox.stateChanged.connect(self.changeDebugMessageVisibility)
     
   def childIterator(self, element):
+    # Used internally, as PyQt4 doesn't let you iterate over QListWidget items in a Pythonic manner
     return [element.item(i) for i in range(element.count())]
   
   def sendError(self, message):
@@ -160,7 +165,13 @@ class SSLCAuditGUIWindow(QMainWindow):
     message.setForeground(QBrush(QColor('Red')))
 
     self.ui.testLog.addItem(message)
+  
+  def controllerSentConnection(self, connection):
+    print '***'
+    print connection
+    print '***'
 
+  
   def changeDebugMessageVisibility(self):
     for item in self.childIterator(self.ui.testLog):
       if str(item.toolTip()) == 'Debug message':
