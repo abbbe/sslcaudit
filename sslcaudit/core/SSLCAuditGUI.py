@@ -13,6 +13,7 @@ from sslcaudit.core.BaseClientAuditController import BaseClientAuditController, 
 from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
 
 import SSLCAuditGUIGenerated
+from sslcaudit.core.ClientServerTestResultTreeTableModel import ClientServerTestResultTreeTableModel
 
 logger = logging.getLogger('SSLCAuditGUI')
 
@@ -41,6 +42,7 @@ class SSLCAuditThreadedInterface(QObject):
     QObject.__init__(self)
     self.file_bag = file_bag
     self.is_running = False
+    self.cstr_ttm = ClientServerTestResultTreeTableModel()
 
   def init_controller(self, options):
     self.options = options
@@ -120,7 +122,9 @@ class SSLCAuditGUIWindow(QMainWindow):
       item.setCheckState(Qt.Checked)
 
     self.ui.showDebugMessagesCheckBox.stateChanged.connect(self.changeDebugMessageVisibility)
-    
+
+    self.ui.treeView.setModel(self.controller.cstr_ttm)
+
   def childIterator(self, element):
     return [element.item(i) for i in range(element.count())]
   
