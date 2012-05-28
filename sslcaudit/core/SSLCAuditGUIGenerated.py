@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Mon May 28 14:32:09 2012
+# Created: Mon May 28 15:18:12 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -263,7 +263,7 @@ class Ui_MainWindow(object):
     MainWindow.setCentralWidget(self.centralwidget)
 
     self.retranslateUi(MainWindow)
-    self.tabWidget.setCurrentIndex(2)
+    self.tabWidget.setCurrentIndex(3)
     QtCore.QObject.connect(self.customCommonNameRadioButton, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.customCommonName.setEnabled)
     QtCore.QMetaObject.connectSlotsByName(MainWindow)
 

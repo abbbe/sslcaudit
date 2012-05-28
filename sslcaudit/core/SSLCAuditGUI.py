@@ -15,7 +15,23 @@ from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResul
 import SSLCAuditGUIGenerated
 from sslcaudit.core.ClientServerTestResultTreeTableModel import ClientServerTestResultTreeTableModel
 
-logger = logging.getLogger('SSLCAuditGUI')
+class PyQt4Handler(logging.Handler, QObject):
+  '''
+  This is a custom logging handler that emits PyQt4 signals when it intercepts messages
+  '''
+
+  sendLog = pyqtSignal(str)
+  sendError = pyqtSignal(str)
+  
+  def __init__(self, *args, **kwargs):
+    logging.Handler.__init__(self, *args, **kwargs)
+    QObject.__init__(self, *args, **kwargs)
+
+  def emit(self, record):
+    if record.levelname == 'DEBUG':
+      self.sendLog.emit(record.getMessage())
+    elif record.levelname == 'ERROR':
+      self.sendError.emit(record.getMessage())
 
 class SSLCAuditGUI(object):
   def __init__(self, options, file_bag):
@@ -36,7 +52,7 @@ class SSLCAuditGUI(object):
 class SSLCAuditThreadedInterface(QObject):
   sendLog = pyqtSignal(str)
   sendError = pyqtSignal(str)
-  sendConnection = pyqtSignal(ClientConnectionAuditResult)
+  sendConnection = pyqtSignal(str)
 
   def __init__(self, file_bag):
     QObject.__init__(self)
@@ -82,10 +98,20 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.settings = QSettings('SSLCAudit')
     self.controller = SSLCAuditThreadedInterface(file_bag)
     
-    self.controller.sendLog.connect(self.controllerSentLog)
-    #self.controller.sendError.connect(self.controllerSentError)
-    #self.controller.sendConnection.connect(self.controllerSentConnection)
+    # Bind connection debugging to the appropriate function
+    self.controller.sendConnection.connect(self.controllerSentConnection)
     
+    # Setup and bind the logging handler to the appropriate functions
+    self.log_handler = PyQt4Handler()
+    self.log_handler.sendLog.connect(self.controllerSentLog)
+    self.log_handler.sendError.connect(self.controllerSentError)
+
+    ClientAuditorTCPServerLogger = logging.getLogger('ClientAuditorTCPServer')
+    ClientAuditorTCPServerLogger.addHandler(self.log_handler)
+
+    BaseClientAuditControllerLogger = logging.getLogger('BaseClientAuditController')
+    BaseClientAuditControllerLogger.addHandler(self.log_handler)
+
     # Initialize the UI and store it within the self.ui variable
     self.ui = SSLCAuditGUIGenerated.Ui_MainWindow()
     self.ui.setupUi(self)
@@ -126,6 +152,7 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.ui.treeView.setModel(self.controller.cstr_ttm)
 
   def childIterator(self, element):
+    # Used internally, as PyQt4 doesn't let you iterate over QListWidget items in a Pythonic manner
     return [element.item(i) for i in range(element.count())]
   
   def sendError(self, message):
@@ -140,6 +167,19 @@ class SSLCAuditGUIWindow(QMainWindow):
     if self.ui.showDebugMessagesCheckBox.checkState() != Qt.Checked:
       message.setHidden(True)
 
+  def controllerSentError(self, message):
+    message = QListWidgetItem(message)
+    message.setToolTip('Error message')
+    message.setForeground(QBrush(QColor('Red')))
+
+    self.ui.testLog.addItem(message)
+  
+  def controllerSentConnection(self, connection):
+    print '***'
+    print connection
+    print '***'
+
+  
   def changeDebugMessageVisibility(self):
     for item in self.childIterator(self.ui.testLog):
       if str(item.toolTip()) == 'Debug message':
