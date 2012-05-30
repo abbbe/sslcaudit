@@ -6,7 +6,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 
 import logging, itertools
 from exceptions import StopIteration
-from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientAuditResult
+from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndResult
 
 def try_iterator_length(iter):
     '''
@@ -30,67 +30,44 @@ class ClientHandler(object):
     ClientConnectionAuditResult or another subclass of ClientConnectionAuditEvent. After the last auditor has
     finished its work it pushes ClientAuditEndEvent and ClientAuditResult into the queue.
 
-    Object states:
-        right after initialization: next_auditor = None, done = False
-        after first and subsequent connection: next_auditor = something, done = False
-        after set of auditors is exhausted: next_auditor = None, done = True
-
     XXX race condition XXX
     '''
     logger = logging.getLogger('ClientHandler')
 
     def __init__(self, client_id, profiles, res_queue):
         self.client_id = client_id
-        self.result = ClientAuditResult(self.client_id)
+        self.result = ClientAuditEndResult(self.client_id)
         self.res_queue = res_queue
 
-        self.nprofiles = try_iterator_length(itertools.chain.from_iterable(profiles))
-        self.profiles_iterator = itertools.chain.from_iterable(profiles)
-        self.profiles_count = 0
+        self.profiles = profiles
+        self.nused_profiles = 0
 
         self.next_profile = None
 
-        self.done = False
+        self.res_queue.put(ClientAuditStartEvent(self.client_id, self.profiles))
 
     def handle(self, conn):
         '''
         This method is invoked when a new connection arrives.
         '''
-        if self.done:
-            self.logger.debug('no more profiles for connection %s', conn)
-            return
-
-        if self.next_profile == None:
-            # this is a very first connection
-            try:
-                self.next_profile = self.profiles_iterator.next()
-                self.profiles_count = self.profiles_count + 1
-                self.res_queue.put(ClientAuditStartEvent(self.next_profile, self.client_id))
-            except StopIteration:
-                self.logger.debug('no profiles for connection %s (the iterator was empty)', conn)
+        if self.nused_profiles < len(self.profiles):
+                self.logger.debug('no profiles for connection %s', conn)
                 self.res_queue.put(self.result)
-                self.done = True
                 return
 
         # handle this connection
-        handler = self.next_profile.get_handler()
-        res = handler.handle(conn, self.next_profile)
-        self.logger.debug('connection from %s using %s (%d/%d) resulted in %s',
-            conn, self.next_profile, self.profiles_count, self.nprofiles, res)
+        profile = self.profiles[self.nused_profiles]
+        handler = profile.get_handler()
+        res = handler.handle(conn, profile)
 
         # log and record the results of the test
-        #self.logger.debug('testing client conn %s using %s resulted in %s', conn, self.next_auditor, res)
-        self.logger.debug('testing connection %s using %s resulted in %s', conn, self.next_profile, res)
+        self.logger.debug('connection from %s using %s (%d/%d) resulted in %s',
+            conn, profile, self.nused_profiles, len(self.profiles), res)
         self.result.add(res)
         self.res_queue.put(res)
 
-        # prefetch next auditor from the iterator, to check if this was the last one
-        try:
-            self.next_profile = self.profiles_iterator.next()
-            self.profiles_count = self.profiles_count + 1
-        except StopIteration:
-            # it was the last auditor in the set
-            self.logger.debug('no more tests for client conn %s', conn)
-            self.res_queue.put(ClientAuditEndEvent(self.next_profile, self.client_id))
+        # if this was the last profile for this client
+        self.nused_profiles = self.nused_profiles + 1
+        if self.nused_profiles < len(self.profiles):
+            # it was the last profile for this client
             self.res_queue.put(self.result)
-            self.done = True

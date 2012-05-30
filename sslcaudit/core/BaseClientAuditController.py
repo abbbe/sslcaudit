@@ -4,7 +4,7 @@ import logging
 import sys
 from threading import Thread
 from sslcaudit.core.ClientAuditorServer import ClientAuditorServer
-from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditResult
+from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditEndResult
 from sslcaudit.core.ConfigError import ConfigError
 from sslcaudit.test.ExternalCommandHammer import CurlHammer
 from sslcaudit.test.SSLConnectionHammer import ChainVerifyingSSLConnectionHammer, CNVerifyingSSLConnectionHammer
@@ -86,7 +86,7 @@ class BaseClientAuditController(Thread):
                 logger.debug("got result %s", res)
                 self.event_handler(res)
 
-                if isinstance(res, ClientAuditResult):
+                if isinstance(res, ClientAuditEndResult):
                     nresults = nresults + 1
             except Empty:
                 pass

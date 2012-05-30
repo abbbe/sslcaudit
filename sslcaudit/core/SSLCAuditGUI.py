@@ -10,7 +10,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController, HOST_ADDR_ANY
-from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientConnectionAuditEvent
+from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientAuditStartEvent, ControllerEvent, ClientAuditEndResult
 
 import SSLCAuditGUIGenerated
 from sslcaudit.core.ClientServerTestResultTreeTableModel import ClientServerTestResultTreeTableModel
@@ -28,6 +28,7 @@ class PyQt4Handler(logging.Handler, QObject):
     QObject.__init__(self, *args, **kwargs)
 
   def emit(self, record):
+    # XXX perhaps move this code to the window class, we don't want logic in interfacing classes
     if record.levelname == 'DEBUG':
       self.sendLog.emit(record.getMessage())
     elif record.levelname == 'ERROR':
@@ -49,10 +50,17 @@ class SSLCAuditGUI(object):
     return self.app.exec_()
 
 
-class SSLCAuditThreadedInterface(QObject):
+class SSLCAuditQtBridge(QObject):
+  '''
+  This class is a bridge between PyQt GUI and the core of sslcaudit.
+  The main window contains an instance of this class and uses it to communicate with the core.
+  It invokes start(), stop(), isRunning() methods of the core to control it.
+  It uses sendLog, sendError, sendConnection signals to receive events from the core.
+  This class does not contain any control rules by itself.
+  '''
   sendLog = pyqtSignal(str)
   sendError = pyqtSignal(str)
-  sendConnection = pyqtSignal(ClientConnectionAuditEvent)
+  sendControllerEvent = pyqtSignal(ControllerEvent)
 
   def __init__(self, file_bag):
     QObject.__init__(self)
@@ -78,12 +86,11 @@ class SSLCAuditThreadedInterface(QObject):
   def isRunning(self):
     return self.is_running
 
-  def event_handler(self, response):
+  def event_handler(self, event):
     '''
     This method gets invoked asynchronously by BaseClientAuditController thread
     '''
-    if isinstance(response, ClientConnectionAuditEvent):
-      self.sendConnection.emit(response)
+    self.sendControllerEvent.emit(event)
 
 
 class SSLCAuditGUIWindow(QMainWindow):
@@ -96,10 +103,10 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.options = options
     self.file_bag = file_bag
     self.settings = QSettings('SSLCAudit')
-    self.controller = SSLCAuditThreadedInterface(file_bag)
+    self.bridge = SSLCAuditQtBridge(file_bag)
     
     # Bind connection debugging to the appropriate function
-    self.controller.sendConnection.connect(self.controllerSentConnection)
+    self.bridge.sendControllerEvent.connect(self.controllerSentEvent)
     
     # Setup and bind the logging handler to the appropriate functions
     self.log_handler = PyQt4Handler()
@@ -149,7 +156,7 @@ class SSLCAuditGUIWindow(QMainWindow):
 
     self.ui.showDebugMessagesCheckBox.stateChanged.connect(self.changeDebugMessageVisibility)
 
-    self.ui.treeView.setModel(self.controller.cstr_ttm)
+    self.ui.treeView.setModel(self.bridge.cstr_ttm)
 
   def childIterator(self, element):
     # Used internally, as PyQt4 doesn't let you iterate over QListWidget items in a Pythonic manner
@@ -157,7 +164,8 @@ class SSLCAuditGUIWindow(QMainWindow):
   
   def sendError(self, message):
     QMessageBox.critical(self, 'SSLCAudit', message, QMessageBox.Ok, QMessageBox.Ok)
-  
+
+  # XXX controllerSentLog and controllerSentEvent should be merged into one
   def controllerSentLog(self, message):
     message = QListWidgetItem(message)
     message.setToolTip('Debug message')
@@ -174,12 +182,17 @@ class SSLCAuditGUIWindow(QMainWindow):
 
     self.ui.testLog.addItem(message)
   
-  def controllerSentConnection(self, connection):
-    print '***'
-    print connection
-    print '***'
+  def controllerSentEvent(self, event):
+    if isinstance(event, ClientAuditStartEvent):
+      print '*** got ClientAuditStartEvent ***'
+    elif isinstance(event, ClientConnectionAuditResult):
+        print '*** got ClientConnectionAuditResult ***'
+    elif isinstance(event, ClientAuditEndResult):
+      print '*** got ClientAuditEndResult ***'
+    else:
+      raise ValueError('unexpected event: %s' % event)
 
-  
+
   def changeDebugMessageVisibility(self):
     for item in self.childIterator(self.ui.testLog):
       if str(item.toolTip()) == 'Debug message':
@@ -191,14 +204,14 @@ class SSLCAuditGUIWindow(QMainWindow):
 
   @pyqtSlot(name='on_startButton_clicked')
   def startStopAudit(self):
-      if self.controller.isRunning():
+      if self.bridge.isRunning():
         self._stopAudit()
       else:
         self._startAudit()
 
   def _stopAudit(self):
     try:
-      self.controller.stop()
+      self.bridge.stop()
       self.ui.startButton.setText('Start')
       self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-start'))
     except:
@@ -219,8 +232,8 @@ class SSLCAuditGUIWindow(QMainWindow):
       port
     )
     try:
-      self.controller.init_controller(self.options)
-      self.controller.start()
+      self.bridge.init_controller(self.options)
+      self.bridge.start()
     except:
       self.sendError(str(sys.exc_info()[1]))
       
@@ -231,9 +244,9 @@ class SSLCAuditGUIWindow(QMainWindow):
   
   
   def closeEvent(self, event):
-    if self.controller and self.controller.isRunning():
+    if self.bridge and self.bridge.isRunning():
       if QMessageBox.question(self, 'SSLCAudit', 'An audit is currently running. Do you really want to exit?', QMessageBox.Yes, QMessageBox.No) == QMessageBox.Yes:
-        self.controller.stop()
+        self.bridge.stop()
         event.accept()
       else:
         event.ignore()

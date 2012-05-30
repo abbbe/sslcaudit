@@ -11,7 +11,7 @@ from sslcaudit.core import SSLCAuditUI
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController
 from sslcaudit.core.FileBag import FileBag
 from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientConnectionAuditResult
-from sslcaudit.core.ClientHandler import ClientAuditResult
+from sslcaudit.core.ClientHandler import ClientAuditEndResult
 from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
 from sslcaudit.test.TestConfig import get_next_listener_port, TEST_LISTENER_ADDR
 
@@ -46,7 +46,7 @@ class TestDummyModule(unittest.TestCase):
                 self.got_result_end = self.got_result_end + 1
             elif isinstance(res, ClientConnectionAuditResult):
                 self.got_result = self.got_result + 1
-            elif isinstance(res, ClientAuditResult):
+            elif isinstance(res, ClientAuditEndResult):
                 self.got_bulk_result = self.got_bulk_result + 1
             else:
                 self.nstray = self.nstray + 1
