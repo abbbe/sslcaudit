@@ -10,7 +10,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController, HOST_ADDR_ANY
-from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientAuditStartEvent
 
 import SSLCAuditGUIGenerated
 
@@ -33,9 +33,16 @@ class SSLCAuditGUI(object):
 
 
 class SSLCAuditThreadedInterface(QObject):
+  '''
+  This class is a bridge between PyQt GUI and the core of sslcaudit.
+  The main window contains an instance of this class and uses it to communicate with the core.
+  It invokes start(), stop(), isRunning() methods of the core to control it.
+  It uses sendLog, sendError, sendConnection signals to receive events from the core.
+  '''
   sendLog = pyqtSignal(str)
   sendError = pyqtSignal(str)
-  sendConnection = pyqtSignal(ClientConnectionAuditResult)
+  sendClientConnectionAuditStart = pyqtSignal(ClientConnectionAuditResult)
+  sendClientAuditStartEvent = pyqtSignal(ClientAuditStartEvent)
 
   def __init__(self, file_bag):
     QObject.__init__(self)
@@ -65,7 +72,7 @@ class SSLCAuditThreadedInterface(QObject):
     This method gets invoked asynchronously by BaseClientAuditController thread
     '''
     if isinstance(response, ClientConnectionAuditResult):
-      self.sendConnection.emit(response)
+      self.sendClientConnectionAuditResult.emit(response)
 
 
 class SSLCAuditGUIWindow(QMainWindow):
