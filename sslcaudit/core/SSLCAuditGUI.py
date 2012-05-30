@@ -41,8 +41,8 @@ class SSLCAuditThreadedInterface(QObject):
   '''
   sendLog = pyqtSignal(str)
   sendError = pyqtSignal(str)
-  sendClientConnectionAuditStart = pyqtSignal(ClientConnectionAuditResult)
   sendClientAuditStartEvent = pyqtSignal(ClientAuditStartEvent)
+  sendClientConnectionAuditResult = pyqtSignal(ClientConnectionAuditResult)
 
   def __init__(self, file_bag):
     QObject.__init__(self)
@@ -71,7 +71,9 @@ class SSLCAuditThreadedInterface(QObject):
     '''
     This method gets invoked asynchronously by BaseClientAuditController thread
     '''
-    if isinstance(response, ClientConnectionAuditResult):
+    if isinstance(response, ClientAuditStartEvent):
+      self.sendClientAuditStartEvent.emit(response)
+    elif isinstance(response, ClientConnectionAuditResult):
       self.sendClientConnectionAuditResult.emit(response)
 
 
