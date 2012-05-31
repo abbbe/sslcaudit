@@ -4,7 +4,7 @@ Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 
-import logging, itertools
+import logging, threading
 from exceptions import StopIteration
 from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndResult
 
@@ -39,6 +39,7 @@ class ClientHandler(object):
 
         self.profiles = profiles
         self.nused_profiles = 0
+        self.lock = threading.Lock()  # this lock has to be acquired before using nused_profiles attribute
 
         self.res_queue.put(ClientAuditStartEvent(self.client_id, self.profiles))
 
@@ -47,27 +48,32 @@ class ClientHandler(object):
         This method is invoked when a new connection arrives. Can be invoked more then once in parallel,
         from different threads.
         '''
-        if self.nused_profiles >= len(self.profiles):
+        with self.lock:
+            if self.nused_profiles < len(self.profiles):
+                profile_index = self.nused_profiles
+                self.nused_profiles = self.nused_profiles + 1
+            else:
                 self.logger.debug('no more profiles for connection %s', conn)
                 if self.result:
                     self.res_queue.put(self.result)
                     self.result = None
                 return
 
-        # handle this connection
-        profile = self.profiles[self.nused_profiles]
+        # handle this connection with this profile
+        profile = self.profiles[profile_index]
         handler = profile.get_handler()
         res = handler.handle(conn, profile)
 
         # log and record the results of the test
         self.logger.debug('connection from %s using %s (%d/%d) resulted in %s',
-            conn, profile, self.nused_profiles, len(self.profiles), res)
+            conn, profile, profile_index, len(self.profiles), res)
         self.result.add(res)
         self.res_queue.put(res)
 
-        # if this was the last profile for this client
-        self.nused_profiles = self.nused_profiles + 1
-        if self.nused_profiles >= len(self.profiles):
-            # it was the last profile for this client
-            self.logger.debug('last profile for connection %s', conn)
-            self.res_queue.put(self.result)
+# XXX actually this code cannot not work well with multi-threading
+# XXX we have no clue if the previously spawned handlers have completed their job or not
+#        # if this was the last profile for this client
+#        if self.nused_profiles >= len(self.profiles):
+#            # it was the last profile for this client
+#            self.logger.debug('last profile for connection %s', conn)
+#            self.res_queue.put(self.result)
