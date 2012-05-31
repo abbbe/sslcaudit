@@ -8,7 +8,7 @@
 
 pid=`ps ax|grep sslcaudit| grep -v grep | awk '{print $1}'`
 if [ -n "$pid" ] ; then
-	kill $pid
+	kill -9 $pid
 	echo "killed $pid"
 else
 	echo "nothinig to kill"
