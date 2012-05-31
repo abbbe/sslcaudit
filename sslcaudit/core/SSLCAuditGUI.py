@@ -188,9 +188,8 @@ class SSLCAuditGUIWindow(QMainWindow):
       self.cstr_ttm.new_client(event.client_id, event.profiles)
     elif isinstance(event, ClientConnectionAuditResult):
       self.cstr_ttm.new_conn_result(event.conn.get_client_id(), event.profile, event.result)
-# XXX disabled because of inherent issues with multithreading
-#    elif isinstance(event, ClientAuditEndResult):
-#      self.cstr_ttm.client_done(event.client_id, event.results)
+    elif isinstance(event, ClientAuditEndResult):
+      self.cstr_ttm.client_done(event.client_id, event.results)
     else:
       raise ValueError('unexpected event: %s' % event)
 
