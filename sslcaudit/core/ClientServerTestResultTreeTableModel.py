@@ -2,6 +2,7 @@ from PyQt4 import QtCore
 from sslcaudit.core.ResultTreeItem import ClientTreeItem, ConnectionProfileTreeItem
 
 HORIZONTAL_HEADERS = ('Test', 'Result')
+RESULT_PENDING = 'pending'
 
 # http://rowinggolfer.blogspot.com/2010/05/qtreeview-and-qabractitemmodel-example.html
 
@@ -28,7 +29,7 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
 #            client_server_test_result = ClientServerTestResult(client_server, test, result)
 #            self.cstrs.append(client_server_test_result)
 #
-        self.rootItem = ClientTreeItem('ALL')
+        self.rootItem = ClientTreeItem('ALL', None)  # XXX wtf
         self.parents = {0: self.rootItem}
 
     def columnCount(self, parent=None):
@@ -100,15 +101,20 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
     def new_client(self, client_id, profiles):
         '''
         This method is when the main window handles events from the controller (via bridge).
-        Here we want to create a new subtree for the client
+        Here we create a new subtree for the client and add it to the list of connections.
         '''
-        print '*** new client ***'
+        # create the subtree containing profiles
         newClientTreeItem = ClientTreeItem(client_id, self.rootItem)
         for profile in profiles:
-            newConnProfileItem = ConnectionProfileTreeItem(newClientTreeItem, profile)
+            newConnProfileItem = ConnectionProfileTreeItem(newClientTreeItem, profile, RESULT_PENDING)  # XXX
+            newClientTreeItem.appendChild(newConnProfileItem)
+
+        # insert the new node under the parent node
+        n = self.rootItem.childCount()
+        self.beginInsertRows(QtCore.QModelIndex(), n, n)
         self.rootItem.appendChild(newClientTreeItem)
         self.parents[client_id] = newClientTreeItem
-
+        self.endInsertRows()
 
     def new_conn_result(self, client_id, profile, result):
         '''

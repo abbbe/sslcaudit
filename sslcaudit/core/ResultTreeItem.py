@@ -40,13 +40,15 @@ class ClientTreeItem(BaseTreeItem):
 
 
 class ConnectionProfileTreeItem(BaseTreeItem):
-    def __init__(self, parentItem):
+    def __init__(self, parentItem, profile, result):
         BaseTreeItem.__init__(self, parentItem)
+        self.profile = profile
+        self.result = result
 
     def data(self, column):
             if column == 0:
-                return QtCore.QVariant(self.client_server_test_result.test)
+                return QtCore.QVariant(self.profile.__str__())
             elif column == 1:
-                return QtCore.QVariant(self.client_server_test_result.result)
+                return QtCore.QVariant(self.result)
             else:
                 return QtCore.QVariant()
