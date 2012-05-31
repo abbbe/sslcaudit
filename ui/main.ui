@@ -170,7 +170,7 @@
       </widget>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -191,7 +191,7 @@
                  <bool>true</bool>
                 </property>
                 <property name="text">
-                 <string/>
+                 <string>Custom CN</string>
                 </property>
                </widget>
               </item>
