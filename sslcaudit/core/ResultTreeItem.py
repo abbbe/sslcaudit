@@ -1,17 +1,12 @@
-import PyQt4.QtCore
+from PyQt4 import QtCore
 
-__author__ = 'abb'
-
-class TreeItem(object):
-    '''
-    a python object used to return row/column data, and keep note of
-    it's parents and/or children
-    '''
-    def __init__(self, client_server_test_result, header, parentItem):
-        self.client_server_test_result = client_server_test_result
+class BaseTreeItem(object):
+    def __init__(self, parentItem):
         self.parentItem = parentItem
-        self.header = header
         self.childItems = []
+
+    def parent(self):
+        return self.parentItem
 
     def appendChild(self, item):
         self.childItems.append(item)
@@ -25,23 +20,33 @@ class TreeItem(object):
     def columnCount(self):
         return 2
 
-    def data(self, column):
-        if self.client_server_test_result == None:
-            if column == 0:
-                return QtCore.QVariant(self.header)
-            if column == 1:
-                return QtCore.QVariant('')
-        else:
-            if column == 0:
-                return QtCore.QVariant(self.client_server_test_result.test)
-            if column == 1:
-                return QtCore.QVariant(self.client_server_test_result.result)
-        return QtCore.QVariant()
-
-    def parent(self):
-        return self.parentItem
-
     def row(self):
         if self.parentItem:
             return self.parentItem.childItems.index(self)
         return 0
+
+class ClientTreeItem(BaseTreeItem):
+    def __init__(self, header):
+        BaseTreeItem.__init__(self, None)
+        self.header = header
+
+    def data(self, column):
+            if column == 0:
+                return QtCore.QVariant(self.header)
+            elif column == 1:
+                return QtCore.QVariant('')
+            else:
+                return QtCore.QVariant()
+
+
+class ConnectionProfileTreeItem(BaseTreeItem):
+    def __init__(self, parentItem):
+        BaseTreeItem.__init__(self, parentItem)
+
+    def data(self, column):
+            if column == 0:
+                return QtCore.QVariant(self.client_server_test_result.test)
+            elif column == 1:
+                return QtCore.QVariant(self.client_server_test_result.result)
+            else:
+                return QtCore.QVariant()

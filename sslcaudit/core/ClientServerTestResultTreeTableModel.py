@@ -1,4 +1,5 @@
 from PyQt4 import QtCore
+from sslcaudit.core.ResultTreeItem import ClientTreeItem, ConnectionProfileTreeItem
 
 HORIZONTAL_HEADERS = ('Test', 'Result')
 
@@ -8,58 +9,14 @@ class ClientServerTestResult(object):
     '''
     a trivial custom data object
     '''
+
     def __init__(self, client_server, test, result):
         self.client_server = client_server
         self.test = test
         self.result = result
 
     def __repr__(self):
-        return "ClientServerTestResult - %s %s %s"% (self.client_server, self.test, self.result)
-
-
-class TreeItem(object):
-    '''
-    a python object used to return row/column data, and keep note of
-    it's parents and/or children
-    '''
-    def __init__(self, client_server_test_result, header, parentItem):
-        self.client_server_test_result = client_server_test_result
-        self.parentItem = parentItem
-        self.header = header
-        self.childItems = []
-
-    def appendChild(self, item):
-        self.childItems.append(item)
-
-    def child(self, row):
-        return self.childItems[row]
-
-    def childCount(self):
-        return len(self.childItems)
-
-    def columnCount(self):
-        return 2
-
-    def data(self, column):
-        if self.client_server_test_result == None:
-            if column == 0:
-                return QtCore.QVariant(self.header)
-            if column == 1:
-                return QtCore.QVariant('')
-        else:
-            if column == 0:
-                return QtCore.QVariant(self.client_server_test_result.test)
-            if column == 1:
-                return QtCore.QVariant(self.client_server_test_result.result)
-        return QtCore.QVariant()
-
-    def parent(self):
-        return self.parentItem
-
-    def row(self):
-        if self.parentItem:
-            return self.parentItem.childItems.index(self)
-        return 0
+        return "ClientServerTestResult - %s %s %s" % (self.client_server, self.test, self.result)
 
 
 class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
@@ -67,13 +24,13 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
         super(ClientServerTestResultTreeTableModel, self).__init__(parent)
         self.cstrs = []
 
-        for client_server, test, result in (('A -> B:C', 'sslcert/selfsigned', 'OK'), ('A -> B:C', 'sslcert/testsigned', 'NOK'),):
+        for client_server, test, result in (
+        ('A -> B:C', 'sslcert/selfsigned', 'OK'), ('A -> B:C', 'sslcert/testsigned', 'NOK'),):
             client_server_test_result = ClientServerTestResult(client_server, test, result)
             self.cstrs.append(client_server_test_result)
 
-        self.rootItem = TreeItem(None, 'ALL', None)
-        self.parents = {0 : self.rootItem}
-        self.setupModelData()
+        self.rootItem = ClientTreeItem('ALL')
+        self.parents = {0: self.rootItem}
 
     def columnCount(self, parent=None):
         if parent and parent.isValid():
@@ -141,23 +98,28 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
             p_Item = parent.internalPointer()
         return p_Item.childCount()
 
-    def setupModelData(self):
-        for cstr in self.cstrs:
-            sex = cstr.client_server
-            if not self.parents.has_key(sex):
-                newparent = TreeItem(None, sex, self.rootItem)
-                self.rootItem.appendChild(newparent)
-                self.parents[sex] = newparent
-
-            parentItem = self.parents[sex]
-            newItem = TreeItem(cstr, '', parentItem)
-            parentItem.appendChild(newItem)
-
     def new_client(self, client_id, profiles):
+        '''
+        This method is when the main window handles events from the controller (via bridge).
+        Here we want to create a new subtree for the client
+        '''
         print '*** new client ***'
+        newClientTreeItem = ClientTreeItem(client_id)
+        for profile in profiles:
+            newConnProfileItem = ConnectionProfileTreeItem(newClientTreeItem, profile)
+        self.rootItem.appendChild(newClientTreeItem)
+        self.parents[client_id] = newClientTreeItem
+
 
     def new_conn_result(self, client_id, profile, result):
+        '''
+        This method is when the main window handles events from the controller (via bridge).
+        '''
         print '*** new client conn result ***'
 
+
     def client_done(self, client_id, results):
+        '''
+        This method is when the main window handles events from the controller (via bridge).
+        '''
         print '*** client done ***'
