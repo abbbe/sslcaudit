@@ -58,5 +58,5 @@ class SSLCAuditCLI(object):
             client_address = '%s:%d' % (res.conn.client_address)
             fields.append('%-16s' % client_address)
             fields.append('%-60s' % (res.profile))
-            fields.append(str(res.res))
+            fields.append(str(res.result))
             print OUTPUT_FIELD_SEPARATOR.join(fields)
