@@ -238,15 +238,27 @@ class SSLCAuditGUIWindow(QMainWindow):
       self.ui.portLineEdit.clear()
     except:
       port = 8443
-
-    self.options.user_cn = (lambda x: None if x == '' else x)(str(self.ui.customCNLineEdit.text()).strip())
-
+    
+    self.options.no_default_cn = self.ui.useDefaultCNCheckbox.isChecked()
+    self.options.user_cn = str(self.ui.customCNLineEdit.text()).strip() or None
+    
     if self.ui.dontFetchCertificateRadioButton.isChecked():
       pass
     elif self.ui.fetchCertificateRadioButton.isChecked():
       self.options.server_use_orig_dest = True
     elif self.ui.fetchCustomCertificateRadioButton.isChecked():
       self.options.server = str(self.ui.customCertificateLineEdit.text()).strip()
+
+    if self.ui.useCertificateGroupBox.isChecked():
+      self.options.user_cert = str(self.ui.certificateEdit1.text())
+      self.options.user_key = str(self.ui.keyEdit1.text())
+
+    if self.ui.useCAGroupBox.isChecked():
+      self.options.user_ca_cert = str(self.ui.certificateEdit2.text())
+      self.options.user_ca_key = str(self.ui.keyEdit2.text())
+
+    self.options.no_self_signed = self.ui.useSelfSignedCertificatesCheckBox.isChecked()
+    self.options.no_user_cert_signed = self.ui.useUserCertificatesToSign.isChecked()
     
     self.options.nclients = self.ui.numerOfRoundsSpinBox.value()
     self.options.self_test = (lambda x: None if x == 0 else x - 1)(self.ui.selfTestComboBox.currentIndex())

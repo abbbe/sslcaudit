@@ -170,7 +170,7 @@
       </widget>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>2</number>
+        <number>0</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -205,7 +205,7 @@
              </layout>
             </item>
             <item row="0" column="0">
-             <widget class="QCheckBox" name="checkBox">
+             <widget class="QCheckBox" name="useDefaultCNCheckbox">
               <property name="text">
                <string>Use default CN ({cn})</string>
               </property>
@@ -218,7 +218,7 @@
           </widget>
          </item>
          <item row="1" column="0">
-          <widget class="QGroupBox" name="groupBox_4">
+          <widget class="QGroupBox" name="useCertificateGroupBox">
            <property name="title">
             <string>Use a certificate</string>
            </property>
@@ -281,7 +281,7 @@
           </widget>
          </item>
          <item row="2" column="0">
-          <widget class="QGroupBox" name="groupBox_5">
+          <widget class="QGroupBox" name="useCAGroupBox">
            <property name="title">
             <string>Use a Certificate Authority</string>
            </property>
@@ -368,16 +368,16 @@
           </widget>
          </item>
          <item row="3" column="0">
-          <widget class="QCheckBox" name="checkBox_2">
+          <widget class="QCheckBox" name="useSelfSignedCertificatesCheckBox">
            <property name="text">
             <string>Use self-signed cerficiates</string>
            </property>
           </widget>
          </item>
          <item row="4" column="0">
-          <widget class="QCheckBox" name="checkBox_3">
+          <widget class="QCheckBox" name="useUserCertificatesToSign">
            <property name="text">
-            <string>User certificates signed by user certificate</string>
+            <string>Sign server certificates with user-supplied certificate</string>
            </property>
           </widget>
          </item>
