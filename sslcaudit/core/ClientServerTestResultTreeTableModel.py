@@ -99,7 +99,7 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
 
     def new_client(self, client_id, profiles):
         '''
-        This method is when the main window handles events from the controller (via bridge).
+        This method is invoked when the main window handles events from the controller (via the bridge).
         Here we create a new subtree for the client and add it to the list of connections.
         '''
         # create the subtree containing profiles
@@ -117,9 +117,8 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
 
     def new_conn_result(self, client_id, profile, result):
         '''
-        This method is when the main window handles events from the controller (via bridge).
+        This method is invoked when the main window handles events from the controller (via the bridge).
         '''
-        
         if client_id in self.parents:
             client = self.parents[client_id]
             
@@ -127,7 +126,7 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
                 _profile = client.child(profile_id)
                 
                 if _profile.profile == profile:
-                    _profile.result = str(result)
+                    _profile.result = result
                     break
 
 
