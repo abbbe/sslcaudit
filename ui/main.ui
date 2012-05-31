@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
+    <width>796</width>
     <height>600</height>
    </rect>
   </property>
@@ -170,7 +170,7 @@
       </widget>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -183,20 +183,13 @@
             <string>Common Name (CN)</string>
            </property>
            <layout class="QGridLayout" name="gridLayout_8">
-            <item row="0" column="0">
-             <widget class="QRadioButton" name="radioButton">
-              <property name="text">
-               <string>Use default CN</string>
-              </property>
-              <property name="checked">
-               <bool>true</bool>
-              </property>
-             </widget>
-            </item>
             <item row="1" column="0">
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
-               <widget class="QRadioButton" name="customCommonNameRadioButton">
+               <widget class="QCheckBox" name="customCommonNameCheckBox">
+                <property name="enabled">
+                 <bool>true</bool>
+                </property>
                 <property name="text">
                  <string/>
                 </property>
@@ -210,6 +203,16 @@
                </widget>
               </item>
              </layout>
+            </item>
+            <item row="0" column="0">
+             <widget class="QCheckBox" name="checkBox">
+              <property name="text">
+               <string>Use default CN ({cn})</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
             </item>
            </layout>
           </widget>
@@ -287,6 +290,9 @@
            </property>
            <property name="checkable">
             <bool>true</bool>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
            </property>
            <layout class="QFormLayout" name="formLayout_3">
             <property name="fieldGrowthPolicy">
@@ -463,6 +469,60 @@
          </item>
         </layout>
        </widget>
+       <widget class="QWidget" name="">
+        <attribute name="title">
+         <string>Server</string>
+        </attribute>
+        <layout class="QGridLayout" name="gridLayout_10">
+         <item row="0" column="0">
+          <widget class="QGroupBox" name="groupBox_6">
+           <property name="title">
+            <string>Certificates</string>
+           </property>
+           <layout class="QFormLayout" name="formLayout_4">
+            <item row="0" column="0" colspan="2">
+             <widget class="QRadioButton" name="radioButton">
+              <property name="text">
+               <string>Don't fetch server certificate</string>
+              </property>
+             </widget>
+            </item>
+            <item row="1" column="0" colspan="2">
+             <widget class="QRadioButton" name="radioButton_2">
+              <property name="text">
+               <string>Fetch server certificate from original destination</string>
+              </property>
+              <property name="checked">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item row="2" column="0" colspan="2">
+             <layout class="QHBoxLayout" name="horizontalLayout_9">
+              <item>
+               <widget class="QRadioButton" name="radioButton_3">
+                <property name="text">
+                 <string>Fetch server certificate from</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QLineEdit" name="lineEdit">
+                <property name="enabled">
+                 <bool>false</bool>
+                </property>
+                <property name="placeholderText">
+                 <string>Host:Port</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
+       </widget>
        <widget class="QWidget" name="tab_3">
         <attribute name="title">
          <string>Connections</string>
@@ -560,18 +620,34 @@ p, li { white-space: pre-wrap; }
  <resources/>
  <connections>
   <connection>
-   <sender>customCommonNameRadioButton</sender>
+   <sender>customCommonNameCheckBox</sender>
    <signal>toggled(bool)</signal>
    <receiver>customCommonName</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
-     <x>335</x>
-     <y>116</y>
+     <x>407</x>
+     <y>109</y>
     </hint>
     <hint type="destinationlabel">
-     <x>391</x>
-     <y>113</y>
+     <x>462</x>
+     <y>110</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>radioButton_3</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>lineEdit</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>451</x>
+     <y>131</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>516</x>
+     <y>139</y>
     </hint>
    </hints>
   </connection>
