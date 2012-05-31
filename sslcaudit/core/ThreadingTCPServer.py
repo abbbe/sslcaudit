@@ -4,6 +4,7 @@ Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
 from SocketServer import TCPServer
+import socket
 
 #class ClientAuditorTCPServer(ThreadingMixIn, TCPServer):
 class ThreadingTCPServer(TCPServer):

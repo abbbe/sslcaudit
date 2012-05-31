@@ -7,6 +7,7 @@ Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 import  logging
 from threading import Thread
 from Queue import Queue
+import itertools
 from sslcaudit.core.ClientConnection import ClientConnection
 from sslcaudit.core.ClientHandler import ClientHandler
 from sslcaudit.core.ThreadingTCPServer import ThreadingTCPServer
@@ -25,13 +26,13 @@ class ClientAuditorServer(Thread):
     via ClientAuditorServer res_queue.
     '''
 
-    def __init__(self, listen_on, profiles, res_queue=None):
+    def __init__(self, listen_on, profile_factories, res_queue=None):
         Thread.__init__(self, target=self.run)
         self.daemon = True
 
         self.listen_on = listen_on
         self.clients = {}
-        self.profiles = profiles
+        self.profiles_factories = profile_factories
 
         # create a local result queue unless one is already provided
         if res_queue == None:
@@ -53,15 +54,19 @@ class ClientAuditorServer(Thread):
         # find or create a session handler
         if not self.clients.has_key(client_id):
             logger.debug('new client %s [id %s]', conn, client_id)
-            self.clients[client_id] = ClientHandler(client_id, self.profiles, self.res_queue)
+            profiles = self.mk_client_profiles_list()
+            self.clients[client_id] = ClientHandler(client_id, profiles, self.res_queue)
 
         # handle the request
         self.clients[client_id].handle(conn)
 
     def run(self):
-        logger.debug('listen_on %s, %d profiles' %(self.listen_on, len(self.profiles)))
+        logger.debug('listen_on %s, %d profiles' %(self.listen_on, len(self.profiles_factories)))
         self.tcp_server.serve_forever()
 
     def stop(self):
         self.tcp_server.shutdown()
         self.tcp_server.server_close()
+
+    def mk_client_profiles_list(self):
+        return list(itertools.chain.from_iterable(self.profiles_factories))

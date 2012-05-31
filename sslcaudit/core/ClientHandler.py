@@ -50,9 +50,11 @@ class ClientHandler(object):
         '''
         This method is invoked when a new connection arrives.
         '''
-        if self.nused_profiles < len(self.profiles):
-                self.logger.debug('no profiles for connection %s', conn)
-                self.res_queue.put(self.result)
+        if self.nused_profiles >= len(self.profiles):
+                self.logger.debug('no more profiles for connection %s', conn)
+                if self.result:
+                    self.res_queue.put(self.result)
+                    self.result = None
                 return
 
         # handle this connection
@@ -68,6 +70,7 @@ class ClientHandler(object):
 
         # if this was the last profile for this client
         self.nused_profiles = self.nused_profiles + 1
-        if self.nused_profiles < len(self.profiles):
+        if self.nused_profiles >= len(self.profiles):
             # it was the last profile for this client
+            self.logger.debug('last profile for connection %s', conn)
             self.res_queue.put(self.result)

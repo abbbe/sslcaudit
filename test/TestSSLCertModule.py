@@ -276,4 +276,5 @@ class TestSSLCertModule(unittest.TestCase):
         self.assertFalse(mismatch)
 
 if __name__ == '__main__':
+    logging.basicConfig(level = logging.DEBUG)
     unittest.main()
