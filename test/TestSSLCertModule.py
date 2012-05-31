@@ -243,7 +243,7 @@ class TestSSLCertModule(unittest.TestCase):
         # run the server
         self.controller.start()
 
-        # start the hammer if any
+        # start the hammer, if any
         if self.hammer != None:
             self.hammer.start()
 
