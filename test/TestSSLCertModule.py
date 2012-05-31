@@ -44,7 +44,7 @@ class ECCAR(object):
         if not (self.profile_spec == actual_res.profile.get_spec()):
             return False
 
-        if self.expected_result == actual_res.res:
+        if self.expected_result == actual_res.result:
             return True
         else:
             return False
