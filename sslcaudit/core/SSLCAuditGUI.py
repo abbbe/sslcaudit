@@ -243,8 +243,7 @@ class SSLCAuditGUIWindow(QMainWindow):
       self.bridge.start()
     except:
       self.sendError(str(sys.exc_info()[1]))
-      self.bridge.stop()
-      
+
       self.ui.startButton.setText('Start')
       self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-start'))
       
