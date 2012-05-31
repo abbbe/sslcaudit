@@ -215,7 +215,7 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.ui.testLog.clear()
 
   @pyqtSlot(name='on_startButton_clicked')
-  def startStopAudit(self):
+  def toggleAudit(self):
     if self.bridge.isRunning():
       self._stopAudit()
     else:
@@ -235,8 +235,18 @@ class SSLCAuditGUIWindow(QMainWindow):
     
     try:
       port = int(self.ui.portLineEdit.text())
+      self.ui.portLineEdit.clear()
     except:
       port = 8443
+
+    self.options.user_cn = (lambda x: None if x == '' else x)(str(self.ui.customCNLineEdit.text()).strip())
+
+    if self.ui.dontFetchCertificateRadioButton.isChecked():
+      pass
+    elif self.ui.fetchCertificateRadioButton.isChecked():
+      self.options.server_use_orig_dest = True
+    elif self.ui.fetchCustomCertificateRadioButton.isChecked():
+      self.options.server = str(self.ui.customCertificateLineEdit.text()).strip()
     
     self.options.nclients = self.ui.numerOfRoundsSpinBox.value()
     self.options.self_test = (lambda x: None if x == 0 else x - 1)(self.ui.selfTestComboBox.currentIndex())

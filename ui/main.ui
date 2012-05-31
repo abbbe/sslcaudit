@@ -170,7 +170,7 @@
       </widget>
       <widget class="QTabWidget" name="tabWidget">
        <property name="currentIndex">
-        <number>0</number>
+        <number>2</number>
        </property>
        <widget class="QWidget" name="tab">
         <attribute name="title">
@@ -196,7 +196,7 @@
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="customCommonName">
+               <widget class="QLineEdit" name="customCNLineEdit">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
@@ -481,14 +481,14 @@
            </property>
            <layout class="QFormLayout" name="formLayout_4">
             <item row="0" column="0" colspan="2">
-             <widget class="QRadioButton" name="radioButton">
+             <widget class="QRadioButton" name="dontFetchCertificateRadioButton">
               <property name="text">
                <string>Don't fetch server certificate</string>
               </property>
              </widget>
             </item>
             <item row="1" column="0" colspan="2">
-             <widget class="QRadioButton" name="radioButton_2">
+             <widget class="QRadioButton" name="fetchCertificateRadioButton">
               <property name="text">
                <string>Fetch server certificate from original destination</string>
               </property>
@@ -500,19 +500,19 @@
             <item row="2" column="0" colspan="2">
              <layout class="QHBoxLayout" name="horizontalLayout_9">
               <item>
-               <widget class="QRadioButton" name="radioButton_3">
+               <widget class="QRadioButton" name="fetchCustomCertificateRadioButton">
                 <property name="text">
                  <string>Fetch server certificate from</string>
                 </property>
                </widget>
               </item>
               <item>
-               <widget class="QLineEdit" name="lineEdit">
+               <widget class="QLineEdit" name="customCertificateLineEdit">
                 <property name="enabled">
                  <bool>false</bool>
                 </property>
                 <property name="placeholderText">
-                 <string>Host:Port</string>
+                 <string>Hostname:Port</string>
                 </property>
                </widget>
               </item>
@@ -622,7 +622,7 @@ p, li { white-space: pre-wrap; }
   <connection>
    <sender>customCommonNameCheckBox</sender>
    <signal>toggled(bool)</signal>
-   <receiver>customCommonName</receiver>
+   <receiver>customCNLineEdit</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
@@ -636,9 +636,9 @@ p, li { white-space: pre-wrap; }
    </hints>
   </connection>
   <connection>
-   <sender>radioButton_3</sender>
+   <sender>fetchCustomCertificateRadioButton</sender>
    <signal>toggled(bool)</signal>
-   <receiver>lineEdit</receiver>
+   <receiver>customCertificateLineEdit</receiver>
    <slot>setEnabled(bool)</slot>
    <hints>
     <hint type="sourcelabel">
