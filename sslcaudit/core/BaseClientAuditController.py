@@ -70,6 +70,9 @@ class BaseClientAuditController(Thread):
     def stop(self):
         # signal the controller thread to stop
         self.do_stop = True
+        # tell the test hammer to stop as well
+        if self.selftest_hammer:
+            self.selftest_hammer.stop()
 
     def run(self):
         '''
