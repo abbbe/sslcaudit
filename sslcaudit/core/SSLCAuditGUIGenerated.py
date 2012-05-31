@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Thu May 31 01:25:19 2012
+# Created: Thu May 31 19:17:44 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -172,12 +172,12 @@ class Ui_MainWindow(object):
     self.formLayout_3.setLayout(1, QtGui.QFormLayout.FieldRole, self.horizontalLayout_6)
     self.horizontalLayout_7 = QtGui.QHBoxLayout()
     self.horizontalLayout_7.setObjectName(_fromUtf8("horizontalLayout_7"))
-    self.pushButton_6 = QtGui.QPushButton(self.groupBox_5)
-    self.pushButton_6.setObjectName(_fromUtf8("pushButton_6"))
-    self.horizontalLayout_7.addWidget(self.pushButton_6)
-    self.pushButton_7 = QtGui.QPushButton(self.groupBox_5)
-    self.pushButton_7.setObjectName(_fromUtf8("pushButton_7"))
-    self.horizontalLayout_7.addWidget(self.pushButton_7)
+    self.generateButton = QtGui.QPushButton(self.groupBox_5)
+    self.generateButton.setObjectName(_fromUtf8("generateButton"))
+    self.horizontalLayout_7.addWidget(self.generateButton)
+    self.exportPKCS12Button = QtGui.QPushButton(self.groupBox_5)
+    self.exportPKCS12Button.setObjectName(_fromUtf8("exportPKCS12Button"))
+    self.horizontalLayout_7.addWidget(self.exportPKCS12Button)
     self.formLayout_3.setLayout(2, QtGui.QFormLayout.FieldRole, self.horizontalLayout_7)
     self.gridLayout_9.addWidget(self.groupBox_5, 2, 0, 1, 1)
     self.checkBox_2 = QtGui.QCheckBox(self.tab)
@@ -268,7 +268,7 @@ class Ui_MainWindow(object):
     MainWindow.setCentralWidget(self.centralwidget)
 
     self.retranslateUi(MainWindow)
-    self.tabWidget.setCurrentIndex(3)
+    self.tabWidget.setCurrentIndex(0)
     QtCore.QObject.connect(self.customCommonNameRadioButton, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.customCommonName.setEnabled)
     QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
@@ -301,8 +301,8 @@ class Ui_MainWindow(object):
     self.label_4.setText(QtGui.QApplication.translate("MainWindow", "Key file", None, QtGui.QApplication.UnicodeUTF8))
     self.keyBrowse2.setStatusTip(QtGui.QApplication.translate("MainWindow", "Select a key file", None, QtGui.QApplication.UnicodeUTF8))
     self.keyBrowse2.setText(QtGui.QApplication.translate("MainWindow", "Browse", None, QtGui.QApplication.UnicodeUTF8))
-    self.pushButton_6.setText(QtGui.QApplication.translate("MainWindow", "Generate", None, QtGui.QApplication.UnicodeUTF8))
-    self.pushButton_7.setText(QtGui.QApplication.translate("MainWindow", "Export PKCS #12", None, QtGui.QApplication.UnicodeUTF8))
+    self.generateButton.setText(QtGui.QApplication.translate("MainWindow", "Generate", None, QtGui.QApplication.UnicodeUTF8))
+    self.exportPKCS12Button.setText(QtGui.QApplication.translate("MainWindow", "Export PKCS #12", None, QtGui.QApplication.UnicodeUTF8))
     self.checkBox_2.setText(QtGui.QApplication.translate("MainWindow", "Use self-signed cerficiates", None, QtGui.QApplication.UnicodeUTF8))
     self.checkBox_3.setText(QtGui.QApplication.translate("MainWindow", "User certificates signed by user certificate", None, QtGui.QApplication.UnicodeUTF8))
     self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("MainWindow", "SSLCert", None, QtGui.QApplication.UnicodeUTF8))

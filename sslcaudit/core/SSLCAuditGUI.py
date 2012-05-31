@@ -120,6 +120,13 @@ class SSLCAuditGUIWindow(QMainWindow):
     # Initialize the UI and store it within the self.ui variable
     self.ui = SSLCAuditGUIGenerated.Ui_MainWindow()
     self.ui.setupUi(self)
+
+    # Hide unimplemented controls
+    for control in [
+      self.ui.generateButton,
+      self.ui.exportPKCS12Button
+    ]:
+      control.hide()
     
     # Remove focus from the input box. We need the placeholder text.
     self.setFocus()
