@@ -33,7 +33,7 @@ class ClientConnectionAuditResult(ClientConnectionAuditEvent):
         self.result = result
 
     def __str__(self):
-        return ' CCAR(%s[%s], %s)' % (self.profile, self.profile.certnkey.cert_filename, self.result)
+        return ' CCAR(%s, %s)' % (self.profile, self.result)
 
 class ClientAuditStartEvent(ControllerEvent):
     '''

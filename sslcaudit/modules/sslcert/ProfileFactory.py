@@ -63,7 +63,7 @@ class SSLServerCertProfile(BaseProfile):
         return sslcert_server_handler
 
     def __str__(self):
-        return str(self.profile_spec)
+        return "%s[%s]" % (self.profile_spec, self.certnkey.cert_filename)
 
 class ProfileFactory(BaseProfileFactory):
     def __init__(self, file_bag, options, protocol='sslv23'):
