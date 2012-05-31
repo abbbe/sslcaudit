@@ -16,18 +16,18 @@ class TCPConnectionHammer(ConnectionHammer):
     '''
     logger = logging.getLogger('TCPConnectionHammer')
 
-    def hammer(self, i):
+    def hammer(self, nround):
         # connect to the peer, do something, disconnect
         sock = socket()
         try:
-            self.logger.debug("opening connection %d to %s ...", i, self.peer)
+            self.logger.debug('opening connection %s (round %d) ...', self.peer, nround)
             sock.connect(self.peer)
-            self.logger.debug("connection %d to %s established, waiting for %.1fs before closing",
-                i, self.peer, self.delay_before_close)
+            self.logger.debug('round %d: connection to %s is established, waiting for %.1fs before closing',
+                nround, self.peer, self.delay_before_close)
             time.sleep(self.delay_before_close)
 
         except IOError as ex:
-            self.logger.error('connection %d failed: %s', i, ex)
+            self.logger.error('round %d: connection to %s has failed: %s', nround, self.peer, ex)
         finally:
             sock.close()
-            self.logger.debug("connection %d with %s closed", i, self.peer)
+            self.logger.debug("round %d: connection with %s is closed", nround, self.peer)

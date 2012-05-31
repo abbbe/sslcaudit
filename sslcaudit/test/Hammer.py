@@ -25,20 +25,20 @@ class Hammer(Thread):
     def run(self):
         self.logger.debug("running %s", self)
 
-        i = 0
-        while (self.nattempts == -1 or i < self.nattempts) and not self.should_stop:
+        nround = 1
+        while (self.nattempts == -1 or nround < self.nattempts) and not self.should_stop:
             # connect to the peer, do something, disconnect
             try:
-                self.logger.debug("start hammering round %d to target %s", i, self.peer)
-                self.hammer(i)
-                self.logger.debug("stopped hammering round %d to target %s", i, self.peer)
+                self.logger.debug("start hammering %s (round %i)", self.peer, nround)
+                self.hammer(nround)
+                self.logger.debug("stopped hammering %s (round %d)", self.peer, nround)
             except Exception as ex:
-                self.logger.error('error hammering round %d target %s: %s', i, self.peer, ex)
+                self.logger.error('error hammering %s (round %d): %s', self.peer, nround, ex)
 
             # wait a little while before repeating
             time.sleep(self.HAMMERING_DELAY)
 
-            i += 1
+            nround += 1
         self.logger.debug("exiting %s", self)
 
     def hammer(self, round):
