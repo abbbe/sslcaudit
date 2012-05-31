@@ -40,14 +40,12 @@ class ClientHandler(object):
         self.profiles = profiles
         self.nused_profiles = 0
 
-        self.next_profile = None
-
         self.res_queue.put(ClientAuditStartEvent(self.client_id, self.profiles))
 
     def handle(self, conn):
         '''
-        This method is invoked when a new connection arrives. Can be invoked more then once in parallel
-        from different threads. XXX to be fixed
+        This method is invoked when a new connection arrives. Can be invoked more then once in parallel,
+        from different threads.
         '''
         if self.nused_profiles >= len(self.profiles):
                 self.logger.debug('no more profiles for connection %s', conn)
