@@ -26,7 +26,7 @@ class Hammer(Thread):
         self.logger.debug("running %s", self)
 
         nround = 1
-        while (self.nattempts == -1 or nround < self.nattempts) and not self.should_stop:
+        while (self.nattempts == -1 or nround <= self.nattempts) and not self.should_stop:
             # connect to the peer, do something, disconnect
             try:
                 self.logger.debug("start hammering %s (round %i)", self.peer, nround)
