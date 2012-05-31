@@ -1,8 +1,9 @@
-''' ----------------------------------------------------------------------
-SSLCAUDIT - a tool for automating security audit of SSL clients
-Released under terms of GPLv3, see COPYING.TXT
-Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
----------------------------------------------------------------------- '''
+# ----------------------------------------------------------------------
+# SSLCAUDIT - a tool for automating security audit of SSL clients
+# Released under terms of GPLv3, see COPYING.TXT
+# Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+# ----------------------------------------------------------------------
+
 import socket
 from M2Crypto import X509
 import M2Crypto
