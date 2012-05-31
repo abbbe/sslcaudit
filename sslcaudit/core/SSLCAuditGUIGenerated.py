@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Thu May 31 00:34:26 2012
+# Created: Thu May 31 01:25:19 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -238,19 +238,24 @@ class Ui_MainWindow(object):
     self.tab_4.setObjectName(_fromUtf8("tab_4"))
     self.gridLayout_2 = QtGui.QGridLayout(self.tab_4)
     self.gridLayout_2.setObjectName(_fromUtf8("gridLayout_2"))
+    self.clearLogButton = QtGui.QPushButton(self.tab_4)
+    self.clearLogButton.setObjectName(_fromUtf8("clearLogButton"))
+    self.gridLayout_2.addWidget(self.clearLogButton, 1, 2, 1, 1)
     self.showDebugMessagesCheckBox = QtGui.QCheckBox(self.tab_4)
     self.showDebugMessagesCheckBox.setObjectName(_fromUtf8("showDebugMessagesCheckBox"))
     self.gridLayout_2.addWidget(self.showDebugMessagesCheckBox, 1, 0, 1, 1)
     self.testLog = QtGui.QListWidget(self.tab_4)
     self.testLog.setObjectName(_fromUtf8("testLog"))
-    self.gridLayout_2.addWidget(self.testLog, 0, 0, 1, 1)
+    self.gridLayout_2.addWidget(self.testLog, 0, 0, 1, 3)
+    spacerItem2 = QtGui.QSpacerItem(40, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+    self.gridLayout_2.addItem(spacerItem2, 1, 1, 1, 1)
     self.tabWidget.addTab(self.tab_4, _fromUtf8(""))
     self.tab_5 = QtGui.QWidget()
     self.tab_5.setObjectName(_fromUtf8("tab_5"))
     self.gridLayout = QtGui.QGridLayout(self.tab_5)
     self.gridLayout.setObjectName(_fromUtf8("gridLayout"))
-    spacerItem2 = QtGui.QSpacerItem(250, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
-    self.gridLayout.addItem(spacerItem2, 1, 0, 1, 1)
+    spacerItem3 = QtGui.QSpacerItem(250, 20, QtGui.QSizePolicy.Expanding, QtGui.QSizePolicy.Minimum)
+    self.gridLayout.addItem(spacerItem3, 1, 0, 1, 1)
     self.copyToClipboardButton = QtGui.QPushButton(self.tab_5)
     self.copyToClipboardButton.setObjectName(_fromUtf8("copyToClipboardButton"))
     self.gridLayout.addWidget(self.copyToClipboardButton, 1, 1, 1, 1)
@@ -327,13 +332,14 @@ class Ui_MainWindow(object):
     self.cipherList.setSortingEnabled(__sortingEnabled)
     self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_2), QtGui.QApplication.translate("MainWindow", "SSLProto", None, QtGui.QApplication.UnicodeUTF8))
     self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_3), QtGui.QApplication.translate("MainWindow", "Connections", None, QtGui.QApplication.UnicodeUTF8))
+    self.clearLogButton.setText(QtGui.QApplication.translate("MainWindow", "Clear", None, QtGui.QApplication.UnicodeUTF8))
     self.showDebugMessagesCheckBox.setText(QtGui.QApplication.translate("MainWindow", "Show debug messages", None, QtGui.QApplication.UnicodeUTF8))
     self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_4), QtGui.QApplication.translate("MainWindow", "Test Log", None, QtGui.QApplication.UnicodeUTF8))
     self.copyToClipboardButton.setText(QtGui.QApplication.translate("MainWindow", "Copy to clipboard", None, QtGui.QApplication.UnicodeUTF8))
     self.reportText.setHtml(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'monospace\'; font-size:10pt;\">This is the report text. It will be copied to your clipboard.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+"</style></head><body style=\" font-family:\'Droid Sans\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'monospace\';\">This is the report text. It will be copied to your clipboard.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
     self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QtGui.QApplication.translate("MainWindow", "Report", None, QtGui.QApplication.UnicodeUTF8))
 

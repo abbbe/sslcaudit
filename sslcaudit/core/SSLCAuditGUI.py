@@ -83,8 +83,8 @@ class SSLCAuditQtBridge(QThread):
 
   def stop(self):
     self.controller.stop()
-    self.is_running = False
 
+    self.is_running = False
     self.exit()
 
   def event_handler(self, event):
@@ -115,11 +115,7 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.log_handler.sendLog.connect(self.controllerSentLog)
     self.log_handler.sendError.connect(self.controllerSentError)
 
-    ClientAuditorTCPServerLogger = logging.getLogger('ClientAuditorTCPServer')
-    ClientAuditorTCPServerLogger.addHandler(self.log_handler)
-
-    BaseClientAuditControllerLogger = logging.getLogger('BaseClientAuditController')
-    BaseClientAuditControllerLogger.addHandler(self.log_handler)
+    logging.getLogger().addHandler(self.log_handler)
 
     # Initialize the UI and store it within the self.ui variable
     self.ui = SSLCAuditGUIGenerated.Ui_MainWindow()
@@ -130,6 +126,9 @@ class SSLCAuditGUIWindow(QMainWindow):
     
     # Gives the "Start" button an icon.
     self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-start'))
+
+    # Gives the "Clear" button an icon
+    self.ui.clearLogButton.setIcon(QIcon.fromTheme('gtk-clear'))
     
     # Gives the "Copy to Cliboard" button an icon.
     self.ui.copyToClipboardButton.setIcon(QIcon.fromTheme('edit-copy'))
@@ -204,6 +203,10 @@ class SSLCAuditGUIWindow(QMainWindow):
   def copyReportToClipboard(self):
     QApplication.clipboard().setText(self.ui.reportText.toPlainText())
 
+  @pyqtSlot(name='on_clearLogButton_clicked')
+  def clearLog(self):
+    self.ui.testLog.clear()
+
   @pyqtSlot(name='on_startButton_clicked')
   def startStopAudit(self):
     if self.bridge.isRunning():
@@ -229,15 +232,18 @@ class SSLCAuditGUIWindow(QMainWindow):
       port = 8443
     
     self.options.nclients = self.ui.numerOfRoundsSpinBox.value()
+    self.options.self_test = (lambda x: None if x == 0 else x - 1)(self.ui.selfTestComboBox.currentIndex())
     self.options.listen_on = (
       str(self.ui.hostnameLineEdit.text()),
       port
     )
+
     try:
       self.bridge.init_controller(self.options)
       self.bridge.start()
     except:
       self.sendError(str(sys.exc_info()[1]))
+      self.bridge.stop()
       
       self.ui.startButton.setText('Start')
       self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-start'))

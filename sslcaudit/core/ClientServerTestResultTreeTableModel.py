@@ -122,7 +122,6 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
         
         if client_id in self.parents:
             client = self.parents[client_id]
-            client_profile = None
             
             for profile_id in range(client.childCount()):
                 _profile = client.child(profile_id)
