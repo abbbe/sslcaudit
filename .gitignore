@@ -5,3 +5,5 @@
 .~lock.*#
 deb_dist/
 sslcaudit.*/
+*.sublime-project
+*.sublime-workspace

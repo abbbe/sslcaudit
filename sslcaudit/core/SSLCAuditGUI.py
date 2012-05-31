@@ -50,7 +50,7 @@ class SSLCAuditGUI(object):
     return self.app.exec_()
 
 
-class SSLCAuditQtBridge(QObject):
+class SSLCAuditQtBridge(QThread):
   '''
   This class is a bridge between PyQt GUI and the core of sslcaudit.
   The main window contains an instance of this class and uses it to communicate with the core.
@@ -63,7 +63,7 @@ class SSLCAuditQtBridge(QObject):
   sendControllerEvent = pyqtSignal(ControllerEvent)
 
   def __init__(self, file_bag):
-    QObject.__init__(self)
+    QThread.__init__(self)
     self.file_bag = file_bag
     self.is_running = False
 
@@ -71,19 +71,21 @@ class SSLCAuditQtBridge(QObject):
     self.options = options
     self.controller = BaseClientAuditController(self.options, self.file_bag, event_handler=self.event_handler)
 
-  def start(self):
+  def run(self):
     try:
       self.controller.start()
       self.is_running = True
     except:
       self.sendError.emit(str(sys.exc_info()[1]))
+  
+  def isRunning(self):
+    return self.is_running
 
   def stop(self):
     self.controller.stop()
     self.is_running = False
 
-  def isRunning(self):
-    return self.is_running
+    self.exit()
 
   def event_handler(self, event):
     '''
@@ -103,7 +105,7 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.file_bag = file_bag
     self.settings = QSettings('SSLCAudit')
     self.bridge = SSLCAuditQtBridge(file_bag)
-    self.cstr_ttm = ClientServerTestResultTreeTableModel()
+    self.cstr_ttm = ClientServerTestResultTreeTableModel(self)
 
     # Bind connection debugging to the appropriate function
     self.bridge.sendControllerEvent.connect(self.controllerSentEvent)
@@ -204,10 +206,10 @@ class SSLCAuditGUIWindow(QMainWindow):
 
   @pyqtSlot(name='on_startButton_clicked')
   def startStopAudit(self):
-      if self.bridge.isRunning():
-        self._stopAudit()
-      else:
-        self._startAudit()
+    if self.bridge.isRunning():
+      self._stopAudit()
+    else:
+      self._startAudit()
 
   def _stopAudit(self):
     try:
@@ -246,7 +248,7 @@ class SSLCAuditGUIWindow(QMainWindow):
   def closeEvent(self, event):
     if self.bridge and self.bridge.isRunning():
       if QMessageBox.question(self, 'SSLCAudit', 'An audit is currently running. Do you really want to exit?', QMessageBox.Yes, QMessageBox.No) == QMessageBox.Yes:
-        self.bridge.stop()
+        self.bridge.terminate()
         event.accept()
       else:
         event.ignore()
