@@ -19,7 +19,12 @@ UNEXPECTED_EOF = 'unexpected eof'
 ALERT_UNKNOWN_CA = 'tlsv1 alert unknown ca'
 ALERT_CERT_UNKNOWN = 'sslv3 alert certificate unknown'
 
-class Connected(object): pass
+class Connected(object):
+    def __eq__(self, other):
+        return self.__class__ == other.__class__
+
+    def __hash__(self):
+        return hash(self.__class__)
 
 class ConnectedGotEOFBeforeTimeout(Connected):
     def __init__(self, dt=None):
@@ -31,10 +36,6 @@ class ConnectedGotEOFBeforeTimeout(Connected):
         else:
             dt_str = ''
         return "connected, EOF before timeout%s" % dt_str
-
-    def __eq__(self, other):
-        # NB: ignore actual DT
-        return self.__class__ == other.__class__
 
 
 class ConnectedReadTimeout(Connected):
@@ -48,10 +49,6 @@ class ConnectedReadTimeout(Connected):
             dt_str = ''
         return "connected, read timeout%s" % dt_str
 
-    def __eq__(self, other):
-        # NB: ignore actual DT
-        return self.__class__ == other.__class__
-
 
 class ConnectedGotRequest(Connected):
     def __init__(self, req=None, dt=None):
@@ -59,7 +56,6 @@ class ConnectedGotRequest(Connected):
         self.dt = dt
 
     def __eq__(self, other):
-        # NB: ignore actual DT
         if self.__class__ != other.__class__: return False
 
         return self.req == None or self.req == other.req

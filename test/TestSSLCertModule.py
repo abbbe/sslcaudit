@@ -54,10 +54,12 @@ class ECCAR(object):
         elif isinstance(other, ACCAR):
             return compare_eccar_with_accar(self, other)
         else:
-            return False
+            raise ValueError()
 
     def __hash__(self):
-        return hash((self.profile_spec, self.expected_result))
+        h = self.profile_spec.__hash__()
+#        print 'ECCAR::hash("%s") = %d' % (self.profile_spec, h)
+        return h
 
     def __repr__(self):
         return "ECCAR(%s, %s)" % (self.profile_spec, self.expected_result)
@@ -74,10 +76,13 @@ class ACCAR(object):
         elif isinstance(other, ECCAR):
             return compare_eccar_with_accar(other, self)
         else:
-            return False
+            raise ValueError()
 
     def __hash__(self):
-        return hash((self.profile.get_spec(), self.result))
+        profile_spec = self.profile.get_spec()
+        h = profile_spec.__hash__()
+#        print 'ACCAR::hash("%s") = %d' % (profile_spec, h)
+        return h
 
     def __repr__(self):
         return "ACCAR(%s, %s)" % (self.profile.get_spec(), self.result)
