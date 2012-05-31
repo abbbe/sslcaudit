@@ -26,8 +26,8 @@ class BaseTreeItem(object):
         return 0
 
 class ClientTreeItem(BaseTreeItem):
-    def __init__(self, header):
-        BaseTreeItem.__init__(self, None)
+    def __init__(self, header, parentItem):
+        BaseTreeItem.__init__(self, parentItem)
         self.header = header
 
     def data(self, column):
