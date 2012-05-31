@@ -16,7 +16,7 @@ class Hammer(object):
 
     HAMMERING_DELAY = 0.1
 
-    def __init__(self, nattempts, nparallel=1):
+    def __init__(self, nattempts, nparallel=10):
         self.nattempts = nattempts
         self.nparallel = nparallel
         self.next_round = 0
