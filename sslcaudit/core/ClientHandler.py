@@ -39,41 +39,51 @@ class ClientHandler(object):
 
         self.profiles = profiles
         self.nused_profiles = 0
-        self.lock = threading.Lock()  # this lock has to be acquired before using nused_profiles attribute
+        self.lock = threading.Lock()  # this lock has to be acquired before using nused_profiles and result attributes
 
         self.res_queue.put(ClientAuditStartEvent(self.client_id, self.profiles))
 
     def handle(self, conn):
         '''
         This method is invoked when a new connection arrives. Can be invoked more then once in parallel,
-        from different threads.
+        from different threads. It takes the next unused profile from the list (in a thread-safe way),
+        uses it to handle this connection, and submits the result of handling this specific connection
+        to the results queue. It detects when the very last handler quits and issues audit-end-res event.
         '''
+
+        # get the index of the profile to use to handle this connection
         with self.lock:
             if self.nused_profiles < len(self.profiles):
                 profile_index = self.nused_profiles
-                self.nused_profiles = self.nused_profiles + 1
+                self.nused_profiles += 1
             else:
-                self.logger.debug('no more profiles for connection %s', conn)
-                if self.result:
+                profile_index = -1
+
+        if profile_index != -1:
+            # handle this connection with this profile
+            self.logger.debug('will use profile %d to handle connection %s', profile_index, conn)
+            profile = self.profiles[profile_index]
+            handler = profile.get_handler()
+            res = handler.handle(conn, profile)
+
+            # log and record the results of the test
+            self.logger.debug('handling connection %s using %s (%d/%d) resulted in %s',
+                conn, profile, profile_index, len(self.profiles), res)
+            self.res_queue.put(res)
+
+            # see if this thread is the very last handler out there
+            with self.lock:
+                self.result.add(res)
+                if len(self.result.results) >= len(self.profiles):
+                    # the result object seems to contains enough results, this must be the very last handler out there
+                    # submit the final result to the queue
+                    self.logger.debug('last profile for connection %s', conn)
                     self.res_queue.put(self.result)
-                    self.result = None
-                return
 
-        # handle this connection with this profile
-        profile = self.profiles[profile_index]
-        handler = profile.get_handler()
-        res = handler.handle(conn, profile)
+        else:
+            # no more profiles to apply, resort to the posttest handler
+            self.logger.debug('no unused profiles for connection %s, invoking the posttest handler', conn)
+            self.handle_posttest_connection(conn)
 
-        # log and record the results of the test
-        self.logger.debug('connection from %s using %s (%d/%d) resulted in %s',
-            conn, profile, profile_index, len(self.profiles), res)
-        self.result.add(res)
-        self.res_queue.put(res)
-
-# XXX actually this code cannot not work well with multi-threading
-# XXX we have no clue if the previously spawned handlers have completed their job or not
-#        # if this was the last profile for this client
-#        if self.nused_profiles >= len(self.profiles):
-#            # it was the last profile for this client
-#            self.logger.debug('last profile for connection %s', conn)
-#            self.res_queue.put(self.result)
+    def handle_posttest_connection(self, conn):
+        pass

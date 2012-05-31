@@ -20,8 +20,8 @@ from test.TestDummyModule import TestDummyModule
 from test.TestSSLCertModule import TestSSLCertModule
 
 if __name__ == '__main__':
-    logging.basicConfig(level = logging.DEBUG)
-    #logging.basicConfig()
+    #logging.basicConfig(level = logging.DEBUG)
+    logging.basicConfig()
     suite = unittest.TestSuite()
     suite.addTest(unittest.makeSuite(TestCertFactory))
     suite.addTest(unittest.makeSuite(TestDummyModule))
