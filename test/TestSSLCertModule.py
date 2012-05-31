@@ -5,6 +5,7 @@
 # ----------------------------------------------------------------------
 
 import logging, unittest
+from sets import Set
 from sslcaudit.core import SSLCAuditUI
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController
 from sslcaudit.core.FileBag import FileBag
@@ -56,9 +57,9 @@ class ECCAR(object):
             return False
 
     def __hash__(self):
-        return hash(self.__dict__)
+        return hash((self.profile_spec, self.expected_result))
 
-    def __str__(self):
+    def __repr__(self):
         return "ECCAR(%s, %s)" % (self.profile_spec, self.expected_result)
 
 
@@ -76,9 +77,9 @@ class ACCAR(object):
             return False
 
     def __hash__(self):
-        return hash(self.__dict__)
+        return hash((self.profile.get_spec(), self.result))
 
-    def __str__(self):
+    def __repr__(self):
         return "ACCAR(%s, %s)" % (self.profile.get_spec(), self.result)
 
 
@@ -289,7 +290,7 @@ class TestSSLCertModule(unittest.TestCase):
         # stop the server
         self.controller.stop()
 
-        self.verify_results(expected_results, self.actual_results)
+        self.verify_results_ignore_order(expected_results, self.actual_results)
 
     def verify_results(self, expected_results, actual_results):
         # check if the actual results match expected ones
