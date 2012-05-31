@@ -66,7 +66,6 @@ class SSLCAuditQtBridge(QObject):
     QObject.__init__(self)
     self.file_bag = file_bag
     self.is_running = False
-    self.cstr_ttm = ClientServerTestResultTreeTableModel()
 
   def init_controller(self, options):
     self.options = options
@@ -104,7 +103,8 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.file_bag = file_bag
     self.settings = QSettings('SSLCAudit')
     self.bridge = SSLCAuditQtBridge(file_bag)
-    
+    self.cstr_ttm = ClientServerTestResultTreeTableModel()
+
     # Bind connection debugging to the appropriate function
     self.bridge.sendControllerEvent.connect(self.controllerSentEvent)
     
@@ -156,7 +156,7 @@ class SSLCAuditGUIWindow(QMainWindow):
 
     self.ui.showDebugMessagesCheckBox.stateChanged.connect(self.changeDebugMessageVisibility)
 
-    self.ui.treeView.setModel(self.bridge.cstr_ttm)
+    self.ui.treeView.setModel(self.cstr_ttm)
 
   def childIterator(self, element):
     # Used internally, as PyQt4 doesn't let you iterate over QListWidget items in a Pythonic manner
@@ -184,11 +184,11 @@ class SSLCAuditGUIWindow(QMainWindow):
   
   def controllerSentEvent(self, event):
     if isinstance(event, ClientAuditStartEvent):
-      print '*** got ClientAuditStartEvent ***'
+      self.cstr_ttm.new_client(event.client_id, event.profiles)
     elif isinstance(event, ClientConnectionAuditResult):
-        print '*** got ClientConnectionAuditResult ***'
+      self.cstr_ttm.new_conn_result(event.conn.get_client_id(), event.profile, event.result)
     elif isinstance(event, ClientAuditEndResult):
-      print '*** got ClientAuditEndResult ***'
+      self.cstr_ttm.client_done(event.client_id, event.results)
     else:
       raise ValueError('unexpected event: %s' % event)
 

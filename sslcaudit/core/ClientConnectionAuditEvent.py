@@ -15,8 +15,8 @@ class ClientConnectionAuditEvent(ControllerEvent):
     This is a base class for events produced while auditing individual client connections.
     '''
     def __init__(self, conn, profile):
-        self.profile = profile
         self.conn = conn
+        self.profile = profile
 
     def __eq__(self, other):
         return (self.__class__ == other.__class__) and (self.__dict__ == other.__dict__)
@@ -28,12 +28,12 @@ class ClientConnectionAuditResult(ClientConnectionAuditEvent):
     contains the results of the audit of a single connection.
     '''
 
-    def __init__(self, conn, profile, res):
+    def __init__(self, conn, profile, result):
         ClientConnectionAuditEvent.__init__(self, conn, profile)
-        self.res = res
+        self.result = result
 
     def __str__(self):
-        return ' CCAR(%s[%s], %s)' % (self.profile, self.profile.certnkey.cert_filename, self.res)
+        return ' CCAR(%s[%s], %s)' % (self.profile, self.profile.certnkey.cert_filename, self.result)
 
 class ClientAuditStartEvent(ControllerEvent):
     '''

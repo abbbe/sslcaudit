@@ -152,3 +152,12 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
             parentItem = self.parents[sex]
             newItem = TreeItem(cstr, '', parentItem)
             parentItem.appendChild(newItem)
+
+    def new_client(self, client_id, profiles):
+        print '*** new client ***'
+
+    def new_conn_result(self, client_id, profile, result):
+        print '*** new client conn result ***'
+
+    def client_done(self, client_id, results):
+        print '*** client done ***'
