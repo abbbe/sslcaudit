@@ -32,25 +32,54 @@ def get_full_test_args(user_cn=TEST_USER_CN):
     ]
 
 
+def compare_eccar_with_accar(eccar, accar):
+    if not (eccar.profile_spec == accar.profile.get_spec()):
+        return False
+
+    if eccar.expected_result == accar.result:
+        return True
+    else:
+        return False
+
+
 class ECCAR(object):
     def __init__(self, profile_spec, expected_res):
         self.profile_spec = profile_spec
         self.expected_result = expected_res
 
-    def matches(self, actual_res):
-        '''
-        Given an actual audit result instance (ClientConnectionAuditResult) checks if it matches our expectations.
-        '''
-        if not (self.profile_spec == actual_res.profile.get_spec()):
-            return False
-
-        if self.expected_result == actual_res.result:
-            return True
+    def __eq__(self, other):
+        if isinstance(other, ECCAR):
+            return self.__dict__ == other.__dict__
+        elif isinstance(other, ACCAR):
+            return compare_eccar_with_accar(self, other)
         else:
             return False
 
+    def __hash__(self):
+        return hash(self.__dict__)
+
     def __str__(self):
         return "ECCAR(%s, %s)" % (self.profile_spec, self.expected_result)
+
+
+class ACCAR(object):
+    def __init__(self, ccar):
+        self.profile = ccar.profile
+        self.result = ccar.result
+
+    def __eq__(self, other):
+        if isinstance(other, ACCAR):
+            return self.__dict__ == other.__dict__
+        elif isinstance(other, ECCAR):
+            return compare_eccar_with_accar(other, self)
+        else:
+            return False
+
+    def __hash__(self):
+        return hash(self.__dict__)
+
+    def __str__(self):
+        return "ACCAR(%s, %s)" % (self.profile.get_spec(), self.result)
 
 
 class TestSSLCertModule(unittest.TestCase):
@@ -219,10 +248,11 @@ class TestSSLCertModule(unittest.TestCase):
 
         # collect classes of observed audit results
         self.actual_results = []
+
         def main__handle_result(res):
             #self.orig_main__handle_result(res)
             if isinstance(res, ClientConnectionAuditResult):
-                self.actual_results.append(res)
+                self.actual_results.append(ACCAR(res))
             else:
                 pass # ignore other events
 
@@ -273,11 +303,22 @@ class TestSSLCertModule(unittest.TestCase):
             for i in range(len(expected_results)):
                 er = expected_results[i]
                 ar = actual_results[i]
-                if not er.matches(ar):
+                if not compare_eccar_with_accar(er, ar):
                     print "! mismatch\n\ter=%s\n\tar=%s" % (er, ar)
                     mismatch = True
         self.assertFalse(mismatch)
 
+    def verify_results_ignore_order(self, expected_results, actual_results):
+        expected_results_set = Set(expected_results)
+        actual_results_set = Set(actual_results)
+
+        unexpected = actual_results_set.difference(expected_results_set)
+        missing = expected_results_set.difference(actual_results_set)
+
+        self.assertSetEqual(Set(), unexpected)
+        self.assertSetEqual(Set(), missing)
+
+
 if __name__ == '__main__':
-    logging.basicConfig(level = logging.DEBUG)
+    logging.basicConfig(level=logging.DEBUG)
     unittest.main()
