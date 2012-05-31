@@ -29,8 +29,6 @@ class ClientHandler(object):
     connection. After each connection is handled, it pushes the result returned by the auditor, which normally is
     ClientConnectionAuditResult or another subclass of ClientConnectionAuditEvent. After the last auditor has
     finished its work it pushes ClientAuditEndEvent and ClientAuditResult into the queue.
-
-    XXX race condition XXX
     '''
     logger = logging.getLogger('ClientHandler')
 
@@ -48,7 +46,8 @@ class ClientHandler(object):
 
     def handle(self, conn):
         '''
-        This method is invoked when a new connection arrives.
+        This method is invoked when a new connection arrives. Can be invoked more then once in parallel
+        from different threads. XXX to be fixed
         '''
         if self.nused_profiles >= len(self.profiles):
                 self.logger.debug('no more profiles for connection %s', conn)

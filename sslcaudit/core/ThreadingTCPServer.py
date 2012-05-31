@@ -3,11 +3,10 @@ SSLCAUDIT - a tool for automating security audit of SSL clients
 Released under terms of GPLv3, see COPYING.TXT
 Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 ---------------------------------------------------------------------- '''
-from SocketServer import TCPServer
+from SocketServer import TCPServer, ThreadingMixIn
 import socket
 
-#class ClientAuditorTCPServer(ThreadingMixIn, TCPServer):
-class ThreadingTCPServer(TCPServer):
+class ThreadingTCPServer(ThreadingMixIn, TCPServer):
     '''
     This class extends TCPServer to enforce address reuse, enforce daemon threads, and allow threading.
     '''
