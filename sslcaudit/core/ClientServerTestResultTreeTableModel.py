@@ -47,12 +47,11 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
             return item.data(index.column())
         if role == QtCore.Qt.UserRole:
             if item:
-                return item.person
+                return item.result
         return QtCore.QVariant()
 
     def headerData(self, column, orientation, role):
-        if (orientation == QtCore.Qt.Horizontal and
-            role == QtCore.Qt.DisplayRole):
+        if (orientation == QtCore.Qt.Horizontal and role == QtCore.Qt.DisplayRole):
             try:
                 return QtCore.QVariant(HORIZONTAL_HEADERS[column])
             except IndexError:
@@ -120,7 +119,18 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
         '''
         This method is when the main window handles events from the controller (via bridge).
         '''
-        print '*** new client conn result ***'
+        
+        if client_id in self.parents:
+            client = self.parents[client_id]
+            client_profile = None
+            
+            for profile_id in range(client.childCount()):
+                _profile = client.child(profile_id)
+                
+                if _profile.profile == profile:
+                    _profile.result = str(result)
+                    break
+
 
 
     def client_done(self, client_id, results):
