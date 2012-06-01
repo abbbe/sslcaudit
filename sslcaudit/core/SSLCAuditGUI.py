@@ -160,7 +160,8 @@ class SSLCAuditGUIWindow(QMainWindow):
   
   def reportError(self, message):
     QMessageBox.critical(self, 'SSLCAudit', message, QMessageBox.Ok, QMessageBox.Ok)
-    # XXX should probably be logged as well
+    # XXX this function is used to log exception occuring during startup, but most of the info
+    # XXX about the exception gets lost, only message is displayed to the user. should log exception info in debug log
 
   def show_debug_messages_enabled(self):
     return self.ui.showDebugMessagesCheckBox.checkState() == Qt.Checked
