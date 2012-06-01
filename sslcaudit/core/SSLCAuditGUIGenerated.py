@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Thu May 31 20:02:02 2012
+# Created: Fri Jun  1 12:49:33 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -111,6 +111,7 @@ class Ui_MainWindow(object):
     self.useCertificateGroupBox = QtGui.QGroupBox(self.tab)
     self.useCertificateGroupBox.setFlat(False)
     self.useCertificateGroupBox.setCheckable(True)
+    self.useCertificateGroupBox.setChecked(False)
     self.useCertificateGroupBox.setObjectName(_fromUtf8("useCertificateGroupBox"))
     self.formLayout_2 = QtGui.QFormLayout(self.useCertificateGroupBox)
     self.formLayout_2.setObjectName(_fromUtf8("formLayout_2"))
@@ -182,9 +183,11 @@ class Ui_MainWindow(object):
     self.formLayout_3.setLayout(2, QtGui.QFormLayout.FieldRole, self.horizontalLayout_7)
     self.gridLayout_9.addWidget(self.useCAGroupBox, 2, 0, 1, 1)
     self.useSelfSignedCertificatesCheckBox = QtGui.QCheckBox(self.tab)
+    self.useSelfSignedCertificatesCheckBox.setChecked(True)
     self.useSelfSignedCertificatesCheckBox.setObjectName(_fromUtf8("useSelfSignedCertificatesCheckBox"))
     self.gridLayout_9.addWidget(self.useSelfSignedCertificatesCheckBox, 3, 0, 1, 1)
     self.useUserCertificatesToSign = QtGui.QCheckBox(self.tab)
+    self.useUserCertificatesToSign.setChecked(True)
     self.useUserCertificatesToSign.setObjectName(_fromUtf8("useUserCertificatesToSign"))
     self.gridLayout_9.addWidget(self.useUserCertificatesToSign, 4, 0, 1, 1)
     spacerItem1 = QtGui.QSpacerItem(38, 134, QtGui.QSizePolicy.Minimum, QtGui.QSizePolicy.Expanding)
@@ -375,7 +378,7 @@ class Ui_MainWindow(object):
     self.reportText.setHtml(QtGui.QApplication.translate("MainWindow", "<!DOCTYPE HTML PUBLIC \"-//W3C//DTD HTML 4.0//EN\" \"http://www.w3.org/TR/REC-html40/strict.dtd\">\n"
 "<html><head><meta name=\"qrichtext\" content=\"1\" /><style type=\"text/css\">\n"
 "p, li { white-space: pre-wrap; }\n"
-"</style></head><body style=\" font-family:\'Droid Sans\'; font-size:10pt; font-weight:400; font-style:normal;\">\n"
-"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'monospace\';\">This is the report text. It will be copied to your clipboard.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
+"</style></head><body style=\" font-family:\'Ubuntu\'; font-size:11pt; font-weight:400; font-style:normal;\">\n"
+"<p style=\" margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;\"><span style=\" font-family:\'monospace\'; font-size:10pt;\">This is the report text. It will be copied to your clipboard.</span></p></body></html>", None, QtGui.QApplication.UnicodeUTF8))
     self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab_5), QtGui.QApplication.translate("MainWindow", "Report", None, QtGui.QApplication.UnicodeUTF8))
 

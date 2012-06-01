@@ -242,28 +242,43 @@ class SSLCAuditGUIWindow(QMainWindow):
       self.ui.portLineEdit.clear()
     except:
       port = 8443
-    
-    self.options.no_default_cn = self.ui.useDefaultCNCheckbox.isChecked()
-    self.options.user_cn = str(self.ui.customCNLineEdit.text()).strip() or None
-    
+
+    # -- server tab
     if self.ui.dontFetchCertificateRadioButton.isChecked():
-      pass
+      self.options.server_use_orig_dest = False
+      self.options.server = None
     elif self.ui.fetchCertificateRadioButton.isChecked():
       self.options.server_use_orig_dest = True
+      self.options.server = None
     elif self.ui.fetchCustomCertificateRadioButton.isChecked():
-      self.options.server = str(self.ui.customCertificateLineEdit.text()).strip()
+        self.options.server_use_orig_dest = False
+        self.options.server = str(self.ui.customCertificateLineEdit.text()).strip()
 
+    # -- sslcert tab / CN
+    self.options.no_default_cn = self.ui.useDefaultCNCheckbox.isChecked()
+    self.options.user_cn = str(self.ui.customCNLineEdit.text()).strip() or None
+
+    # -- sslcert tab / user cert
     if self.ui.useCertificateGroupBox.isChecked():
       self.options.user_cert = str(self.ui.certificateEdit1.text())
       self.options.user_key = str(self.ui.keyEdit1.text())
+    else:
+      self.options.user_cert = None
+      self.options.user_key = None
 
+    # -- sslcert tab / user CA
     if self.ui.useCAGroupBox.isChecked():
       self.options.user_ca_cert = str(self.ui.certificateEdit2.text())
       self.options.user_ca_key = str(self.ui.keyEdit2.text())
+    else:
+      self.options.user_ca_cert = None
+      self.options.user_ca_key = None
 
+    # -- sslcert tab / other options
     self.options.no_self_signed = self.ui.useSelfSignedCertificatesCheckBox.isChecked()
     self.options.no_user_cert_signed = self.ui.useUserCertificatesToSign.isChecked()
-    
+
+    # -- left panel
     self.options.nclients = self.ui.numerOfRoundsSpinBox.value()
     self.options.self_test = (lambda x: None if x == 0 else x - 1)(self.ui.selfTestComboBox.currentIndex())
     self.options.listen_on = (
@@ -279,10 +294,7 @@ class SSLCAuditGUIWindow(QMainWindow):
 
       self.ui.startButton.setText('Start')
       self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-start'))
-      
-  
-  
-  
+
   def closeEvent(self, event):
     if self.bridge and self.bridge.isRunning():
       if QMessageBox.question(self, 'SSLCAudit', 'An audit is currently running. Do you really want to exit?', QMessageBox.Yes, QMessageBox.No) == QMessageBox.Yes:
