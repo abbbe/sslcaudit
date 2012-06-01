@@ -42,7 +42,10 @@ class BaseClientAuditController(Thread):
         self.server = ClientAuditorServer(self.options.listen_on, self.profile_factories)
         self.res_queue = self.server.res_queue
 
-        #self.logger.info('initialized with options %s' % str(self.options))
+        logger.debug('initialized with options\n%s' % str(self.options))
+        logger.info('number of profile factories: %d' % len(self.profile_factories))
+        for pf in self.profile_factories:
+            logger.info('profile factory: %s', pf)
 
         self.init_self_tests()
 

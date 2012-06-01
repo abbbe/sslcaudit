@@ -32,7 +32,7 @@ class ClientAuditorServer(Thread):
 
         self.listen_on = listen_on
         self.clients = {}
-        self.profiles_factories = profile_factories
+        self.profile_factories = profile_factories
 
         # create a local result queue unless one is already provided
         if res_queue == None:
@@ -61,9 +61,7 @@ class ClientAuditorServer(Thread):
         self.clients[client_id].handle(conn)
 
     def run(self):
-        logger.info('listen_on: %s, number of profile factories: %d' %(self.listen_on, len(self.profiles_factories)))
-        for pf in self.profiles_factories:
-            logger.info('profile factory: %s', pf)
+        logger.info('listen_on: %s' % str(self.listen_on))
         self.tcp_server.serve_forever()
 
     def stop(self):
@@ -71,4 +69,4 @@ class ClientAuditorServer(Thread):
         self.tcp_server.server_close()
 
     def mk_client_profiles_list(self):
-        return list(itertools.chain.from_iterable(self.profiles_factories))
+        return list(itertools.chain.from_iterable(self.profile_factories))
