@@ -61,7 +61,9 @@ class ClientAuditorServer(Thread):
         self.clients[client_id].handle(conn)
 
     def run(self):
-        logger.debug('listen_on %s, %d profiles' %(self.listen_on, len(self.profiles_factories)))
+        logger.info('listen_on: %s, number of profile factories: %d' %(self.listen_on, len(self.profiles_factories)))
+        for pf in self.profiles_factories:
+            logger.info('profile factory: %s', pf)
         self.tcp_server.serve_forever()
 
     def stop(self):
