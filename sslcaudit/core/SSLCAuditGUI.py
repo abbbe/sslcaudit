@@ -10,6 +10,7 @@ from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController, HOST_ADDR_ANY
+from sslcaudit.modules.sslcert.ProfileFactory import DEFAULT_CN
 from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientAuditStartEvent, ControllerEvent, ClientAuditEndResult
 
 import SSLCAuditGUIGenerated
@@ -120,6 +121,9 @@ class SSLCAuditGUIWindow(QMainWindow):
     # Initialize the UI and store it within the self.ui variable
     self.ui = SSLCAuditGUIGenerated.Ui_MainWindow()
     self.ui.setupUi(self)
+
+    # Replace placeholder text in checkbox
+    self.ui.useDefaultCNCheckbox.setText(str(self.ui.useDefaultCNCheckbox.text()).format(cn=DEFAULT_CN))
 
     # Hide unimplemented controls
     for control in [
