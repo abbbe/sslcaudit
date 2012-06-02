@@ -64,13 +64,16 @@ class SSLCAuditQtBridge(logging.Handler, QThread):
     self.options = options
     self.controller = BaseClientAuditController(self.options, self.file_bag, event_handler=self.event_handler)
 
-  def run(self):
+  def start(self):
     try:
       self.controller.start()
       self.is_running = True
     except:
       self.sendError.emit(str(sys.exc_info()[1]))
-  
+
+  def run(self):
+    raise NotImplemented('there is no use for this "thread" to run')
+
   def isRunning(self):
     return self.is_running
 
@@ -295,7 +298,7 @@ class SSLCAuditGUIWindow(QMainWindow):
   def closeEvent(self, event):
     if self.bridge and self.bridge.isRunning():
       if QMessageBox.question(self, 'SSLCAudit', 'An audit is currently running. Do you really want to exit?', QMessageBox.Yes, QMessageBox.No) == QMessageBox.Yes:
-        self.bridge.terminate()
+        self.bridge.stop()
         event.accept()
       else:
         event.ignore()
