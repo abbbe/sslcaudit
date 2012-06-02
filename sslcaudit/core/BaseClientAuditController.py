@@ -50,7 +50,13 @@ class BaseClientAuditController(Thread):
         for pf in self.profile_factories:
             logger.info('profile factory: %s', pf)
 
-        self.init_self_tests()
+        # initialize the self test hammers
+        # make sure we shut down the controller if there is a failure
+        try:
+            self.init_self_tests()
+        except Exception as ex:
+            self.server.server_close()
+            raise ex
 
     def init_profile_factories(self):
         self.profile_factories = []
