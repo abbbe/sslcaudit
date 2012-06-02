@@ -65,7 +65,11 @@ class ClientAuditorServer(Thread):
         self.tcp_server.serve_forever()
 
     def stop(self):
+        ''' this method can only be invoked if the server is already running '''
         self.tcp_server.shutdown()
+        self.server_close()
+
+    def server_close(self):
         self.tcp_server.server_close()
 
     def mk_client_profiles_list(self):
