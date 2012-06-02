@@ -65,14 +65,12 @@ class FileBag(object):
                     # remove the first file
                     os.unlink(f1)
                 except:
-                    # XXX
                     pass
 
                 # try from the beginning
                 continue
             else:
-                # create the second file
-                # XXX race condition here, but rather unlikely to happen
+                # create the second file, race condition here, but rather unlikely to happen
                 f2 = open(f2name, 'w')
 
                 return (f1, f2)
