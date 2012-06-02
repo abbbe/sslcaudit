@@ -26,8 +26,8 @@ class TCPConnectionHammer(ConnectionHammer):
                 nround, self.peer, self.delay_before_close)
             time.sleep(self.delay_before_close)
 
-        except IOError as ex:
-            self.logger.error('round %d: connection to %s has failed: %s', nround, self.peer, ex)
+        except Exception as ex:
+            self.logger.debug('round %d: connection to %s has failed: %s', nround, self.peer, ex)
         finally:
             sock.close()
             self.logger.debug("round %d: connection with %s is closed", nround, self.peer)
