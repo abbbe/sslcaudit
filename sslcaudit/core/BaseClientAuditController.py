@@ -113,6 +113,8 @@ class BaseClientAuditController(Thread):
                 pass
 
         self.server.stop()
+        if self.selftest_hammer:
+            self.selftest_hammer.stop()
         logger.debug('exited main loop in run()')
 
     def init_self_tests(self):
