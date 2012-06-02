@@ -37,10 +37,10 @@ class BaseProfileFactory(object):
     def __init__(self, file_bag, options):
         self.file_bag = file_bag
         self.options = options
-        self.profiles_ = []
+        self.profiles = []
 
     def add_profile(self, profile):
-        self.profiles_.append(profile)
+        self.profiles.append(profile)
 
     def __iter__(self):
-        return self.profiles_.__iter__()
+        return self.profiles.__iter__()

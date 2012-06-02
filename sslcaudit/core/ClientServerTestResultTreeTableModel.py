@@ -29,12 +29,6 @@ class ClientServerTestResult(object):
 class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
     def __init__(self, parent=None):
         super(ClientServerTestResultTreeTableModel, self).__init__(parent)
-#        self.cstrs = []
-#        for client_server, test, result in (
-#        ('A -> B:C', 'sslcert/selfsigned', 'OK'), ('A -> B:C', 'sslcert/testsigned', 'NOK'),):
-#            client_server_test_result = ClientServerTestResult(client_server, test, result)
-#            self.cstrs.append(client_server_test_result)
-#
         self.rootItem = ClientTreeItem('ALL', None)  # XXX wtf
         self.parents = {0: self.rootItem}
 
@@ -111,7 +105,7 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
         # create the subtree containing profiles
         newClientTreeItem = ClientTreeItem(client_id, self.rootItem)
         for profile in profiles:
-            newConnProfileItem = ConnectionProfileTreeItem(newClientTreeItem, profile, RESULT_PENDING)  # XXX
+            newConnProfileItem = ConnectionProfileTreeItem(newClientTreeItem, profile, RESULT_PENDING)
             newClientTreeItem.appendChild(newConnProfileItem)
 
         # insert the new node under the parent node

@@ -99,6 +99,9 @@ class ProfileFactory(BaseProfileFactory):
             '--user-ca-cert', self.options.user_ca_cert_file,
             '--user-ca-key', self.options.user_ca_key_file)
 
+    def __str__(self):
+        return 'SSLCert (%d profiles)' % (len(self.profiles))
+
     # ----------------------------------------------------------------------------------------------
 
     def init_cert_requests(self):

@@ -5,34 +5,19 @@
 # ----------------------------------------------------------------------
 
 import sys, logging
+import traceback
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController, HOST_ADDR_ANY
+from sslcaudit.modules.sslcert.ProfileFactory import DEFAULT_CN
 from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientAuditStartEvent, ControllerEvent, ClientAuditEndResult
 
 import SSLCAuditGUIGenerated
 from sslcaudit.core.ClientServerTestResultTreeTableModel import ClientServerTestResultTreeTableModel
 
-class PyQt4Handler(logging.Handler, QObject):
-  '''
-  This is a custom logging handler that emits PyQt4 signals when it intercepts messages
-  '''
-
-  sendLog = pyqtSignal(str)
-  sendError = pyqtSignal(str)
-  
-  def __init__(self, *args, **kwargs):
-    logging.Handler.__init__(self, *args, **kwargs)
-    QObject.__init__(self, *args, **kwargs)
-
-  def emit(self, record):
-    # XXX perhaps move this code to the window class, we don't want logic in interfacing classes
-    if record.levelname == 'DEBUG':
-      self.sendLog.emit(record.getMessage())
-    elif record.levelname == 'ERROR':
-      self.sendError.emit(record.getMessage())
+logger = logging.getLogger('SSLCAuditGUI')
 
 class SSLCAuditGUI(object):
   def __init__(self, options, file_bag):
@@ -50,7 +35,7 @@ class SSLCAuditGUI(object):
     return self.app.exec_()
 
 
-class SSLCAuditQtBridge(QThread):
+class SSLCAuditQtBridge(logging.Handler, QThread):
   '''
   This class is a bridge between PyQt GUI and the core of sslcaudit.
   The main window contains an instance of this class and uses it to communicate with the core.
@@ -58,14 +43,20 @@ class SSLCAuditQtBridge(QThread):
   It uses sendLog, sendError, sendConnection signals to receive events from the core.
   This class does not contain any control rules by itself.
   '''
-  sendLog = pyqtSignal(str)
-  sendError = pyqtSignal(str)
+  sendLog = pyqtSignal(logging.LogRecord)
   sendControllerEvent = pyqtSignal(ControllerEvent)
 
   def __init__(self, file_bag):
+    logging.Handler.__init__(self)
     QThread.__init__(self)
     self.file_bag = file_bag
     self.is_running = False
+
+  def emit(self, record):
+    '''
+    This method overrides logging.Handler.emit()
+    '''
+    self.sendLog.emit(record)
 
   def init_controller(self, options):
     self.options = options
@@ -111,15 +102,22 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.bridge.sendControllerEvent.connect(self.controllerSentEvent)
     
     # Setup and bind the logging handler to the appropriate functions
-    self.log_handler = PyQt4Handler()
-    self.log_handler.sendLog.connect(self.controllerSentLog)
-    self.log_handler.sendError.connect(self.controllerSentError)
-
-    logging.getLogger().addHandler(self.log_handler)
+    self.bridge.sendLog.connect(self.controllerSentLog)
+    logging.getLogger().addHandler(self.bridge)
 
     # Initialize the UI and store it within the self.ui variable
     self.ui = SSLCAuditGUIGenerated.Ui_MainWindow()
     self.ui.setupUi(self)
+
+    # Replace placeholder text in checkbox
+    self.ui.useDefaultCNCheckbox.setText(str(self.ui.useDefaultCNCheckbox.text()).format(cn=DEFAULT_CN))
+
+    # Hide unimplemented controls
+    for control in [
+      self.ui.generateButton,
+      self.ui.exportPKCS12Button
+    ]:
+      control.hide()
     
     # Remove focus from the input box. We need the placeholder text.
     self.setFocus()
@@ -163,26 +161,32 @@ class SSLCAuditGUIWindow(QMainWindow):
     # Used internally, as PyQt4 doesn't let you iterate over QListWidget items in a Pythonic manner
     return [element.item(i) for i in range(element.count())]
   
-  def sendError(self, message):
-    QMessageBox.critical(self, 'SSLCAudit', message, QMessageBox.Ok, QMessageBox.Ok)
+  def reportError(self, message, debug_info):
+    QMessageBox.critical(self, 'Error', message, QMessageBox.Ok, QMessageBox.Ok)
+    logger.error(message)
+    if debug_info:
+      logger.debug(debug_info)
 
-  # XXX controllerSentLog and controllerSentEvent should be merged into one
-  def controllerSentLog(self, message):
-    message = QListWidgetItem(message)
-    message.setToolTip('Debug message')
+  def show_debug_messages_enabled(self):
+    return self.ui.showDebugMessagesCheckBox.checkState() == Qt.Checked
+
+  def controllerSentLog(self, log_record):
+    message = QListWidgetItem(log_record.getMessage())
+    hide = False
+    if log_record.levelno <= logging.DEBUG:
+      message.setToolTip('Debug message')
+      message.setForeground(QBrush(QColor('Grey')))
+      if not self.show_debug_messages_enabled():
+        hide = True
+    elif log_record.levelno == logging.INFO:
+      message.setToolTip('Info message')
+    else:
+      message.setToolTip('Error message')
+      message.setForeground(QBrush(QColor('Red')))
 
     self.ui.testLog.addItem(message)
-    
-    if self.ui.showDebugMessagesCheckBox.checkState() != Qt.Checked:
-      message.setHidden(True)
+    message.setHidden(hide)
 
-  def controllerSentError(self, message):
-    message = QListWidgetItem(message)
-    message.setToolTip('Error message')
-    message.setForeground(QBrush(QColor('Red')))
-
-    self.ui.testLog.addItem(message)
-  
   def controllerSentEvent(self, event):
     if isinstance(event, ClientAuditStartEvent):
       self.cstr_ttm.new_client(event.client_id, event.profiles)
@@ -195,9 +199,10 @@ class SSLCAuditGUIWindow(QMainWindow):
 
 
   def changeDebugMessageVisibility(self):
+    hideDebugMessages = not self.show_debug_messages_enabled()
     for item in self.childIterator(self.ui.testLog):
       if str(item.toolTip()) == 'Debug message':
-        item.setHidden(self.ui.showDebugMessagesCheckBox.checkState() != Qt.Checked)
+        item.setHidden(hideDebugMessages)
   
   @pyqtSlot(name='on_copyToClipboardButton_clicked')
   def copyReportToClipboard(self):
@@ -208,7 +213,7 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.ui.testLog.clear()
 
   @pyqtSlot(name='on_startButton_clicked')
-  def startStopAudit(self):
+  def toggleAudit(self):
     if self.bridge.isRunning():
       self._stopAudit()
     else:
@@ -220,7 +225,7 @@ class SSLCAuditGUIWindow(QMainWindow):
       self.ui.startButton.setText('Start')
       self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-start'))
     except:
-      self.sendError(str(sys.exc_info()[1]))
+      self.reportError(str(sys.exc_info()[1]))
 
   def _startAudit(self):
     self.ui.startButton.setText('Stop')
@@ -228,9 +233,46 @@ class SSLCAuditGUIWindow(QMainWindow):
     
     try:
       port = int(self.ui.portLineEdit.text())
+      self.ui.portLineEdit.clear()
     except:
       port = 8443
-    
+
+    # -- server tab
+    if self.ui.dontFetchCertificateRadioButton.isChecked():
+      self.options.server_use_orig_dest = False
+      self.options.server = None
+    elif self.ui.fetchCertificateRadioButton.isChecked():
+      self.options.server_use_orig_dest = True
+      self.options.server = None
+    elif self.ui.fetchCustomCertificateRadioButton.isChecked():
+        self.options.server_use_orig_dest = False
+        self.options.server = str(self.ui.customCertificateLineEdit.text()).strip()
+
+    # -- sslcert tab / CN
+    self.options.no_default_cn = self.ui.useDefaultCNCheckbox.isChecked()
+    self.options.user_cn = str(self.ui.customCNLineEdit.text()).strip() or None
+
+    # -- sslcert tab / user cert
+    if self.ui.useCertificateGroupBox.isChecked():
+      self.options.user_cert = str(self.ui.certificateEdit1.text())
+      self.options.user_key = str(self.ui.keyEdit1.text())
+    else:
+      self.options.user_cert = None
+      self.options.user_key = None
+
+    # -- sslcert tab / user CA
+    if self.ui.useCAGroupBox.isChecked():
+      self.options.user_ca_cert = str(self.ui.certificateEdit2.text())
+      self.options.user_ca_key = str(self.ui.keyEdit2.text())
+    else:
+      self.options.user_ca_cert = None
+      self.options.user_ca_key = None
+
+    # -- sslcert tab / other options
+    self.options.no_self_signed = self.ui.useSelfSignedCertificatesCheckBox.isChecked()
+    self.options.no_user_cert_signed = self.ui.useUserCertificatesToSign.isChecked()
+
+    # -- left panel
     self.options.nclients = self.ui.numerOfRoundsSpinBox.value()
     self.options.self_test = (lambda x: None if x == 0 else x - 1)(self.ui.selfTestComboBox.currentIndex())
     self.options.listen_on = (
@@ -241,15 +283,12 @@ class SSLCAuditGUIWindow(QMainWindow):
     try:
       self.bridge.init_controller(self.options)
       self.bridge.start()
-    except:
-      self.sendError(str(sys.exc_info()[1]))
+    except Exception as ex:
+      self.reportError('Failed to start: %s' % ex, traceback.format_exc())
 
       self.ui.startButton.setText('Start')
       self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-start'))
-      
-  
-  
-  
+
   def closeEvent(self, event):
     if self.bridge and self.bridge.isRunning():
       if QMessageBox.question(self, 'SSLCAudit', 'An audit is currently running. Do you really want to exit?', QMessageBox.Yes, QMessageBox.No) == QMessageBox.Yes:
