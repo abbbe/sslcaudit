@@ -8,18 +8,6 @@ import logging, threading
 from exceptions import StopIteration
 from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndResult
 
-def try_iterator_length(iter):
-    '''
-    Tries to traverse the iterator and returns sequence length
-    '''
-    length = 0
-    while True:
-        try:
-            iter.next()
-            length += 1
-        except StopIteration:
-            return length
-
 class ClientHandler(object):
     '''
     Instances of this class hold information about the progress and the results of an audit of a single client.
