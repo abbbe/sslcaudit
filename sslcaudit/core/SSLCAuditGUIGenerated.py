@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Fri Jun  1 12:49:33 2012
+# Created: Sat Jun  2 13:29:01 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -312,8 +312,8 @@ class Ui_MainWindow(object):
     self.portLineEdit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "Port", None, QtGui.QApplication.UnicodeUTF8))
     self.selfTestLabel.setText(QtGui.QApplication.translate("MainWindow", "Self Test", None, QtGui.QApplication.UnicodeUTF8))
     self.selfTestComboBox.setItemText(0, QtGui.QApplication.translate("MainWindow", "None", None, QtGui.QApplication.UnicodeUTF8))
-    self.selfTestComboBox.setItemText(1, QtGui.QApplication.translate("MainWindow", "TCP client", None, QtGui.QApplication.UnicodeUTF8))
-    self.selfTestComboBox.setItemText(2, QtGui.QApplication.translate("MainWindow", "Common Name verifying client", None, QtGui.QApplication.UnicodeUTF8))
+    self.selfTestComboBox.setItemText(1, QtGui.QApplication.translate("MainWindow", "Plain TCP client", None, QtGui.QApplication.UnicodeUTF8))
+    self.selfTestComboBox.setItemText(2, QtGui.QApplication.translate("MainWindow", "CN-verifying client", None, QtGui.QApplication.UnicodeUTF8))
     self.selfTestComboBox.setItemText(3, QtGui.QApplication.translate("MainWindow", "curl", None, QtGui.QApplication.UnicodeUTF8))
     self.numerOfRoundsLabel.setText(QtGui.QApplication.translate("MainWindow", "Numer of Rounds", None, QtGui.QApplication.UnicodeUTF8))
     self.startButton.setText(QtGui.QApplication.translate("MainWindow", "Start", None, QtGui.QApplication.UnicodeUTF8))

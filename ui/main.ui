@@ -95,12 +95,12 @@
             </item>
             <item>
              <property name="text">
-              <string>TCP client</string>
+              <string>Plain TCP client</string>
              </property>
             </item>
             <item>
              <property name="text">
-              <string>Common Name verifying client</string>
+              <string>CN-verifying client</string>
              </property>
             </item>
             <item>
