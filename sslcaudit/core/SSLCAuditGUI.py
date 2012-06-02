@@ -5,6 +5,7 @@
 # ----------------------------------------------------------------------
 
 import sys, logging
+import traceback
 
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
@@ -15,6 +16,8 @@ from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResul
 
 import SSLCAuditGUIGenerated
 from sslcaudit.core.ClientServerTestResultTreeTableModel import ClientServerTestResultTreeTableModel
+
+logger = logging.getLogger('SSLCAuditGUI')
 
 class SSLCAuditGUI(object):
   def __init__(self, options, file_bag):
@@ -158,10 +161,11 @@ class SSLCAuditGUIWindow(QMainWindow):
     # Used internally, as PyQt4 doesn't let you iterate over QListWidget items in a Pythonic manner
     return [element.item(i) for i in range(element.count())]
   
-  def reportError(self, message):
-    QMessageBox.critical(self, 'SSLCAudit', message, QMessageBox.Ok, QMessageBox.Ok)
-    # XXX this function is used to log exception occuring during startup, but most of the info
-    # XXX about the exception gets lost, only message is displayed to the user. should log exception info in debug log
+  def reportError(self, message, debug_info):
+    QMessageBox.critical(self, 'Error', message, QMessageBox.Ok, QMessageBox.Ok)
+    logger.error(message)
+    if debug_info:
+      logger.debug(debug_info)
 
   def show_debug_messages_enabled(self):
     return self.ui.showDebugMessagesCheckBox.checkState() == Qt.Checked
@@ -279,8 +283,8 @@ class SSLCAuditGUIWindow(QMainWindow):
     try:
       self.bridge.init_controller(self.options)
       self.bridge.start()
-    except:
-      self.reportError(str(sys.exc_info()[1]))
+    except Exception as ex:
+      self.reportError('Failed to start: %s' % ex, traceback.format_exc())
 
       self.ui.startButton.setText('Start')
       self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-start'))
