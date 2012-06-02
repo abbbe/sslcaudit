@@ -43,7 +43,6 @@ class BaseClientAuditController(Thread):
         self.res_queue = self.server.res_queue
 
         logger.debug('dumping options')
-        print self.options
         for (key, value) in self.options.__dict__.items():
           logger.debug('\t%s = %s' % (key, value))
         logger.debug('end of options dump')
