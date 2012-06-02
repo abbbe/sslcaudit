@@ -249,7 +249,7 @@ class SSLCAuditGUIWindow(QMainWindow):
         self.options.server = str(self.ui.customCertificateLineEdit.text()).strip()
 
     # -- sslcert tab / CN
-    self.options.no_default_cn = self.ui.useDefaultCNCheckbox.isChecked()
+    self.options.no_default_cn = not self.ui.useDefaultCNCheckbox.isChecked()
     self.options.user_cn = str(self.ui.customCNLineEdit.text()).strip() or None
 
     # -- sslcert tab / user cert
@@ -269,8 +269,8 @@ class SSLCAuditGUIWindow(QMainWindow):
       self.options.user_ca_key = None
 
     # -- sslcert tab / other options
-    self.options.no_self_signed = self.ui.useSelfSignedCertificatesCheckBox.isChecked()
-    self.options.no_user_cert_signed = self.ui.useUserCertificatesToSign.isChecked()
+    self.options.no_self_signed = not self.ui.useSelfSignedCertificatesCheckBox.isChecked()
+    self.options.no_user_cert_signed = not self.ui.useUserCertificatesToSign.isChecked()
 
     # -- left panel
     self.options.nclients = self.ui.numerOfRoundsSpinBox.value()
