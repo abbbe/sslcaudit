@@ -19,16 +19,19 @@ class Hammer(object):
     def __init__(self, nattempts, nparallel=10):
         self.nattempts = nattempts
         self.nparallel = nparallel
+
         self.next_round = 0
         self.lock = threading.Lock()  # this lock has to be acquired before use of 'next_round' attribute
 
-        self.daemon = True
         self.should_stop = False
 
+        # launch as many threads as needed to reach desired parallelism, but don't exceed the number of attempts
         self.hammer_threads = []
         nthreads = self.nparallel if (nattempts < 0) or (self.nparallel < nattempts) else nattempts
         for _ in range(nthreads):
-            self.hammer_threads.append(Thread(target=self.run))
+            thread = Thread(target=self.run)
+            thread.daemon = True
+            self.hammer_threads.append(thread)
 
     def start(self):
         for thread in self.hammer_threads:
