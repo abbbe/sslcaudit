@@ -118,23 +118,23 @@ class BaseClientAuditController(Thread):
         peer = (peer_host, self.options.listen_on[1])
 
         # instantiate hammer class
-        if self.options.self_test is None:
+        if self.options.self_test == 0:
             self.selftest_hammer = None
         else:
-            if self.options.self_test == 0:
+            if self.options.self_test == 1:
                 self.selftest_hammer = TCPConnectionHammer(-1)
 
-            elif self.options.self_test == 1:
+            elif self.options.self_test == 2:
                 if self.options.user_cn is not None:
                     self.selftest_hammer = CNVerifyingSSLConnectionHammer(-1, 'hello')
                 else:
-                    raise ConfigError('test mode 1 requires --user-cn')
+                    raise ConfigError('test mode 2 requires --user-cn')
 
-            elif self.options.self_test == 2:
+            elif self.options.self_test == 3:
                 if self.options.user_ca_cert_file is not None:
                     self.selftest_hammer = CurlHammer(-1, self.options.user_ca_cert_file)
                 else:
-                    raise ConfigError('test mode 2 requires --user-ca-cert/--user-ca-key')
+                    raise ConfigError('test mode 3 requires --user-ca-cert/--user-ca-key')
             else:
                 raise ConfigError('invalid selftest number %d' % self.options.self_test)
 

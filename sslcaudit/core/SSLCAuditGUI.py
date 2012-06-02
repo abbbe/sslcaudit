@@ -274,7 +274,7 @@ class SSLCAuditGUIWindow(QMainWindow):
 
     # -- left panel
     self.options.nclients = self.ui.numerOfRoundsSpinBox.value()
-    self.options.self_test = (lambda x: None if x == 0 else x - 1)(self.ui.selfTestComboBox.currentIndex())
+    self.options.self_test = self.ui.selfTestComboBox.currentIndex()
     self.options.listen_on = (
       str(self.ui.hostnameLineEdit.text()),
       port

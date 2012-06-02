@@ -26,7 +26,8 @@ class Hammer(object):
         self.should_stop = False
 
         self.hammer_threads = []
-        for _ in range(self.nparallel):
+        nthreads = self.nparallel if (nattempts < 0) or (self.nparallel < nattempts) else nattempts
+        for _ in range(nthreads):
             self.hammer_threads.append(Thread(target=self.run))
 
     def start(self):
@@ -43,9 +44,15 @@ class Hammer(object):
         while True:
             # get ourselves a round id
             with self.lock:
-                if self.next_round >= self.nattempts or self.should_stop:
-                    # quitting this thread
-                    self.logger.debug("exiting, thread %s", threading.currentThread())
+                if self.should_stop:
+                    # quitting this thread because we were requested to
+                    self.logger.debug("exiting (should_stop is True), thread %s", threading.currentThread())
+                    return
+                elif (self.nattempts > 0) and (self.next_round >= self.nattempts):
+                    # quitting this thread because too many rounds are made already
+                    self.logger.debug("exiting (next_round  %d > nattempts %d), thread %s",
+                        self.next_round, self.nattempts,
+                        threading.currentThread())
                     return
                 else:
                     this_nround = self.next_round
