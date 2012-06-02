@@ -48,6 +48,8 @@ class SSLCAuditQtBridge(logging.Handler, QThread):
 
   def __init__(self, file_bag):
     logging.Handler.__init__(self)
+    self.setFormatter(logging.Formatter('%(asctime)s %(message)s', datefmt='%H:%M:%S'))
+
     QThread.__init__(self)
     self.file_bag = file_bag
     self.is_running = False
@@ -171,7 +173,8 @@ class SSLCAuditGUIWindow(QMainWindow):
     return self.ui.showDebugMessagesCheckBox.checkState() == Qt.Checked
 
   def controllerSentLog(self, log_record):
-    message = QListWidgetItem(log_record.getMessage())
+    log_record_text = self.bridge.format(log_record)
+    message = QListWidgetItem(log_record_text)
     hide = False
     if log_record.levelno <= logging.DEBUG:
       message.setToolTip('Debug message')
