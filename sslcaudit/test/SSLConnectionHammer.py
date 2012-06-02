@@ -3,6 +3,7 @@
 # Released under terms of GPLv3, see COPYING.TXT
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
+from M2Crypto.SSL import SSLError
 
 import time, logging, M2Crypto
 from M2Crypto.SSL.Checker import  SSLVerificationError
@@ -40,9 +41,15 @@ class CNVerifyingSSLConnectionHammer(ConnectionHammer):
             else:
                 self.logger.debug('SSL handshake failed: %s', ssl_conn.ssl_get_error(res))
                 return False
-        except SSLVerificationError as ex:
-            self.logger.debug('SSL handshake SSLVerificationError: %s', ex)
+        except Exception as ex:
+            self.logger.debug('SSL handshake exception: %s', ex)
             return False
+#        except SSLError as ex:
+#            self.logger.debug('SSL handshake SSLError: %s', ex)
+#            return False
+#        except SSLVerificationError as ex:
+#            self.logger.debug('SSL handshake SSLVerificationError: %s', ex)
+#            return False
 
 class ChainVerifyingSSLConnectionHammer(CNVerifyingSSLConnectionHammer):
     '''
