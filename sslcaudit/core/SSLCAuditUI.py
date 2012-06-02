@@ -38,8 +38,8 @@ def parse_options(argv):
         + "it gets one client fully processed.")
     parser.add_option("-N", dest="test_name",
         help="Set the name of the test. If specified will appear in the leftmost column in the output.")
-    parser.add_option('-T', type='int', dest='self_test',
-        help='Launch self-test. 0 - plain TCP client, 1 - CN verifying client, 2 - curl.')
+    parser.add_option('-T', type='int', dest='self_test', default=0,
+        help='Launch self-test. 1 - plain TCP client, 2 - CN verifying client, 3 - curl.')
 
     parser.add_option("--user-cn", dest="user_cn",
         help="Set user-specified CN.")
