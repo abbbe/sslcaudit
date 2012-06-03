@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Sat Jun  2 13:29:01 2012
+# Created: Sun Jun  3 21:58:03 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -39,14 +39,12 @@ class Ui_MainWindow(object):
     self.horizontalLayout_8.setObjectName(_fromUtf8("horizontalLayout_8"))
     self.hostnameLineEdit = QtGui.QLineEdit(self.layoutWidget)
     self.hostnameLineEdit.setMinimumSize(QtCore.QSize(175, 0))
-    self.hostnameLineEdit.setText(_fromUtf8(""))
-    self.hostnameLineEdit.setMaxLength(15)
+    self.hostnameLineEdit.setText(_fromUtf8("0.0.0.0"))
     self.hostnameLineEdit.setObjectName(_fromUtf8("hostnameLineEdit"))
     self.horizontalLayout_8.addWidget(self.hostnameLineEdit)
     self.portLineEdit = QtGui.QLineEdit(self.layoutWidget)
     self.portLineEdit.setMinimumSize(QtCore.QSize(50, 0))
     self.portLineEdit.setMaximumSize(QtCore.QSize(50, 16777215))
-    self.portLineEdit.setMaxLength(5)
     self.portLineEdit.setObjectName(_fromUtf8("portLineEdit"))
     self.horizontalLayout_8.addWidget(self.portLineEdit)
     self.formLayout.setLayout(0, QtGui.QFormLayout.FieldRole, self.horizontalLayout_8)
@@ -307,9 +305,7 @@ class Ui_MainWindow(object):
   def retranslateUi(self, MainWindow):
     MainWindow.setWindowTitle(QtGui.QApplication.translate("MainWindow", "sslcaudit", None, QtGui.QApplication.UnicodeUTF8))
     self.listenOnLabel.setText(QtGui.QApplication.translate("MainWindow", "Listen on", None, QtGui.QApplication.UnicodeUTF8))
-    self.hostnameLineEdit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "Hostname (defaults to any)", None, QtGui.QApplication.UnicodeUTF8))
     self.portLineEdit.setText(QtGui.QApplication.translate("MainWindow", "8443", None, QtGui.QApplication.UnicodeUTF8))
-    self.portLineEdit.setPlaceholderText(QtGui.QApplication.translate("MainWindow", "Port", None, QtGui.QApplication.UnicodeUTF8))
     self.selfTestLabel.setText(QtGui.QApplication.translate("MainWindow", "Self Test", None, QtGui.QApplication.UnicodeUTF8))
     self.selfTestComboBox.setItemText(0, QtGui.QApplication.translate("MainWindow", "None", None, QtGui.QApplication.UnicodeUTF8))
     self.selfTestComboBox.setItemText(1, QtGui.QApplication.translate("MainWindow", "Plain TCP client", None, QtGui.QApplication.UnicodeUTF8))
