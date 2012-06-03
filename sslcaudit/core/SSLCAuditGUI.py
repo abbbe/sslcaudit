@@ -268,11 +268,11 @@ class SSLCAuditGUIWindow(QMainWindow):
 
     # -- sslcert tab / user CA
     if self.ui.useCAGroupBox.isChecked():
-      self.options.user_ca_cert = str(self.ui.certificateEdit2.text())
-      self.options.user_ca_key = str(self.ui.keyEdit2.text())
+      self.options.user_ca_cert_file = str(self.ui.certificateEdit2.text())
+      self.options.user_ca_key_file = str(self.ui.keyEdit2.text())
     else:
-      self.options.user_ca_cert = None
-      self.options.user_ca_key = None
+      self.options.user_ca_cert_file = None
+      self.options.user_ca_key_file = None
 
     # -- sslcert tab / other options
     self.options.no_self_signed = not self.ui.useSelfSignedCertificatesCheckBox.isChecked()
