@@ -237,11 +237,7 @@ class SSLCAuditGUIWindow(QMainWindow):
     self.ui.startButton.setText('Stop')
     self.ui.startButton.setIcon(QIcon.fromTheme('media-playback-stop'))
     
-    try:
-      port = int(self.ui.portLineEdit.text())
-      self.ui.portLineEdit.clear()
-    except:
-      port = 8443
+    port = int(self.ui.portLineEdit.text())
 
     # -- server tab
     if self.ui.dontFetchCertificateRadioButton.isChecked():
