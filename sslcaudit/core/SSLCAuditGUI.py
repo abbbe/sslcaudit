@@ -68,11 +68,8 @@ class SSLCAuditQtBridge(logging.Handler, QThread):
     self.controller = BaseClientAuditController(self.options, self.file_bag, event_handler=self.event_handler)
 
   def start(self):
-    try:
-      self.controller.start()
-      self.is_running = True
-    except:
-      self.sendError.emit(str(sys.exc_info()[1]))
+    self.controller.start()
+    self.is_running = True
 
   def run(self):
     raise NotImplemented('there is no use for this "thread" to run')
