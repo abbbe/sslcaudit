@@ -5,10 +5,13 @@
 # ----------------------------------------------------------------------
 
 from PyQt4 import QtCore
+import logging
 from sslcaudit.core.ResultTreeItem import ClientTreeItem, ConnectionProfileTreeItem
 
 HORIZONTAL_HEADERS = ('Test', 'Result')
 RESULT_PENDING = 'pending'
+
+logger = logging.getLogger('CSTR_TTM')
 
 # http://rowinggolfer.blogspot.com/2010/05/qtreeview-and-qabractitemmodel-example.html
 
@@ -127,8 +130,11 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
                 
                 if _profile.profile == profile:
                     _profile.result = result
-                    break
-
+                    # XXX need to call self.dataChanged() here?
+                    return
+            logger.error('got "new_conn_result" event, but cannot find a row for it')
+        else:
+            logger.error('received "new_conn_result" event for client id "%s" but there is no subtree for it' % (client_id))
 
 
     def client_done(self, client_id, results):
