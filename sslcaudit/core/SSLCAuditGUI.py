@@ -3,6 +3,7 @@
 # Released under terms of GPLv3, see COPYING.TXT
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
+from os.path import dirname
 
 import sys, logging
 import traceback
@@ -18,6 +19,8 @@ import SSLCAuditGUIGenerated
 from sslcaudit.core.ClientServerTestResultTreeTableModel import ClientServerTestResultTreeTableModel
 
 logger = logging.getLogger('SSLCAuditGUI')
+
+INITIAL_DIR_SETTING_NAME = 'startup/certDir'
 
 class SSLCAuditGUI(object):
   def __init__(self, options, file_bag):
@@ -307,8 +310,7 @@ class SSLCAuditGUIWindow(QMainWindow):
 
   def browseButtonClicked(self, name):
     textbox = getattr(self.ui, str(name).replace('Browse', 'Edit'))
-    settingName = 'startup/{}'.format(name)
-    initialDir = self.settings.value(settingName, QDir.homePath()).toString()
+    initialDir = self.settings.value(INITIAL_DIR_SETTING_NAME, QDir.homePath()).toString()
     filename = QFileDialog.getOpenFileName(
       self,
       getattr(self.ui, str(name)).statusTip(),
@@ -316,5 +318,6 @@ class SSLCAuditGUIWindow(QMainWindow):
     )
     
     if filename:
-      self.settings.setValue(settingName, filename)
+      newInitialDir = dirname(str(filename))
+      self.settings.setValue(INITIAL_DIR_SETTING_NAME, newInitialDir)
       textbox.setText(filename)
