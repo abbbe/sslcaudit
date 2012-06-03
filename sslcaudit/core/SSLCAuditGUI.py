@@ -307,12 +307,14 @@ class SSLCAuditGUIWindow(QMainWindow):
 
   def browseButtonClicked(self, name):
     textbox = getattr(self.ui, str(name).replace('Browse', 'Edit'))
+    settingName = 'startup/{}'.format(name)
+    initialDir = self.settings.value(settingName, QDir.homePath()).toString()
     filename = QFileDialog.getOpenFileName(
       self,
       getattr(self.ui, str(name)).statusTip(),
-      self.settings.value('startup/{}'.format(name), QDir.homePath()).toString()
+      initialDir
     )
     
     if filename:
-      self.settings.setValue('startup/{}'.format(name), filename)
+      self.settings.setValue(settingName, filename)
       textbox.setText(filename)
