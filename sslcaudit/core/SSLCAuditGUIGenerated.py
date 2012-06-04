@@ -2,7 +2,7 @@
 
 # Form implementation generated from reading ui file 'main.ui'
 #
-# Created: Sun Jun  3 21:58:03 2012
+# Created: Mon Jun  4 11:13:39 2012
 #      by: PyQt4 UI code generator 4.9.1
 #
 # WARNING! All changes made in this file will be lost!
@@ -185,6 +185,8 @@ class Ui_MainWindow(object):
     self.useSelfSignedCertificatesCheckBox.setObjectName(_fromUtf8("useSelfSignedCertificatesCheckBox"))
     self.gridLayout_9.addWidget(self.useSelfSignedCertificatesCheckBox, 3, 0, 1, 1)
     self.useUserCertificatesToSign = QtGui.QCheckBox(self.tab)
+    self.useUserCertificatesToSign.setEnabled(False)
+    self.useUserCertificatesToSign.setCheckable(True)
     self.useUserCertificatesToSign.setChecked(True)
     self.useUserCertificatesToSign.setObjectName(_fromUtf8("useUserCertificatesToSign"))
     self.gridLayout_9.addWidget(self.useUserCertificatesToSign, 4, 0, 1, 1)
@@ -300,6 +302,7 @@ class Ui_MainWindow(object):
     self.tabWidget.setCurrentIndex(0)
     QtCore.QObject.connect(self.customCommonNameCheckBox, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.customCNLineEdit.setEnabled)
     QtCore.QObject.connect(self.fetchCustomCertificateRadioButton, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.customCertificateLineEdit.setEnabled)
+    QtCore.QObject.connect(self.useCertificateGroupBox, QtCore.SIGNAL(_fromUtf8("toggled(bool)")), self.useUserCertificatesToSign.setEnabled)
     QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
   def retranslateUi(self, MainWindow):
@@ -333,7 +336,7 @@ class Ui_MainWindow(object):
     self.generateButton.setText(QtGui.QApplication.translate("MainWindow", "Generate", None, QtGui.QApplication.UnicodeUTF8))
     self.exportPKCS12Button.setText(QtGui.QApplication.translate("MainWindow", "Export PKCS #12", None, QtGui.QApplication.UnicodeUTF8))
     self.useSelfSignedCertificatesCheckBox.setText(QtGui.QApplication.translate("MainWindow", "Use self-signed cerficiates", None, QtGui.QApplication.UnicodeUTF8))
-    self.useUserCertificatesToSign.setText(QtGui.QApplication.translate("MainWindow", "Sign server certificates with user-supplied certificate", None, QtGui.QApplication.UnicodeUTF8))
+    self.useUserCertificatesToSign.setText(QtGui.QApplication.translate("MainWindow", "Sign certificates with the user-supplied certificate", None, QtGui.QApplication.UnicodeUTF8))
     self.tabWidget.setTabText(self.tabWidget.indexOf(self.tab), QtGui.QApplication.translate("MainWindow", "SSLCert", None, QtGui.QApplication.UnicodeUTF8))
     self.groupBox.setTitle(QtGui.QApplication.translate("MainWindow", "Protocols", None, QtGui.QApplication.UnicodeUTF8))
     __sortingEnabled = self.protocolList.isSortingEnabled()
