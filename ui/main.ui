@@ -370,8 +370,14 @@
          </item>
          <item row="4" column="0">
           <widget class="QCheckBox" name="useUserCertificatesToSign">
+           <property name="enabled">
+            <bool>false</bool>
+           </property>
            <property name="text">
-            <string>Sign server certificates with user-supplied certificate</string>
+            <string>Sign certificates with the user-supplied certificate</string>
+           </property>
+           <property name="checkable">
+            <bool>true</bool>
            </property>
            <property name="checked">
             <bool>true</bool>
@@ -645,6 +651,22 @@ p, li { white-space: pre-wrap; }
     <hint type="destinationlabel">
      <x>516</x>
      <y>139</y>
+    </hint>
+   </hints>
+  </connection>
+  <connection>
+   <sender>useCertificateGroupBox</sender>
+   <signal>toggled(bool)</signal>
+   <receiver>useUserCertificatesToSign</receiver>
+   <slot>setEnabled(bool)</slot>
+   <hints>
+    <hint type="sourcelabel">
+     <x>580</x>
+     <y>197</y>
+    </hint>
+    <hint type="destinationlabel">
+     <x>580</x>
+     <y>433</y>
     </hint>
    </hints>
   </connection>
