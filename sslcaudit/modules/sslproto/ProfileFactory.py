@@ -43,7 +43,12 @@ class ProfileFactory(BaseProfileFactory):
         certreq_n_keys = cert_factory.mk_certreq_n_keys(SSLPROTO_CN)
         certnkey = cert_factory.sign_cert_req(certreq_n_keys, None)
 
+        # XXX Test protocols separately, see what protocols other tools consider (like sslaudit) and do the same.
+        # XXX OS libraries might lack support some protocol (we can expect SSLv2 is not supported by default, unless
+        # XXX we run very old or specialized distro like BackTrack. Such faults have to be handled gracefully
+        # XXX and the user must be aware they are getting incomplete results
         for proto in ('sslv23',):
             for cipher in ('HIGH', 'MEDIUM', 'LOW', 'EXPORT'):
+                # XXX There should be an option to enable per-cipher test (like sslaudit does with servers).
                 profile = SSLServerProtoProfile(SSLServerProtoSpec(proto, cipher), certnkey)
                 self.add_profile(profile)
