@@ -8,6 +8,7 @@ import  logging
 from threading import Thread
 from Queue import Queue
 import itertools
+import threading
 from sslcaudit.core.ClientConnection import ClientConnection
 from sslcaudit.core.ClientHandler import ClientHandler
 from sslcaudit.core.ThreadingTCPServer import ThreadingTCPServer
@@ -32,6 +33,7 @@ class ClientAuditorServer(Thread):
 
         self.listen_on = listen_on
         self.clients = {}
+        self.lock = threading.Lock()  # this lock has to be acquired before using clients dictionary
         self.profile_factories = profile_factories
 
         # create a local result queue unless one is already provided
@@ -46,19 +48,24 @@ class ClientAuditorServer(Thread):
 
     def finish_request(self, sock, client_address):
         # this method overrides TCPServer implementation and actually handles new connections
+        # it may be invoked from different threads, in parallel
 
         # create new conn object and obtain client id
         conn = ClientConnection(sock, client_address)
         client_id = conn.get_client_id()
 
         # find or create a session handler
-        if not self.clients.has_key(client_id):
-            logger.debug('new client %s [id %s]', conn, client_id)
-            profiles = self.mk_client_profiles_list()
-            self.clients[client_id] = ClientHandler(client_id, profiles, self.res_queue)
+        with self.lock:
+            if not self.clients.has_key(client_id):
+                logger.debug('new client %s [id %s]', conn, client_id)
+                profiles = self.mk_client_profiles_list()
+                handler = ClientHandler(client_id, profiles, self.res_queue)
+                self.clients[client_id] = handler
+            else:
+                handler = self.clients[client_id]
 
         # handle the request
-        self.clients[client_id].handle(conn)
+        handler.handle(conn)
 
     def run(self):
         logger.info('listen_on: %s' % str(self.listen_on))
