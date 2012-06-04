@@ -26,7 +26,7 @@ class ExternalCommandHammer(ConnectionHammer):
         devnull = open(os.devnull, 'w')
         try:
             self.logger.debug('calling %s', str(cmd))
-            res = call(cmd, stdout = devnull, stderr = devnull)
+            res = call(cmd, stdout = devnull, stderr = devnull, close_fds=True)
             self.logger.debug('exit code %d', res)
         finally:
             devnull.close()
