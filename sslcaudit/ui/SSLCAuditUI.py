@@ -38,7 +38,7 @@ def parse_options(argv):
     parser.add_option("-N", dest="test_name",
         help="Set the name of the test. If specified will appear in the leftmost column in the output.")
     parser.add_option('-T', type='int', dest='self_test', default=0,
-        help='Launch self-test. 1 - plain TCP client, 2 - CN verifying client, 3 - curl.')
+        help='Launch self-test. 1 - plain TCP client, 2 - CN verifying client, 3 - curl (requires --user-ca-cert/key).')
 
     parser.add_option("--user-cn", dest="user_cn",
         help="Set user-specified CN.")
@@ -54,11 +54,11 @@ def parse_options(argv):
         help="Set path to file containing key for user-supplied CA.")
 
     parser.add_option("--no-default-cn", action="store_true", default=False, dest="no_default_cn",
-        help=("Do not use default CN"))
+        help=("Do not use default CN."))
     parser.add_option("--no-self-signed", action="store_true", default=False, dest="no_self_signed",
-        help="Don't try self-signed certificates")
+        help="Don't try self-signed certificates.")
     parser.add_option("--no-user-cert-signed", action="store_true", default=False, dest="no_user_cert_signed",
-        help="Do not sign server certificates with user-supplied one")
+        help="Do not sign server certificates with the user-supplied one.")
 
     (options, args) = parser.parse_args(argv)
     if len(args) > 0:
