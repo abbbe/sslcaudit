@@ -23,7 +23,7 @@ PROFILE_FACTORY_MODULE_NAME = 'ProfileFactory'
 PROFILE_FACTORY_CLASS_NAME = 'ProfileFactory'
 
 PROG_NAME = 'sslcaudit'
-PROG_VERSION = '1.0'
+PROG_VERSION = '1.1'
 
 logger = logging.getLogger('BaseClientAuditController')
 
