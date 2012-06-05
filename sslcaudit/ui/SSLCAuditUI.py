@@ -9,8 +9,7 @@ from optparse import OptionParser
 from sslcaudit.core import Utils
 from sslcaudit.core.BaseClientAuditController import PROG_NAME, PROG_VERSION
 from sslcaudit.core.ConfigError import ConfigError
-from sslcaudit.core.SSLCAuditCLI import DEFAULT_LISTEN_ON, DEFAULT_MODULES
-import sslcaudit.core.Utils
+from sslcaudit.ui.SSLCAuditCLI import DEFAULT_LISTEN_ON, DEFAULT_MODULES
 
 __author__ = 'abb'
 

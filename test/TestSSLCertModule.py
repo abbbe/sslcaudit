@@ -6,7 +6,6 @@
 
 import logging, unittest
 from sets import Set
-from sslcaudit.core import SSLCAuditUI
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController
 from sslcaudit.core.FileBag import FileBag
 
@@ -18,6 +17,7 @@ from sslcaudit.test.SSLConnectionHammer import CNVerifyingSSLConnectionHammer
 from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
 from sslcaudit.test.TestConfig import *
 from sslcaudit.test.ExternalCommandHammer import CurlHammer
+from sslcaudit.ui import SSLCAuditUI
 
 LOCALHOST = 'localhost'
 HAMMER_HELLO = 'hello'
