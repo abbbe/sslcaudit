@@ -14,7 +14,7 @@ from PyQt4.QtCore import *
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController
 from sslcaudit.ui import SSLCAuditGUIGenerated
 from sslcaudit.modules.sslcert.ProfileFactory import DEFAULT_CN
-from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientAuditStartEvent, ControllerEvent, ClientAuditEndResult
+from sslcaudit.core.ConnectionAuditEvent import ConnectionAuditResult, SessionStartEvent, ControllerEvent, SessionEndResult
 from sslcaudit.ui.ClientServerTestResultTreeTableModel import ClientServerTestResultTreeTableModel
 
 logger = logging.getLogger('SSLCAuditGUI')
@@ -193,11 +193,11 @@ class SSLCAuditGUIWindow(QMainWindow):
     message.setHidden(hide)
 
   def controllerSentEvent(self, event):
-    if isinstance(event, ClientAuditStartEvent):
+    if isinstance(event, SessionStartEvent):
       self.cstr_ttm.new_client(event.session_id, event.profiles)
-    elif isinstance(event, ClientConnectionAuditResult):
+    elif isinstance(event, ConnectionAuditResult):
       self.cstr_ttm.new_conn_result(event.conn.get_session_id(), event.profile, event.result)
-    elif isinstance(event, ClientAuditEndResult):
+    elif isinstance(event, SessionEndResult):
       self.cstr_ttm.client_done(event.session_id, event.results)
     else:
       raise ValueError('unexpected event: %s' % event)

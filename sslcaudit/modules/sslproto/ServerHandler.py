@@ -7,7 +7,7 @@
 import M2Crypto, logging
 from time import time
 from M2Crypto.SSL.timeout import timeout
-from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from sslcaudit.core.ConnectionAuditEvent import ConnectionAuditResult
 from sslcaudit.modules.base.BaseServerHandler import BaseServerHandler
 
 DEFAULT_SOCK_READ_TIMEOUT = 3.0
@@ -53,17 +53,17 @@ class ServerHandler(BaseServerHandler):
             ssl_conn_res = ssl_conn.accept_ssl()
             if ssl_conn_res == 1:
                 self.logger.debug('SSL connection accepted')
-                return ClientConnectionAuditResult(conn, profile, Connected())
+                return ConnectionAuditResult(conn, profile, Connected())
             else:
                 self.logger.debug('SSL handshake failed: %s', ssl_conn.ssl_get_error(ssl_conn_res))
                 res = ssl_conn.ssl_get_error(ssl_conn_res)
-                return ClientConnectionAuditResult(conn, profile, res)
+                return ConnectionAuditResult(conn, profile, res)
 
         except Exception as ex:
             res = ex.message
             self.logger.debug('SSL accept failed: %s', ex)
 
-        return ClientConnectionAuditResult(conn, profile, res)
+        return ConnectionAuditResult(conn, profile, res)
 
     def __repr__(self):
         return "sslproto.ServerHandler%s" % self.__dict__

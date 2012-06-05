@@ -6,7 +6,7 @@
 
 import logging
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController, HOST_ADDR_ANY
-from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from sslcaudit.core.ConnectionAuditEvent import ConnectionAuditResult
 
 logger = logging.getLogger('SSLCAuditCLI')
 
@@ -48,7 +48,7 @@ class SSLCAuditCLI(object):
         self.controller.stop()
 
     def event_handler(self, res):
-        if isinstance(res, ClientConnectionAuditResult):
+        if isinstance(res, ConnectionAuditResult):
             # dump:
             # * client address and port,
             # * server profile

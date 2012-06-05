@@ -6,7 +6,7 @@
 
 import logging, threading
 from exceptions import StopIteration
-from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndResult
+from sslcaudit.core.ConnectionAuditEvent import SessionStartEvent, SessionEndResult
 
 class ClientServerSessionHandler(object):
     '''
@@ -18,21 +18,21 @@ class ClientServerSessionHandler(object):
     For each connection it fetches a next server profile object from the list of profiles and treats the client with it.
     It sends ClientAuditStartEvent event on first client connection.
     After each connection is handled, it pushes the result returned by the handler, which normally is
-    ClientConnectionAuditResult or another subclass of ClientConnectionAuditEvent.
+    ConnectionAuditResult or another subclass of ConnectionAuditEvent.
     After the last auditor has finished its work it pushes ClientAuditEndEvent and ClientAuditResult into the queue.
     '''
     logger = logging.getLogger('ClientServerSessionHandler')
 
     def __init__(self, session_id, profiles, res_queue):
         self.session_id = session_id
-        self.result = ClientAuditEndResult(self.session_id)
+        self.result = SessionEndResult(self.session_id)
         self.res_queue = res_queue
 
         self.profiles = profiles
         self.nused_profiles = 0
         self.lock = threading.Lock()  # this lock has to be acquired before using nused_profiles and result attributes
 
-        self.res_queue.put(ClientAuditStartEvent(self.session_id, self.profiles))
+        self.res_queue.put(SessionStartEvent(self.session_id, self.profiles))
 
     def handle(self, conn):
         '''
