@@ -12,7 +12,7 @@ class ClientConnection(object):
 
     def get_session_id(self):
         '''
-        This function returns a key is used to distinguish between different clients under test.
+        This function returns a key is used to distinguish between different sessions between clients and servers.
         In the current implementation we use client IP address as a key.
         '''
         return self.client_address[0]
