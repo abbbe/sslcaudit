@@ -6,7 +6,7 @@
 
 from PyQt4 import QtCore
 import logging
-from sslcaudit.core.ResultTreeItem import ClientTreeItem, ConnectionProfileTreeItem
+from sslcaudit.gui.ResultTreeItem import ClientTreeItem, ConnectionProfileTreeItem
 
 HORIZONTAL_HEADERS = ('Test', 'Result')
 RESULT_PENDING = 'pending'

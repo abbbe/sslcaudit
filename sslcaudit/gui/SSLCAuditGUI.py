@@ -11,11 +11,11 @@ import traceback
 from PyQt4.QtGui import *
 from PyQt4.QtCore import *
 
-from sslcaudit.core.BaseClientAuditController import BaseClientAuditController, HOST_ADDR_ANY
+from sslcaudit.core.BaseClientAuditController import BaseClientAuditController
+from sslcaudit.gui import SSLCAuditGUIGenerated
 from sslcaudit.modules.sslcert.ProfileFactory import DEFAULT_CN
 from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult, ClientAuditStartEvent, ControllerEvent, ClientAuditEndResult
 
-import SSLCAuditGUIGenerated
 from sslcaudit.core.ClientServerTestResultTreeTableModel import ClientServerTestResultTreeTableModel
 
 logger = logging.getLogger('SSLCAuditGUI')
