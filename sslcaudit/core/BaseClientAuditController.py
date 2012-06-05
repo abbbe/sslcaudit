@@ -133,10 +133,7 @@ class BaseClientAuditController(Thread):
                 self.selftest_hammer = TCPConnectionHammer(-1)
 
             elif self.options.self_test == 2:
-                if self.options.user_cn is not None:
-                    self.selftest_hammer = CNVerifyingSSLConnectionHammer(-1, 'hello')
-                else:
-                    raise ConfigError('test mode 2 requires --user-cn')
+                self.selftest_hammer = CNVerifyingSSLConnectionHammer(-1, 'hello')
 
             elif self.options.self_test == 3:
                 if self.options.user_ca_cert_file is not None:
