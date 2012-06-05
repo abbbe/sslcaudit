@@ -67,7 +67,7 @@ def main(argv):
         return 1
 
     try:
-        from sslcaudit.core import SSLCAuditUI
+        from sslcaudit.ui import SSLCAuditUI
 
         options = SSLCAuditUI.parse_options(argv[1:])
         file_bag = FileBag(options.test_name)
@@ -75,11 +75,11 @@ def main(argv):
         init_logging(options, file_bag)
 
         if options.gui:
-            from sslcaudit.core.SSLCAuditGUI import SSLCAuditGUI
+            from sslcaudit.ui.SSLCAuditGUI import SSLCAuditGUI
 
             ui = SSLCAuditGUI(options, file_bag)
         else:
-            from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
+            from sslcaudit.ui.SSLCAuditCLI import SSLCAuditCLI
 
             ui = SSLCAuditCLI(options, file_bag)
 

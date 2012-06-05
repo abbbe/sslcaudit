@@ -53,8 +53,8 @@ class ConnectionProfileTreeItem(BaseTreeItem):
 
     def data(self, column):
             if column == 0:
-                return QtCore.QVariant(self.profile.__str__())
+                return QtCore.QVariant(str(self.profile))
             elif column == 1:
-                return QtCore.QVariant(self.result)
+                return QtCore.QVariant(str(self.result))
             else:
                 return QtCore.QVariant()

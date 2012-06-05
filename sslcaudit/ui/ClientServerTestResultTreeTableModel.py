@@ -123,13 +123,13 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
         This method is invoked when the main window handles events from the controller (via the bridge).
         '''
         if client_id in self.parents:
-            client = self.parents[client_id]
+            clientTreeItem = self.parents[client_id]
             
-            for profile_id in range(client.childCount()):
-                _profile = client.child(profile_id)
+            for profile_id in range(clientTreeItem.childCount()):
+                connProfileItem = clientTreeItem.child(profile_id)
                 
-                if _profile.profile == profile:
-                    _profile.result = result
+                if connProfileItem.profile == profile:
+                    connProfileItem.result = result
                     # XXX need to call self.dataChanged() here?
                     return
             logger.error('got "new_conn_result" event, but cannot find a row for it')
