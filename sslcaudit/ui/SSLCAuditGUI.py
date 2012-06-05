@@ -194,11 +194,11 @@ class SSLCAuditGUIWindow(QMainWindow):
 
   def controllerSentEvent(self, event):
     if isinstance(event, ClientAuditStartEvent):
-      self.cstr_ttm.new_client(event.client_id, event.profiles)
+      self.cstr_ttm.new_client(event.session_id, event.profiles)
     elif isinstance(event, ClientConnectionAuditResult):
-      self.cstr_ttm.new_conn_result(event.conn.get_client_id(), event.profile, event.result)
+      self.cstr_ttm.new_conn_result(event.conn.get_session_id(), event.profile, event.result)
     elif isinstance(event, ClientAuditEndResult):
-      self.cstr_ttm.client_done(event.client_id, event.results)
+      self.cstr_ttm.client_done(event.session_id, event.results)
     else:
       raise ValueError('unexpected event: %s' % event)
 

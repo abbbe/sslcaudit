@@ -9,7 +9,7 @@ import unittest
 from sslcaudit.core.BaseClientAuditController import BaseClientAuditController
 from sslcaudit.core.FileBag import FileBag
 from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientConnectionAuditResult
-from sslcaudit.core.ClientHandler import ClientAuditEndResult
+from sslcaudit.core.ClientServerSessionHandler import ClientAuditEndResult
 from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
 from sslcaudit.test.TestConfig import get_next_listener_port, TEST_LISTENER_ADDR
 from sslcaudit.ui import SSLCAuditUI

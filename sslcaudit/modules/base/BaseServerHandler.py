@@ -16,7 +16,7 @@ class BaseServerHandler(object):
 
     def handle(self, conn, profile):
         '''
-        This method will be invoked by ClientHandler when new client connection arrives. It is expected to treat given
+        This method will be invoked by ClientServerSessionHandler when new client connection arrives. It is expected to treat given
         connection using given profile and return ClientConnectionAuditResult describing the outcome. This method gets
         invoked multiple times, for different client connections, for different profiles, so it must not change the
         state of the object itself and be thread-safe.

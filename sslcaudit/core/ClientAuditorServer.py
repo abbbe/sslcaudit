@@ -10,7 +10,7 @@ from Queue import Queue
 import itertools
 import threading
 from sslcaudit.core.ClientConnection import ClientConnection
-from sslcaudit.core.ClientHandler import ClientHandler
+from sslcaudit.core.ClientServerSessionHandler import ClientServerSessionHandler
 from sslcaudit.core.ThreadingTCPServer import ThreadingTCPServer
 
 logger = logging.getLogger('ClientAuditorTCPServer')
@@ -18,13 +18,16 @@ logger = logging.getLogger('ClientAuditorTCPServer')
 
 class ClientAuditorServer(Thread):
     '''
-    This class with specification of listen port, a list of profiles, and result queue.
-    It works in a separate Thread and uses ClientAuditorTCPServer server to receive connections from clients under test.
-    It distinguishes between different clients by their IP addresses. It creates an instance of ClientHandler class
-    for each individual client and calls ClientHandler.handle() for each incoming connection.
-    By itself this class does not interpret the content of 'profiles' in any way, just passes it to the constructor of
-    ClientHandler. If res_queue is None, this class will create its own Queue and make accessible to users of this class
-    via ClientAuditorServer res_queue.
+    This class is instantiated with a specification of listen port, a list of profile factories, and a result queue.
+    It works in a separate Thread and relies on ClientAuditorTCPServer server to actually receive TCP connections from
+    clients and invoke finish_request() method (weird name, but it is the way the stock TCP python server works).
+    It distinguishes between different clients by their IP addresses, ignoring TCP port.
+    It distinguishes between different servers (may be more than one if redirection takes place) by address/port pairs.
+    It creates an instance of ClientServerSessionHandler class for each distinct client-server pair and calls its
+    handle() for each incoming connection relevant to that session.
+    Right now this generates the list of profiles by flattening 'profile_factories' and passes the result to the
+    constructor of ClientServerSessionHandler. This will change.
+    If res_queue is None, this class will create its own Queue and make accessible to users via res_queue attribute.
     '''
 
     def __init__(self, listen_on, profile_factories, res_queue=None):
@@ -32,7 +35,7 @@ class ClientAuditorServer(Thread):
         self.daemon = True
 
         self.listen_on = listen_on
-        self.clients = {}
+        self.client_server_sessions = {}
         self.lock = threading.Lock()  # this lock has to be acquired before using clients dictionary
         self.profile_factories = profile_factories
 
@@ -52,17 +55,17 @@ class ClientAuditorServer(Thread):
 
         # create new conn object and obtain client id
         conn = ClientConnection(sock, client_address)
-        client_id = conn.get_client_id()
+        session_id = conn.get_session_id()
 
         # find or create a session handler
         with self.lock:
-            if not self.clients.has_key(client_id):
-                logger.debug('new client %s [id %s]', conn, client_id)
-                profiles = self.mk_client_profiles_list()
-                handler = ClientHandler(client_id, profiles, self.res_queue)
-                self.clients[client_id] = handler
+            if not self.client_server_sessions.has_key(session_id):
+                logger.debug('new session [id %s]', session_id)
+                profiles = self.mk_session_profiles()
+                handler = ClientServerSessionHandler(session_id, profiles, self.res_queue)
+                self.client_server_sessions[session_id] = handler
             else:
-                handler = self.clients[client_id]
+                handler = self.client_server_sessions[session_id]
 
         # handle the request
         handler.handle(conn)
@@ -79,5 +82,5 @@ class ClientAuditorServer(Thread):
     def server_close(self):
         self.tcp_server.server_close()
 
-    def mk_client_profiles_list(self):
+    def mk_session_profiles(self):
         return list(itertools.chain.from_iterable(self.profile_factories))

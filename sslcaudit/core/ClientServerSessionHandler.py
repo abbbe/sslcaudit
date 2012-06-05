@@ -8,28 +8,31 @@ import logging, threading
 from exceptions import StopIteration
 from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndResult
 
-class ClientHandler(object):
+class ClientServerSessionHandler(object):
     '''
-    Instances of this class hold information about the progress and the results of an audit of a single client.
-    Normally it gets instantiated on the very first connection from a client and same instance handles all subsequent
-    connections from the same client. For each connection it fetches a next auditor object from the predefined
-    auditor set and uses that auditor to test the connection. It sends ClientAuditStartEvent event on first client
-    connection. After each connection is handled, it pushes the result returned by the auditor, which normally is
-    ClientConnectionAuditResult or another subclass of ClientConnectionAuditEvent. After the last auditor has
-    finished its work it pushes ClientAuditEndEvent and ClientAuditResult into the queue.
+    Instances of this class hold information about the progress and the results of an audit of a client connecting to
+    a server.
+    Normally the clients are distinguished by IP address and the servers are distinguished by address/port tuple.
+    Objects of this class get instantiated on the very first connection from a client connecting to a server, and same
+    instance is supposed to handle all subsequent connections from the same client connecting to the same server.
+    For each connection it fetches a next server profile object from the list of profiles and treats the client with it.
+    It sends ClientAuditStartEvent event on first client connection.
+    After each connection is handled, it pushes the result returned by the handler, which normally is
+    ClientConnectionAuditResult or another subclass of ClientConnectionAuditEvent.
+    After the last auditor has finished its work it pushes ClientAuditEndEvent and ClientAuditResult into the queue.
     '''
-    logger = logging.getLogger('ClientHandler')
+    logger = logging.getLogger('ClientServerSessionHandler')
 
-    def __init__(self, client_id, profiles, res_queue):
-        self.client_id = client_id
-        self.result = ClientAuditEndResult(self.client_id)
+    def __init__(self, session_id, profiles, res_queue):
+        self.session_id = session_id
+        self.result = ClientAuditEndResult(self.session_id)
         self.res_queue = res_queue
 
         self.profiles = profiles
         self.nused_profiles = 0
         self.lock = threading.Lock()  # this lock has to be acquired before using nused_profiles and result attributes
 
-        self.res_queue.put(ClientAuditStartEvent(self.client_id, self.profiles))
+        self.res_queue.put(ClientAuditStartEvent(self.session_id, self.profiles))
 
     def handle(self, conn):
         '''

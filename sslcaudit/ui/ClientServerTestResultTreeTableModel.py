@@ -15,20 +15,6 @@ logger = logging.getLogger('CSTR_TTM')
 
 # http://rowinggolfer.blogspot.com/2010/05/qtreeview-and-qabractitemmodel-example.html
 
-class ClientServerTestResult(object):
-    '''
-    a trivial custom data object
-    '''
-
-    def __init__(self, client_server, test, result):
-        self.client_server = client_server
-        self.test = test
-        self.result = result
-
-    def __repr__(self):
-        return "ClientServerTestResult - %s %s %s" % (self.client_server, self.test, self.result)
-
-
 class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
     def __init__(self, parent=None):
         super(ClientServerTestResultTreeTableModel, self).__init__(parent)
@@ -100,13 +86,13 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
             p_Item = parent.internalPointer()
         return p_Item.childCount()
 
-    def new_client(self, client_id, profiles):
+    def new_client(self, session_id, profiles):
         '''
         This method is invoked when the main window handles events from the controller (via the bridge).
         Here we create a new subtree for the client and add it to the list of connections.
         '''
         # create the subtree containing profiles
-        newClientTreeItem = ClientTreeItem(client_id, self.rootItem)
+        newClientTreeItem = ClientTreeItem(session_id, self.rootItem)
         for profile in profiles:
             newConnProfileItem = ConnectionProfileTreeItem(newClientTreeItem, profile, RESULT_PENDING)
             newClientTreeItem.appendChild(newConnProfileItem)
@@ -115,15 +101,15 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
         n = self.rootItem.childCount()
         self.beginInsertRows(QtCore.QModelIndex(), n, n)
         self.rootItem.appendChild(newClientTreeItem)
-        self.parents[client_id] = newClientTreeItem
+        self.parents[session_id] = newClientTreeItem
         self.endInsertRows()
 
-    def new_conn_result(self, client_id, profile, result):
+    def new_conn_result(self, session_id, profile, result):
         '''
         This method is invoked when the main window handles events from the controller (via the bridge).
         '''
-        if client_id in self.parents:
-            clientTreeItem = self.parents[client_id]
+        if session_id in self.parents:
+            clientTreeItem = self.parents[session_id]
             
             for profile_id in range(clientTreeItem.childCount()):
                 connProfileItem = clientTreeItem.child(profile_id)
@@ -134,10 +120,10 @@ class ClientServerTestResultTreeTableModel(QtCore.QAbstractItemModel):
                     return
             logger.error('got "new_conn_result" event, but cannot find a row for it')
         else:
-            logger.error('received "new_conn_result" event for client id "%s" but there is no subtree for it' % (client_id))
+            logger.error('received "new_conn_result" event for session id "%s" but there is no subtree for it' % (session_id))
 
 
-    def client_done(self, client_id, results):
+    def client_done(self, session_id, results):
         '''
         This method is when the main window handles events from the controller (via bridge).
         '''

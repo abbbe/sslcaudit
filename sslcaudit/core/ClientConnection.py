@@ -10,7 +10,7 @@ class ClientConnection(object):
         self.client_address = client_address
         self.sockname = self.sock.getsockname()
 
-    def get_client_id(self):
+    def get_session_id(self):
         '''
         This function returns a key is used to distinguish between different clients under test.
         In the current implementation we use client IP address as a key.
@@ -18,4 +18,4 @@ class ClientConnection(object):
         return self.client_address[0]
 
     def __str__(self):
-        return "%s [%s->%s]" % (self.get_client_id(), self.client_address, self.sockname)
+        return "%s [%s->%s]" % (self.get_session_id(), self.client_address, self.sockname)
