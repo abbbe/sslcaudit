@@ -1,1 +1,7 @@
-git svn clone -s http://optparse-gui.googlecode.com/svn optparse-gui
+Building openssl with SSLv2 support (needed for sslproto unittests).
+
+
+./config enable-sslv2
+make
+make test
+
