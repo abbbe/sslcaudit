@@ -31,7 +31,7 @@ class ConnectedGotEOFBeforeTimeout(Connected):
         self.dt = dt
 
     def __str__(self):
-        if self.dt != None:
+        if self.dt is not None:
             dt_str = " (in %.3fs)" % self.dt
         else:
             dt_str = ''
@@ -43,7 +43,7 @@ class ConnectedReadTimeout(Connected):
         self.dt = dt
 
     def __str__(self):
-        if self.dt != None:
+        if self.dt is not None:
             dt_str = " (in %.1fs)" % self.dt
         else:
             dt_str = ''
@@ -61,11 +61,11 @@ class ConnectedGotRequest(Connected):
         return self.req == None or self.req == other.req
 
     def __str__(self):
-        if self.dt != None:
+        if self.dt is not None:
             dt_str = '%.1fs' % self.dt
         else:
             dt_str = '?s'
-        if self.req != None:
+        if self.req is not None:
             noctets_str = '%d' % len(self.req)
         else:
             noctets_str = '?'

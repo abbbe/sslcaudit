@@ -127,7 +127,7 @@ class TestModule(unittest.TestCase):
         self.controller = BaseClientAuditController(options, file_bag, event_handler=main__handle_result)
 
         self.hammer = hammer
-        if self.hammer != None:
+        if self.hammer is not None:
             self.hammer.set_peer((TEST_LISTENER_ADDR, port))
 
     def _main_test_do(self, expected_results):
@@ -135,7 +135,7 @@ class TestModule(unittest.TestCase):
         self.controller.start()
 
         # start the hammer, if any
-        if self.hammer != None:
+        if self.hammer is not None:
             self.hammer.start()
 
         # wait for main to finish its job
@@ -145,7 +145,7 @@ class TestModule(unittest.TestCase):
         self.assertFalse(self.controller.is_alive(), 'main thread is still alive')
 
         # stop the hammer if any
-        if self.hammer != None:    self.hammer.stop()
+        if self.hammer is not None:    self.hammer.stop()
 
         # stop the server
         self.controller.stop()

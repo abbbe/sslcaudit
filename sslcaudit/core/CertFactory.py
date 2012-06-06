@@ -137,13 +137,13 @@ class CertFactory(object):
         cert_req.set_serial_number(1)
 
         # set issuer
-        if ca_certnkey != None:
+        if ca_certnkey is not None:
             cert_req.set_issuer(ca_certnkey.cert.get_subject())
         else:
             cert_req.set_issuer(cert_req.get_subject())
 
         # sign
-        if ca_certnkey != None:
+        if ca_certnkey is not None:
             cert_req.sign(ca_certnkey.pkey, md)
             signed_by = ca_certnkey.name
         else:
@@ -154,7 +154,7 @@ class CertFactory(object):
         (cert_file, key_file) = self.file_bag.mk_two_files(suffix1=CERT_FILE_SUFFIX, suffix2=KEY_FILE_SUFFIX)
         cert_file.write(cert_req.as_text())
         cert_file.write(cert_req.as_pem())
-        if ca_certnkey != None:
+        if ca_certnkey is not None:
             cert_file.write(ca_certnkey.cert.as_text())
             cert_file.write(ca_certnkey.cert.as_pem())
         cert_file.close()

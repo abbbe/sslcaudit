@@ -80,7 +80,7 @@ class ProfileFactory(BaseProfileFactory):
 
     def init_options(self):
         # handle --server= option
-        if self.options.server != None:
+        if self.options.server is not None:
             # fetch X.509 certificate from user-specified server
             try:
                 self.server_x509_cert = self.cert_factory.grab_server_x509_cert(self.options.server, protocol=self.protocol)
@@ -111,25 +111,25 @@ class ProfileFactory(BaseProfileFactory):
             req1 = self.cert_factory.mk_certreq_n_keys(cn=DEFAULT_CN)
             self.certreq_n_keyss.append(req1)
 
-        if self.options.user_cn != None:
+        if self.options.user_cn is not None:
             req2 = self.cert_factory.mk_certreq_n_keys(cn=self.options.user_cn)
             self.certreq_n_keyss.append(req2)
 
-        if self.server_x509_cert != None:
+        if self.server_x509_cert is not None:
             cert_req3 = self.cert_factory.mk_replica_certreq_n_keys(self.server_x509_cert)
             self.certreq_n_keyss.append(cert_req3)
 
     def add_profiles(self):
-        if self.user_certnkey != None:
+        if self.user_certnkey is not None:
             self.add_raw_user_certnkey_profile()
 
         if not self.options.no_self_signed:
             self.add_signed_profiles(ca_certnkey=None)
 
-        if self.user_certnkey != None:
+        if self.user_certnkey is not None:
             self.add_signed_profiles(ca_certnkey=self.user_certnkey)
 
-        if self.user_ca_certnkey != None:
+        if self.user_ca_certnkey is not None:
             self.add_signed_profiles(ca_certnkey=self.user_ca_certnkey)
             self.add_im_basic_constraints_profiles()
 
@@ -170,7 +170,7 @@ class ProfileFactory(BaseProfileFactory):
         ca_certnkey = self.user_ca_certnkey
 
         # create an intermediate authority, signed by user-supplied CA, possibly with proper constraints
-        if basicConstraint_CA != None:
+        if basicConstraint_CA is not None:
             if basicConstraint_CA:
                 ext_value="CA:TRUE"
                 im_ca_cn = IM_CA_TRUE_CN
