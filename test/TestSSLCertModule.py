@@ -94,6 +94,13 @@ class TestSSLCertModule(unittest.TestCase):
     '''
     logger = logging.getLogger('TestSSLCertModule')
 
+    def setUp(self):
+        self.controller = None
+
+    def tearDown(self):
+        if self.controller is not None:
+            self.controller.stop()
+
     def test_plain_tcp_client(self):
         # Plain TCP client causes unexpected UNEXPECTED_EOF.
         eccars = [
@@ -231,13 +238,6 @@ class TestSSLCertModule(unittest.TestCase):
             CurlHammer(len(eccars), TEST_USER_CA_CERT_FILE),
             eccars
         )
-
-    def setUp(self):
-        self.controller = None
-
-    def tearDown(self):
-        if self.controller != None:
-            self.controller.stop()
 
     def _main_test(self, main_args, hammer, expected_results):
         '''
