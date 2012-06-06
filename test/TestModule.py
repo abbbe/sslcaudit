@@ -87,6 +87,7 @@ class TestModule(unittest.TestCase):
     '''
     This is a base class for testing modules of sslcaudit tool.
     '''
+
     def setUp(self):
         self.controller = None
 
@@ -159,8 +160,13 @@ class TestModule(unittest.TestCase):
         unexpected = actual_results_set.difference(expected_results_set)
         missing = expected_results_set.difference(actual_results_set)
 
-        self.assertSetEqual(set(), unexpected)
-        self.assertSetEqual(set(), missing)
+        if len(unexpected) != 0 or len(missing) != 0:
+            print
+        if len(unexpected) > 0:
+            print '\tunexpected results: %s' % unexpected
+        if len(missing) > 0:
+            print '\tmissing results: %s' % missing
+        self.assertTrue(len(unexpected) == 0 and len(missing) == 0, 'there are missing or unexpected results')
 
 
 def init_logging(cls):
