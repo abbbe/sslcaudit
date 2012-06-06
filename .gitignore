@@ -3,7 +3,6 @@
 .idea/misc.xml
 .*.swp
 .~lock.*#
-deb_dist/
-sslcaudit.*/
 *.sublime-project
 *.sublime-workspace
+openssl-1.0.1b/test/
