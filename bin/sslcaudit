@@ -35,6 +35,19 @@ def check_dependencies():
         return False
 
 
+def check_gui_dependencies():
+    # make sure PyQT4 is installed
+    try:
+        import PyQt4
+
+        return True
+    except ImportError as ex:
+        print 'Failed to load PyQT4: %s' % ex
+        print
+        print 'Sslcaudit GUI requires PyQT4 library. Please install your OS package.'
+        return False
+
+
 def init_logging(options, file_bag):
     FORMAT = '%(asctime)s %(name)s %(levelname)s   %(message)s'
     formatter = logging.Formatter(FORMAT)
@@ -57,8 +70,8 @@ def init_logging(options, file_bag):
         consoleLogger.setLevel(logging.INFO)
     consoleLogger.setFormatter(formatter)
     logging.getLogger().addHandler(consoleLogger)
-    logging.getLogger().debug('logging initialized, debug_level=%d, verbose=%s' \
-        % (options.debug_level, str(options.quiet)))
+    logging.getLogger().debug(
+        'logging initialized, debug_level=%d, verbose=%s' % (options.debug_level, str(options.quiet)))
     logging.getLogger().setLevel(logging.DEBUG)
 
 
@@ -70,6 +83,9 @@ def main(argv):
         from sslcaudit.ui import SSLCAuditUI
 
         options = SSLCAuditUI.parse_options(argv[1:])
+        if options.gui and not check_gui_dependencies():
+            return 1
+
         file_bag = FileBag(options.test_name)
 
         init_logging(options, file_bag)
