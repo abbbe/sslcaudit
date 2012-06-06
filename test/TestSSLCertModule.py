@@ -22,7 +22,7 @@ from sslcaudit.ui import SSLCAuditUI
 LOCALHOST = 'localhost'
 HAMMER_HELLO = 'hello'
 
-def get_full_test_args(user_cn=TEST_USER_CN):
+def mk_sslcaudit_argv(user_cn=TEST_USER_CN):
     return [
         '--user-cn', user_cn,
         '--user-cert', TEST_USER_CERT_FILE,
@@ -34,6 +34,9 @@ def get_full_test_args(user_cn=TEST_USER_CN):
 
 
 def compare_eccar_with_accar(eccar, accar):
+    '''
+    This function compares an expected result with an actual result,
+    '''
     if not (eccar.profile_spec == accar.profile.get_spec()):
         return False
 
@@ -44,6 +47,9 @@ def compare_eccar_with_accar(eccar, accar):
 
 
 class ECCAR(object):
+    '''
+    Expected client connection audit result.
+    '''
     def __init__(self, profile_spec, expected_res):
         self.profile_spec = profile_spec
         self.expected_result = expected_res
@@ -66,6 +72,9 @@ class ECCAR(object):
 
 
 class ACCAR(object):
+    '''
+    Actual client connection audit result.
+    '''
     def __init__(self, ccar):
         self.profile = ccar.profile
         self.result = ccar.result
@@ -138,7 +147,7 @@ class TestSSLCertModule(unittest.TestCase):
             ECCAR(SSLProfileSpec_IMCA_Signed(TEST_SERVER_CN, IM_CA_TRUE_CN, TEST_USER_CA_CN), UNEXPECTED_EOF)
         ]
         self._main_test(
-            get_full_test_args(),
+            mk_sslcaudit_argv(),
             TCPConnectionHammer(len(eccars)),
             eccars
         )
@@ -190,7 +199,7 @@ class TestSSLCertModule(unittest.TestCase):
             ]
 
         self._main_test(
-            get_full_test_args(user_cn=LOCALHOST),
+            mk_sslcaudit_argv(user_cn=LOCALHOST),
             CNVerifyingSSLConnectionHammer(len(eccars), HAMMER_HELLO),
             eccars)
 
@@ -234,7 +243,7 @@ class TestSSLCertModule(unittest.TestCase):
             ]
 
         self._main_test(
-            get_full_test_args(user_cn=LOCALHOST),
+            mk_sslcaudit_argv(user_cn=LOCALHOST),
             CurlHammer(len(eccars), TEST_USER_CA_CERT_FILE),
             eccars
         )
@@ -296,23 +305,6 @@ class TestSSLCertModule(unittest.TestCase):
         self.controller.stop()
 
         self.verify_results_ignore_order(expected_results, self.actual_results)
-
-    def verify_results(self, expected_results, actual_results):
-        # check if the actual results match expected ones
-        if len(expected_results) != len(actual_results):
-            mismatch = True
-            print "! length mismatch len(er)=%d, len(ar)=%d" % (len(expected_results), len(actual_results))
-            for er in expected_results: print "er=%s" % er
-            for ar in actual_results: print "ar=%s" % ar
-        else:
-            mismatch = False
-            for i in range(len(expected_results)):
-                er = expected_results[i]
-                ar = actual_results[i]
-                if not compare_eccar_with_accar(er, ar):
-                    print "! mismatch\n\ter=%s\n\tar=%s" % (er, ar)
-                    mismatch = True
-        self.assertFalse(mismatch)
 
     def verify_results_ignore_order(self, expected_results, actual_results):
         expected_results_set = Set(expected_results)
