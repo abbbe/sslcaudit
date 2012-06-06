@@ -12,7 +12,7 @@ from subprocess import call
 class ExternalCommandHammer(ConnectionHammer):
     logger = logging.getLogger('ConnectionHammer')
 
-    def __init__(self, nattempts, ca_cert_file):
+    def __init__(self, nattempts, ca_cert_file=None):
         ConnectionHammer.__init__(self, nattempts)
         self.ca_cert_file = ca_cert_file
 
@@ -35,5 +35,8 @@ class CurlHammer(ExternalCommandHammer):
     logger = logging.getLogger('CurlHammer')
 
     def get_command(self):
-        server = 'https://%s:%d' % (self.peer[0], self.peer[1])
-        return ['curl', '--cacert', self.ca_cert_file, server]
+        server_url = 'https://%s:%d' % (self.peer[0], self.peer[1])
+        if self.ca_cert_file:
+            return ['curl', '--cacert', self.ca_cert_file, server_url]
+        else:
+            return ['curl', server_url]
