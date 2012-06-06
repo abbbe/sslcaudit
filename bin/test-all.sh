@@ -11,5 +11,5 @@ for testno in 1 2 3; do
 		-T $testno
 done
 
-bin/cleanup.sh
+bin/clean.sh
 
