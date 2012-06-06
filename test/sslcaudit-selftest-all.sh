@@ -1,7 +1,7 @@
 #!/bin/sh -xe
 
-for testno in 0 1 2; do 
-	./sslcaudit \
+for testno in 1 2 3; do
+	bin/sslcaudit \
 		--user-cn localhost \
 		--server 62.213.200.252:443 \
 		--user-cert test/certs/www.example.com-cert.pem --user-key test/certs/www.example.com-key.pem \
