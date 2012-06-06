@@ -1,7 +1,6 @@
 #!/bin/sh -xe
 
-bin/test-sslcaudit
-
+# execute unit-tests
 for testno in 1 2 3; do
 	bin/sslcaudit \
 		--user-cn localhost \
@@ -11,5 +10,12 @@ for testno in 1 2 3; do
 		-T $testno
 done
 
+# execute self-tests
+bin/test-sslcaudit
+
+# build and test debian package
+bin/mk-deb.sh
+
+# cleanup
 bin/clean.sh
 
