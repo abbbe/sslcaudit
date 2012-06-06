@@ -18,11 +18,11 @@ from test.TestModule import ECCAR, mk_sslcaudit_argv
 LOCALHOST = 'localhost'
 HAMMER_HELLO = 'hello'
 
-class TestSSLCertModule(TestModule.TestModule):
+class TestSSLProtoModule(TestModule.TestModule):
     '''
     Unittests for SSLCert.
     '''
-    logger = logging.getLogger('TestSSLCertModule')
+    logger = logging.getLogger('TestSSLProtoModule')
 
 
     def test_plain_tcp_client(self):
