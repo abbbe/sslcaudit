@@ -30,7 +30,7 @@ logger = logging.getLogger('BaseClientAuditController')
 class BaseClientAuditController(Thread):
 
     def __init__(self, options, file_bag, event_handler):
-        Thread.__init__(self, target=self.run)
+        Thread.__init__(self, target=self.run, name='BaseClientAuditController')
         self.options = options
         self.event_handler = event_handler
         self.queue_read_timeout = 0.1

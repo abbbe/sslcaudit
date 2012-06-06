@@ -31,7 +31,7 @@ class ClientAuditorServer(Thread):
     '''
 
     def __init__(self, listen_on, profile_factories, res_queue=None):
-        Thread.__init__(self, target=self.run)
+        Thread.__init__(self, target=self.run, name='ClientAuditorServer')
         self.daemon = True
 
         self.listen_on = listen_on

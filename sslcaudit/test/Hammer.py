@@ -28,8 +28,9 @@ class Hammer(object):
         # launch as many threads as needed to reach desired parallelism, but don't exceed the number of attempts
         self.hammer_threads = []
         nthreads = self.nparallel if (nattempts < 0) or (self.nparallel < nattempts) else nattempts
-        for _ in range(nthreads):
-            thread = Thread(target=self.run)
+        for hammer_id in range(nthreads):
+            thread_name = 'Hammer-%d' % hammer_id
+            thread = Thread(target=self.run, name=thread_name)
             thread.daemon = True
             self.hammer_threads.append(thread)
 
