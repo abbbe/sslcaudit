@@ -1,5 +1,7 @@
 #!/bin/sh -xe
 
+bin/test-sslcaudit
+
 for testno in 1 2 3; do
 	bin/sslcaudit \
 		--user-cn localhost \
@@ -8,4 +10,6 @@ for testno in 1 2 3; do
 		--user-ca-cert test/certs/test-ca-cacert.pem --user-ca-key test/certs/test-ca-cakey.pem \
 		-T $testno
 done
+
+bin/cleanup.sh
 
