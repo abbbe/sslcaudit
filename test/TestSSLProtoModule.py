@@ -49,6 +49,7 @@ class TestSSLProtoModule(TestModule.TestModule):
                 if cipher == 'HIGH' or cipher == 'MEDIUM':
                     # we expect curl to establish the connection to a server offering a reasonably strong cipher,
                     # but complain about CA (we didn't bother specifying it)
+                    # XXX in practice curl rejects MEDIUM-grade ciphers, not clear why
                     expected_res = ALERT_UNKNOWN_CA
                 else:
                     # we expect curl to refuse connecting to server offering weak ciphers
@@ -63,6 +64,7 @@ class TestSSLProtoModule(TestModule.TestModule):
 
     def test_opensssl_all_ciphers(self):
         # openssl client is expected to connect to anything
+        # XXX in practice openssl fails to connect to export ciphers, not clear why
         eccars = []
         for proto in ('sslv23',):
             for cipher in ('HIGH', 'MEDIUM', 'LOW', 'EXPORT'):
