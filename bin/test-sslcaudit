@@ -23,7 +23,6 @@ if __name__ == '__main__':
     #logging.basicConfig(level = logging.DEBUG)
     logging.basicConfig()
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestCertFactory))
-    suite.addTest(unittest.makeSuite(TestDummyModule))
-    suite.addTest(unittest.makeSuite(TestSSLCertModule))
+    for ut in [TestCertFactory, TestDummyModule, TestSSLCertModule]:
+        suite.addTest(unittest.makeSuite(ut))
     unittest.TextTestRunner(verbosity=2).run(suite)
