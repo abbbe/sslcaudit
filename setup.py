@@ -20,5 +20,5 @@ setup(
               'sslcaudit.modules.base', 'sslcaudit.modules.dummy',
               'sslcaudit.modules.sslcert', 'sslcaudit.profile', 'sslcaudit.test',
               'sslcaudit.ui'],
-    requires=['m2crypto']
+    requires=['m2crypto', 'qt4']
 )

@@ -12,7 +12,7 @@ from subprocess import call
 class ExternalCommandHammer(ConnectionHammer):
     logger = logging.getLogger('ConnectionHammer')
 
-    def __init__(self, nattempts, ca_cert_file):
+    def __init__(self, nattempts, ca_cert_file=None):
         ConnectionHammer.__init__(self, nattempts)
         self.ca_cert_file = ca_cert_file
 
@@ -26,14 +26,35 @@ class ExternalCommandHammer(ConnectionHammer):
         devnull = open(os.devnull, 'w')
         try:
             self.logger.debug('calling %s', str(cmd))
-            res = call(cmd, stdout = devnull, stderr = devnull, close_fds=True)
+            res = call(cmd, stdout=devnull, stderr=devnull, close_fds=True)
             self.logger.debug('exit code %d', res)
+        except OSError as ex:
+            print 'failed to call %s, exceptin %s' % (cmd, ex)
+            raise ex
         finally:
             devnull.close()
+
 
 class CurlHammer(ExternalCommandHammer):
     logger = logging.getLogger('CurlHammer')
 
     def get_command(self):
-        server = 'https://%s:%d' % (self.peer[0], self.peer[1])
-        return ['curl', '--cacert', self.ca_cert_file, server]
+        server_url = 'https://%s:%d' % (self.peer[0], self.peer[1])
+        if self.ca_cert_file:
+            return ['curl', '--cacert', self.ca_cert_file, server_url]
+        else:
+            return ['curl', server_url]
+
+
+class OpenSSLHammer(ExternalCommandHammer):
+    logger = logging.getLogger('OpenSSLHammer')
+
+    def get_command(self):
+        assert not self.ca_cert_file
+
+        server_n_port = '%s:%d' % (self.peer[0], self.peer[1])
+        return [
+            'openssl-1.0.1b/apps/openssl', 's_client',
+            '-connect', server_n_port,
+            '-cipher', 'ALL'
+        ]
