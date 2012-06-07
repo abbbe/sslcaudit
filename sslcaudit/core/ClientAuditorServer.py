@@ -12,6 +12,7 @@ import threading
 from sslcaudit.core.ClientConnection import ClientConnection
 from sslcaudit.core.ClientServerSessionHandler import ClientServerSessionHandler
 from sslcaudit.core.ThreadingTCPServer import ThreadingTCPServer
+from sslcaudit.core.get_original_dst import get_original_dst
 
 logger = logging.getLogger('ClientAuditorTCPServer')
 
@@ -52,6 +53,12 @@ class ClientAuditorServer(Thread):
     def finish_request(self, sock, client_address):
         # this method overrides TCPServer implementation and actually handles new connections
         # it may be invoked from different threads, in parallel
+
+        try:
+            orig_dst = get_original_dst(sock)
+            print '*** ORIG_DEST >%s<' % orig_dst
+        except Exception as ex:
+            print 'get_original_dst() has thrown an exception: %s' % ex
 
         # create new conn object and obtain client id
         conn = ClientConnection(sock, client_address)
