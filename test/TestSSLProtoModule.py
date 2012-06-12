@@ -42,19 +42,17 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
-    def test_curl_rejects_weak_ciphers(self):
+    def test_curl_rejects_export_ciphers(self):
         # curl (and any other proper SSL client for that purpose) is expected to reject SSLv2 and weak ciphers
         eccars = []
         for proto in PROTOCOLS:
             for cipher in CIPHERS:
-                if cipher == 'HIGH' or cipher == 'MEDIUM':
-                    # we expect curl to establish the connection to a server offering a reasonably strong cipher,
-                    # but complain about CA (we didn't bother specifying it)
-                    # XXX in practice curl rejects MEDIUM-grade ciphers, not clear why
-                    expected_res = ALERT_UNKNOWN_CA
-                else:
-                    # we expect curl to refuse connecting to server offering weak ciphers
+                if cipher == 'EXPORT':
+                    # we expect curl to refuse connecting to server offering an export-grade ciphers
                     expected_res = ALERT_NO_SHARED_CIPHER
+                else:
+                    # we expect curl to establish the connection to a server offering non-export cipher
+                    expected_res = ALERT_UNKNOWN_CA
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
 
         self._main_test(
