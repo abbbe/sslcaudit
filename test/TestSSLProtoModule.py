@@ -15,6 +15,7 @@ from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
 from sslcaudit.test.TestConfig import *
 from test import TestModule
 from test.TestModule import ECCAR, mk_sslcaudit_argv
+from sslcaudit.modules.sslproto import PROTOCOLS, CIPHERS
 
 LOCALHOST = 'localhost'
 HAMMER_HELLO = 'hello'
@@ -31,8 +32,8 @@ class TestSSLProtoModule(TestModule.TestModule):
     def test_plain_tcp_client(self):
         # Plain TCP client causes unexpected UNEXPECTED_EOF.
         eccars = []
-        for proto in ('sslv23',):
-            for cipher in ('HIGH', 'MEDIUM', 'LOW', 'EXPORT'):
+        for proto in PROTOCOLS:
+            for cipher in CIPHERS:
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), UNEXPECTED_EOF))
 
         self._main_test(
@@ -41,11 +42,11 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
-    def test_curl_weak_ciphers(self):
+    def test_curl_rejects_weak_ciphers(self):
         # curl (and any other proper SSL client for that purpose) is expected to reject SSLv2 and weak ciphers
         eccars = []
-        for proto in ('sslv23',):
-            for cipher in ('HIGH', 'MEDIUM', 'LOW', 'EXPORT'):
+        for proto in PROTOCOLS:
+            for cipher in CIPHERS:
                 if cipher == 'HIGH' or cipher == 'MEDIUM':
                     # we expect curl to establish the connection to a server offering a reasonably strong cipher,
                     # but complain about CA (we didn't bother specifying it)
@@ -62,12 +63,12 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
-    def test_opensssl_all_ciphers(self):
+    def test_opensssl_accepts_all_ciphers(self):
         # openssl client is expected to connect to anything
-        # XXX in practice openssl fails to connect to export ciphers, not clear why
+        # XXX in practice it fails to connect to export ciphers, not clear why
         eccars = []
-        for proto in ('sslv23',):
-            for cipher in ('HIGH', 'MEDIUM', 'LOW', 'EXPORT'):
+        for proto in PROTOCOLS:
+            for cipher in CIPHERS:
                 expected_res = Connected()
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
 
