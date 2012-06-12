@@ -45,6 +45,8 @@ class CurlHammer(ExternalCommandHammer):
         else:
             return ['curl', server_url]
 
+#OPENSSL_PROG = 'openssl-1.0.1b/apps/openssl'
+OPENSSL_PROG = 'openssl'
 
 class OpenSSLHammer(ExternalCommandHammer):
     logger = logging.getLogger('OpenSSLHammer')
@@ -54,7 +56,7 @@ class OpenSSLHammer(ExternalCommandHammer):
 
         server_n_port = '%s:%d' % (self.peer[0], self.peer[1])
         return [
-            'openssl-1.0.1b/apps/openssl', 's_client',
+            OPENSSL_PROG, 's_client',
             '-connect', server_n_port,
             '-cipher', 'ALL'
         ]
