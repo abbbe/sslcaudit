@@ -19,12 +19,11 @@ from test.TestFileBag import TestFileBag
 from test.TestCertFactory import TestCertFactory
 from test.TestDummyModule import TestDummyModule
 from test.TestSSLCertModule import TestSSLCertModule
-from test.TestSSLProtoModule import TestSSLProtoModule
 
 if __name__ == '__main__':
     #logging.basicConfig(level = logging.DEBUG)
     logging.basicConfig()
     suite = unittest.TestSuite()
-    for ut in [TestFileBag, TestCertFactory, TestDummyModule, TestSSLCertModule, TestSSLProtoModule]:
+    for ut in [TestFileBag, TestCertFactory, TestDummyModule, TestSSLCertModule]:
         suite.addTest(unittest.makeSuite(ut))
     unittest.TextTestRunner(verbosity=2).run(suite)
