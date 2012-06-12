@@ -163,9 +163,13 @@ class TestModule(unittest.TestCase):
         if len(unexpected) != 0 or len(missing) != 0:
             print
         if len(unexpected) > 0:
-            print '\tunexpected results: %s' % unexpected
+            print '\tunexpected results'
+            for r in unexpected:
+                print '\t\t%s' % r
         if len(missing) > 0:
-            print '\tmissing results: %s' % missing
+            print '\tmissing results'
+            for r in missing:
+                print '\t\t%s' % r
         self.assertTrue(len(unexpected) == 0 and len(missing) == 0, 'there are missing or unexpected results')
 
 
