@@ -15,7 +15,7 @@ from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
 from sslcaudit.test.TestConfig import *
 from test import TestModule
 from test.TestModule import ECCAR, mk_sslcaudit_argv
-from sslcaudit.modules.sslproto import PROTOCOLS, CIPHERS
+from sslcaudit.modules.sslproto import PROTOCOLS, CIPHERS, EXPORT_CIPHER
 
 LOCALHOST = 'localhost'
 HAMMER_HELLO = 'hello'
@@ -47,7 +47,7 @@ class TestSSLProtoModule(TestModule.TestModule):
         eccars = []
         for proto in PROTOCOLS:
             for cipher in CIPHERS:
-                if cipher == 'EXPORT':
+                if cipher == EXPORT_CIPHER:
                     # we expect curl to refuse connecting to server offering an export-grade ciphers
                     expected_res = ALERT_NO_SHARED_CIPHER
                 else:

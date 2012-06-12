@@ -5,4 +5,5 @@
 # ----------------------------------------------------------------------
 
 PROTOCOLS = ('sslv2', 'sslv3', 'tlsv1')
-CIPHERS = ('HIGH', 'MEDIUM', 'LOW', 'EXPORT')
+EXPORT_CIPHER = 'EXPORT'
+CIPHERS = ('HIGH', 'MEDIUM', 'LOW', EXPORT_CIPHER)
