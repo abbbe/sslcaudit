@@ -1,13 +1,13 @@
-''' ----------------------------------------------------------------------
-SSLCAUDIT - a tool for automating security audit of SSL clients
-Released under terms of GPLv3, see COPYING.TXT
-Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
----------------------------------------------------------------------- '''
+# ----------------------------------------------------------------------
+# SSLCAUDIT - a tool for automating security audit of SSL clients
+# Released under terms of GPLv3, see COPYING.TXT
+# Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+# ----------------------------------------------------------------------
 
 import M2Crypto, logging
 from time import time
 from M2Crypto.SSL.timeout import timeout
-from sslcaudit.core.ClientConnectionAuditEvent import ClientConnectionAuditResult
+from sslcaudit.core.ConnectionAuditEvent import ConnectionAuditResult
 from sslcaudit.modules.base.BaseServerHandler import BaseServerHandler
 
 DEFAULT_SOCK_READ_TIMEOUT = 3.0
@@ -19,22 +19,23 @@ UNEXPECTED_EOF = 'unexpected eof'
 ALERT_UNKNOWN_CA = 'tlsv1 alert unknown ca'
 ALERT_CERT_UNKNOWN = 'sslv3 alert certificate unknown'
 
-class Connected(object): pass
+class Connected(object):
+    def __eq__(self, other):
+        return self.__class__ == other.__class__
+
+    def __hash__(self):
+        return hash(self.__class__)
 
 class ConnectedGotEOFBeforeTimeout(Connected):
     def __init__(self, dt=None):
         self.dt = dt
 
     def __str__(self):
-        if self.dt != None:
+        if self.dt is not None:
             dt_str = " (in %.3fs)" % self.dt
         else:
             dt_str = ''
         return "connected, EOF before timeout%s" % dt_str
-
-    def __eq__(self, other):
-        # NB: ignore actual DT
-        return self.__class__ == other.__class__
 
 
 class ConnectedReadTimeout(Connected):
@@ -42,15 +43,11 @@ class ConnectedReadTimeout(Connected):
         self.dt = dt
 
     def __str__(self):
-        if self.dt != None:
+        if self.dt is not None:
             dt_str = " (in %.1fs)" % self.dt
         else:
             dt_str = ''
         return "connected, read timeout%s" % dt_str
-
-    def __eq__(self, other):
-        # NB: ignore actual DT
-        return self.__class__ == other.__class__
 
 
 class ConnectedGotRequest(Connected):
@@ -59,17 +56,16 @@ class ConnectedGotRequest(Connected):
         self.dt = dt
 
     def __eq__(self, other):
-        # NB: ignore actual DT
         if self.__class__ != other.__class__: return False
 
         return self.req == None or self.req == other.req
 
     def __str__(self):
-        if self.dt != None:
+        if self.dt is not None:
             dt_str = '%.1fs' % self.dt
         else:
             dt_str = '?s'
-        if self.req != None:
+        if self.req is not None:
             noctets_str = '%d' % len(self.req)
         else:
             noctets_str = '?'
@@ -109,7 +105,7 @@ class SSLServerHandler(BaseServerHandler):
             else:
                 self.logger.debug('SSL handshake failed: %s', ssl_conn.ssl_get_error(ssl_conn_res))
                 res = ssl_conn.ssl_get_error(ssl_conn_res)
-                return ClientConnectionAuditResult(conn, profile, res)
+                return ConnectionAuditResult(conn, profile, res)
 
             # try to read something from the client
             start_time = time()
@@ -137,7 +133,7 @@ class SSLServerHandler(BaseServerHandler):
 
         # report the result
 
-        return ClientConnectionAuditResult(conn, profile, res)
+        return ConnectionAuditResult(conn, profile, res)
 
     def __repr__(self):
         return "SSLServerHandler%s" % self.__dict__

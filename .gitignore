@@ -1,5 +1,8 @@
 *.pyc
 .idea/workspace.xml
+.idea/misc.xml
 .*.swp
 .~lock.*#
-deb_dist
+*.sublime-project
+*.sublime-workspace
+openssl-1.0.1b/test/

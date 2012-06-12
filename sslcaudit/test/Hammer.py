@@ -1,45 +1,72 @@
-''' ----------------------------------------------------------------------
-SSLCAUDIT - a tool for automating security audit of SSL clients
-Released under terms of GPLv3, see COPYING.TXT
-Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
----------------------------------------------------------------------- '''
+# ----------------------------------------------------------------------
+# SSLCAUDIT - a tool for automating security audit of SSL clients
+# Released under terms of GPLv3, see COPYING.TXT
+# Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+# ----------------------------------------------------------------------
 
 import logging, time
 from threading import Thread
+import threading
 
-class Hammer(Thread):
+class Hammer(object):
     '''
     This is an abstract class for hammering, normally used for unit tests only.
     '''
     logger = logging.getLogger('Hammer')
 
-    HAMMERING_DELAY = 0.5
+    HAMMERING_DELAY = 0.1
 
-    def __init__(self, nattempts):
-        Thread.__init__(self, target=self.run)
+    def __init__(self, nattempts, nparallel=10):
         self.nattempts = nattempts
+        self.nparallel = nparallel
 
-        self.daemon = True
+        self.next_round = 0
+        self.lock = threading.Lock()  # this lock has to be acquired before use of 'next_round' attribute
+
         self.should_stop = False
 
-    def run(self):
-        self.logger.debug("running %s", self)
+        # launch as many threads as needed to reach desired parallelism, but don't exceed the number of attempts
+        self.hammer_threads = []
+        nthreads = self.nparallel if (nattempts < 0) or (self.nparallel < nattempts) else nattempts
+        for hammer_id in range(nthreads):
+            thread_name = 'Hammer-%d' % hammer_id
+            thread = Thread(target=self.run, name=thread_name)
+            thread.daemon = True
+            self.hammer_threads.append(thread)
 
-        i = 0
-        while (self.nattempts == -1 or i < self.nattempts) and not self.should_stop:
-            # connect to the peer, do something, disconnect
-            try:
-                self.logger.debug("start hammering round %d to target %s", i, self.peer)
-                self.hammer(i)
-                self.logger.debug("stopped hammering round %d to target %s", i, self.peer)
-            except Exception as ex:
-                self.logger.error('error hammering round %d target %s: %s', i, self.peer, ex)
+    def start(self):
+        for thread in self.hammer_threads:
+            thread.start()
+            self.logger.debug("spawned thread %s", thread)
+
+    def run(self):
+        '''
+        This method is a target of multiple threads running in parallel.
+        '''
+        self.logger.debug("running, thread %s", threading.currentThread())
+
+        while True:
+            # get ourselves a round id
+            with self.lock:
+                if self.should_stop:
+                    # quitting this thread because we were requested to
+                    self.logger.debug("exiting (should_stop is True), thread %s", threading.currentThread())
+                    return
+                elif (self.nattempts > 0) and (self.next_round >= self.nattempts):
+                    # quitting this thread because too many rounds are made already
+                    self.logger.debug("exiting (next_round  %d > nattempts %d), thread %s",
+                        self.next_round, self.nattempts,
+                        threading.currentThread())
+                    return
+                else:
+                    this_nround = self.next_round
+                    self.next_round += 1
+
+            self.logger.debug("invoking hammer(), thread %s", threading.currentThread())
+            self.hammer(this_nround)
 
             # wait a little while before repeating
             time.sleep(self.HAMMERING_DELAY)
-
-            i += 1
-        self.logger.debug("exiting %s", self)
 
     def hammer(self, round):
         '''
@@ -51,3 +78,12 @@ class Hammer(Thread):
     def stop(self):
         self.logger.debug("stopping %s", self)
         self.should_stop = True
+
+    def spawn_hammer_thread(self, nround):
+        # connect to the peer, do something, disconnect
+        try:
+            self.logger.debug("start hammering %s (round %i)", self.peer, nround)
+            self.hammer(nround)
+            self.logger.debug("stopped hammering %s (round %d)", self.peer, nround)
+        except Exception as ex:
+            self.logger.error('error hammering %s (round %d): %s', self.peer, nround, ex)

@@ -1,1 +1,10 @@
-git svn clone -s http://optparse-gui.googlecode.com/svn optparse-gui
+Building openssl with SSLv2 support (needed for sslproto unittests).
+	./config enable-sslv2
+	make
+	make test
+
+Redirecting connections with iptables:
+	sudo brctl addbr br0
+	sudo addif br0 eth1 eth2
+	sudo iptables -t nat -A PREROUTING -p tcp -d 10.255.254.2 --dport 80 -j REDIRECT --to-port 80
+

@@ -28,8 +28,8 @@ dpkg -L python-sslcaudit
 (
 	cd /tmp
 	which sslcaudit
-	sslcaudit -T 1 --user-cn localhost
-)
+	sslcaudit -T 2 --user-cn localhost
+) || true
 
 # uninstall
 sudo dpkg -r python-sslcaudit

@@ -1,8 +1,8 @@
-''' ----------------------------------------------------------------------
-SSLCAUDIT - a tool for automating security audit of SSL clients
-Released under terms of GPLv3, see COPYING.TXT
-Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
----------------------------------------------------------------------- '''
+# ----------------------------------------------------------------------
+# SSLCAUDIT - a tool for automating security audit of SSL clients
+# Released under terms of GPLv3, see COPYING.TXT
+# Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+# ----------------------------------------------------------------------
 
 import socket
 
@@ -14,7 +14,7 @@ from sslcaudit.core.ConfigError import ConfigError
 DEFAULT_X509_C = 'BE'
 DEFAULT_X509_ORG = 'Gremwell bvba'
 SELFSIGNED = 'SELF'
-BITS=1024
+BITS = 1024
 
 CERT_FILE_SUFFIX = '-cert.pem'
 KEY_FILE_SUFFIX = '-key.pem'
@@ -22,10 +22,10 @@ KEY_FILE_SUFFIX = '-key.pem'
 class CertAndKey(object):
     '''
     This class holds:
-     * object name
-     * X509 certificate object
-     * path to the cert file
-     * path to the key file
+    * object name
+    * X509 certificate object
+    * path to the cert file
+    * path to the key file
     '''
 
     def __init__(self, name, cert_filename, key_filename, cert, pkey):
@@ -82,9 +82,9 @@ class CertFactory(object):
     def mk_certreq_n_keys(self, cn, v3_exts=[]):
         '''
         This function creates a certificate request with following attributes:
-         * given common name, organization, and country
-         * maximum validity period
-         * given extensions
+        * given common name, organization, and country
+        * maximum validity period
+        * given extensions
         Returns the certificate request and the keys as a tuple (X509, EVP, RSA)
         '''
         bits = DEFAULT_BITS
@@ -137,13 +137,13 @@ class CertFactory(object):
         cert_req.set_serial_number(1)
 
         # set issuer
-        if ca_certnkey != None:
+        if ca_certnkey is not None:
             cert_req.set_issuer(ca_certnkey.cert.get_subject())
         else:
             cert_req.set_issuer(cert_req.get_subject())
 
         # sign
-        if ca_certnkey != None:
+        if ca_certnkey is not None:
             cert_req.sign(ca_certnkey.pkey, md)
             signed_by = ca_certnkey.name
         else:
@@ -154,7 +154,7 @@ class CertFactory(object):
         (cert_file, key_file) = self.file_bag.mk_two_files(suffix1=CERT_FILE_SUFFIX, suffix2=KEY_FILE_SUFFIX)
         cert_file.write(cert_req.as_text())
         cert_file.write(cert_req.as_pem())
-        if ca_certnkey != None:
+        if ca_certnkey is not None:
             cert_file.write(ca_certnkey.cert.as_text())
             cert_file.write(ca_certnkey.cert.as_pem())
         cert_file.close()
@@ -207,15 +207,15 @@ class CertFactory(object):
         '''
         This function creates a certificate request replicating given certificate. It returns a tuple of certificate and
         Most of the fields of the original certificates are replicated:
-         * key length
-         * subject
-         * validity dates
-         * serial number
-         * version
-         * extensions
+        * key length
+        * subject
+        * validity dates
+        * serial number
+        * version
+        * extensions
         Couple parameters don't get replicated (because I don't know where to find them in M2Crypto.X509 object):
-         * public key exponent which is fixed to 65537,
-         * signature algorithm which is fixed to sha1WithRSAEncryption.
+        * public key exponent which is fixed to 65537,
+        * signature algorithm which is fixed to sha1WithRSAEncryption.
         '''
 
         # copy certificate attributes

@@ -6,7 +6,7 @@
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
 
-import os, sys
+import os, sys, logging
 
 # if the script is launched from sources, make sure it uses modules located in the same place
 base_dir = os.path.join(os.path.dirname(__file__), '..')
@@ -15,13 +15,15 @@ if os.path.exists(src_dir): sys.path.insert(0, base_dir)
 
 import unittest
 
+from test.TestFileBag import TestFileBag
 from test.TestCertFactory import TestCertFactory
 from test.TestDummyModule import TestDummyModule
 from test.TestSSLCertModule import TestSSLCertModule
 
 if __name__ == '__main__':
+    #logging.basicConfig(level = logging.DEBUG)
+    logging.basicConfig()
     suite = unittest.TestSuite()
-    suite.addTest(unittest.makeSuite(TestCertFactory))
-    suite.addTest(unittest.makeSuite(TestDummyModule))
-    suite.addTest(unittest.makeSuite(TestSSLCertModule))
+    for ut in [TestFileBag, TestCertFactory, TestDummyModule, TestSSLCertModule]:
+        suite.addTest(unittest.makeSuite(ut))
     unittest.TextTestRunner(verbosity=2).run(suite)

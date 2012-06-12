@@ -1,16 +1,18 @@
-''' ----------------------------------------------------------------------
-SSLCAUDIT - a tool for automating security audit of SSL clients
-Released under terms of GPLv3, see COPYING.TXT
-Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
----------------------------------------------------------------------- '''
+# ----------------------------------------------------------------------
+# SSLCAUDIT - a tool for automating security audit of SSL clients
+# Released under terms of GPLv3, see COPYING.TXT
+# Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+# ----------------------------------------------------------------------
 
 import logging
 import unittest
-from sslcaudit.core.SSLCAuditCLI import SSLCAuditCLI
-from sslcaudit.core.ClientConnectionAuditEvent import ClientAuditStartEvent, ClientAuditEndEvent, ClientConnectionAuditResult
-from sslcaudit.core.ClientHandler import ClientAuditResult
+from sslcaudit.core.BaseClientAuditController import BaseClientAuditController
+from sslcaudit.core.FileBag import FileBag
+from sslcaudit.core.ConnectionAuditEvent import SessionStartEvent, ConnectionAuditResult
+from sslcaudit.core.ClientServerSessionHandler import SessionEndResult
 from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
 from sslcaudit.test.TestConfig import get_next_listener_port, TEST_LISTENER_ADDR
+from sslcaudit.ui import SSLCAuditUI
 
 class TestDummyModule(unittest.TestCase):
     '''
@@ -26,10 +28,9 @@ class TestDummyModule(unittest.TestCase):
         The dummy auditor just acknowledges the fact of connection happening.
         '''
         # these variables will be updated from a hook function invoked from main
-        self.got_result_start = 0
-        self.got_result = 0
-        self.got_result_end = 0
-        self.got_bulk_result = 0
+        self.got_result_starts = 0
+        self.got_conn_results = 0
+        self.got_result_ends = 0
         self.nstray = 0
 
         # the hook function
@@ -37,14 +38,12 @@ class TestDummyModule(unittest.TestCase):
             '''
             This function overrides main.handle_result() and updates our counters
             '''
-            if isinstance(res, ClientAuditStartEvent):
-                self.got_result_start = self.got_result_start + 1
-            elif isinstance(res, ClientAuditEndEvent):
-                self.got_result_end = self.got_result_end + 1
-            elif isinstance(res, ClientConnectionAuditResult):
-                self.got_result = self.got_result + 1
-            elif isinstance(res, ClientAuditResult):
-                self.got_bulk_result = self.got_bulk_result + 1
+            if isinstance(res, SessionStartEvent):
+                self.got_result_starts = self.got_result_starts + 1
+            elif isinstance(res, SessionEndResult):
+                self.got_result_ends = self.got_result_ends + 1
+            elif isinstance(res, ConnectionAuditResult):
+                self.got_conn_results = self.got_conn_results + 1
             else:
                 self.nstray = self.nstray + 1
 
@@ -55,28 +54,29 @@ class TestDummyModule(unittest.TestCase):
         self.hammer = TCPConnectionHammer(self.HAMMER_ATTEMPTS)
 
         # create main, the target of the test
-        self.main = SSLCAuditCLI(['-m', 'dummy', '-l', ("%s:%d" % (TEST_LISTENER_ADDR, port))])
-        self.main.handle_result = main__handle_result
+        main_args = ['-m', 'dummy', '-l', ("%s:%d" % (TEST_LISTENER_ADDR, port))]
+        options = SSLCAuditUI.parse_options(main_args)
+        file_bag = FileBag(basename='test-sslcaudit', use_tempdir=True)
+        controller = BaseClientAuditController(options, file_bag, event_handler=main__handle_result)
 
         # tell the hammer how many attempts to make exactly
         self.hammer.set_peer((TEST_LISTENER_ADDR, port))
 
         # start server and client
-        self.main.start()
+        controller.start()
         self.hammer.start()
 
-        self.main.join(timeout=5)
+        controller.join(timeout=5)
         self.hammer.stop()
-        self.main.stop()
 
         # make sure we have received expected number of results
-        self.assertEquals(self.got_result_start, 1)
-        self.assertEquals(self.got_result, 2)
-        self.assertEquals(self.got_result_end, 1)
-        self.assertEquals(self.got_bulk_result, 1)
+        self.assertEquals(self.got_result_starts, 1)
+        self.assertEquals(self.got_conn_results, 2)
+        self.assertEquals(self.got_result_ends, 1)
         self.assertEquals(self.nstray, 0)
 
 
 if __name__ == '__main__':
+    logging.baseConfig()
     unittest.main()
 

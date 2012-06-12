@@ -1,12 +1,15 @@
-''' ----------------------------------------------------------------------
-SSLCAUDIT - a tool for automating security audit of SSL clients
-Released under terms of GPLv3, see COPYING.TXT
-Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
----------------------------------------------------------------------- '''
+# ----------------------------------------------------------------------
+# SSLCAUDIT - a tool for automating security audit of SSL clients
+# Released under terms of GPLv3, see COPYING.TXT
+# Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+# ----------------------------------------------------------------------
 
 class BaseProfileSpec(object):
     def __eq__(self, other):
         return self.__class__ == other.__class__ and self.__dict__ == other.__dict__
+
+    def __hash__(self):
+        return hash(self.__class__)
 
 class BaseProfile(object):
     '''
@@ -34,10 +37,10 @@ class BaseProfileFactory(object):
     def __init__(self, file_bag, options):
         self.file_bag = file_bag
         self.options = options
-        self.profiles_ = []
+        self.profiles = []
 
     def add_profile(self, profile):
-        self.profiles_.append(profile)
+        self.profiles.append(profile)
 
     def __iter__(self):
-        return self.profiles_.__iter__()
+        return self.profiles.__iter__()

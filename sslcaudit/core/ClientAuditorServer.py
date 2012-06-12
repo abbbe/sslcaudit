@@ -1,57 +1,44 @@
-''' ----------------------------------------------------------------------
-SSLCAUDIT - a tool for automating security audit of SSL clients
-Released under terms of GPLv3, see COPYING.TXT
-Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
----------------------------------------------------------------------- '''
+# ----------------------------------------------------------------------
+# SSLCAUDIT - a tool for automating security audit of SSL clients
+# Released under terms of GPLv3, see COPYING.TXT
+# Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+# ----------------------------------------------------------------------
 
 import  logging
-from SocketServer import TCPServer
-import socket
 from threading import Thread
 from Queue import Queue
+import itertools
+import threading
 from sslcaudit.core.ClientConnection import ClientConnection
-from sslcaudit.core.ClientHandler import ClientHandler
+from sslcaudit.core.ClientServerSessionHandler import ClientServerSessionHandler
+from sslcaudit.core.ThreadingTCPServer import ThreadingTCPServer
+from sslcaudit.core.get_original_dst import get_original_dst
 
 logger = logging.getLogger('ClientAuditorTCPServer')
-
-#class ClientAuditorTCPServer(ThreadingMixIn, TCPServer):
-class ClientAuditorTCPServer(TCPServer):
-    '''
-    This class extends TCPServer to enforce address reuse, enforce daemon threads, and allow threading.
-    '''
-
-    def __init__(self, listen_on):
-        TCPServer.__init__(self, listen_on, None, bind_and_activate=False)
-        self.daemon_threads = True
-        # make sure SO_REUSE_ADDR socket option is set
-        self.allow_reuse_address = True
-
-        try:
-            self.server_bind()
-        except socket.error as ex:
-            raise RuntimeError('failed to bind to %s, exception: %s' % (listen_on, ex))
-
-        self.server_activate()
 
 
 class ClientAuditorServer(Thread):
     '''
-    This class with specification of listen port, a list of profiles, and result queue.
-    It works in a separate Thread and uses ClientAuditorTCPServer server to receive connections from clients under test.
-    It distinguishes between different clients by their IP addresses. It creates an instance of ClientHandler class
-    for each individual client and calls ClientHandler.handle() for each incoming connection.
-    By itself this class does not interpret the content of 'profiles' in any way, just passes it to the constructor of
-    ClientHandler. If res_queue is None, this class will create its own Queue and make accessible to users of this class
-    via ClientAuditorServer res_queue.
+    This class is instantiated with a specification of listen port, a list of profile factories, and a result queue.
+    It works in a separate Thread and relies on ClientAuditorTCPServer server to actually receive TCP connections from
+    clients and invoke finish_request() method (weird name, but it is the way the stock TCP python server works).
+    It distinguishes between different clients by their IP addresses, ignoring TCP port.
+    It distinguishes between different servers (may be more than one if redirection takes place) by address/port pairs.
+    It creates an instance of ClientServerSessionHandler class for each distinct client-server pair and calls its
+    handle() for each incoming connection relevant to that session.
+    Right now this generates the list of profiles by flattening 'profile_factories' and passes the result to the
+    constructor of ClientServerSessionHandler. This will change.
+    If res_queue is None, this class will create its own Queue and make accessible to users via res_queue attribute.
     '''
 
-    def __init__(self, listen_on, profiles, res_queue=None):
-        Thread.__init__(self, target=self.run)
+    def __init__(self, listen_on, profile_factories, res_queue=None):
+        Thread.__init__(self, target=self.run, name='ClientAuditorServer')
         self.daemon = True
 
         self.listen_on = listen_on
-        self.clients = {}
-        self.profiles = profiles
+        self.client_server_sessions = {}
+        self.lock = threading.Lock()  # this lock has to be acquired before using clients dictionary
+        self.profile_factories = profile_factories
 
         # create a local result queue unless one is already provided
         if res_queue == None:
@@ -60,24 +47,47 @@ class ClientAuditorServer(Thread):
             self.res_queue = res_queue
 
         # create TCP server and make it use our method to handle the requests
-        self.tcp_server = ClientAuditorTCPServer(self.listen_on)
+        self.tcp_server = ThreadingTCPServer(self.listen_on)
         self.tcp_server.finish_request = self.finish_request
 
     def finish_request(self, sock, client_address):
         # this method overrides TCPServer implementation and actually handles new connections
+        # it may be invoked from different threads, in parallel
+
+        try:
+            orig_dst = get_original_dst(sock)
+	    logger.debug('original destination is %s' % str(orig_dst))
+        except Exception as ex:
+	    logger.debug('get_original_dst() has thrown an exception: %s', ex)
 
         # create new conn object and obtain client id
         conn = ClientConnection(sock, client_address)
-        client_id = conn.get_client_id()
+        session_id = conn.get_session_id()
 
         # find or create a session handler
-        if not self.clients.has_key(client_id):
-            logger.debug('new client %s [id %s]', conn, client_id)
-            self.clients[client_id] = ClientHandler(client_id, self.profiles, self.res_queue)
+        with self.lock:
+            if not self.client_server_sessions.has_key(session_id):
+                logger.debug('new session [id %s]', session_id)
+                profiles = self.mk_session_profiles()
+                handler = ClientServerSessionHandler(session_id, profiles, self.res_queue)
+                self.client_server_sessions[session_id] = handler
+            else:
+                handler = self.client_server_sessions[session_id]
 
         # handle the request
-        self.clients[client_id].handle(conn)
+        handler.handle(conn)
 
     def run(self):
-        logger.debug('running %s, listen_on %s, profiles %s', self, self.listen_on, self.profiles)
+        logger.info('listen_on: %s' % str(self.listen_on))
         self.tcp_server.serve_forever()
+
+    def stop(self):
+        ''' this method can only be invoked if the server is already running '''
+        self.tcp_server.shutdown()
+        self.server_close()
+
+    def server_close(self):
+        self.tcp_server.server_close()
+
+    def mk_session_profiles(self):
+        return list(itertools.chain.from_iterable(self.profile_factories))

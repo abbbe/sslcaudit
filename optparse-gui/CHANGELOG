@@ -1,9 +1,0 @@
-= optparse_gui 0.1 =
-
-First release of optparse_gui.
-Dynamically generated a wx-based dialog with controls the match the option's
-type:
- * CheckBox for boolean options
- * ComboBox for "choice" options
- * TextCtrl for all other options
- * An extra TextCtrl for entering non-option command line arguments

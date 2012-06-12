@@ -7,3 +7,4 @@
 # ----------------------------------------------------------------------
 
 python setup.py --command-packages=stdeb.command debianize
+cp COPYING.TXT debian/copyright

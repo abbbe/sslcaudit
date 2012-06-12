@@ -1,8 +1,8 @@
-''' ----------------------------------------------------------------------
-SSLCAUDIT - a tool for automating security audit of SSL clients
-Released under terms of GPLv3, see COPYING.TXT
-Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
----------------------------------------------------------------------- '''
+# ----------------------------------------------------------------------
+# SSLCAUDIT - a tool for automating security audit of SSL clients
+# Released under terms of GPLv3, see COPYING.TXT
+# Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
+# ----------------------------------------------------------------------
 
 class BaseServerHandler(object):
     '''
@@ -16,8 +16,8 @@ class BaseServerHandler(object):
 
     def handle(self, conn, profile):
         '''
-        This method will be invoked by ClientHandler when new client connection arrives. It is expected to treat given
-        connection using given profile and return ClientConnectionAuditResult describing the outcome. This method gets
+        This method will be invoked by ClientServerSessionHandler when new client connection arrives. It is expected to treat given
+        connection using given profile and return SessionEndResult describing the outcome. This method gets
         invoked multiple times, for different client connections, for different profiles, so it must not change the
         state of the object itself and be thread-safe.
         '''
