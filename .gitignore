@@ -1,5 +1,6 @@
 *.pyc
 .idea/workspace.xml
+.idea/sslcaudit.iml
 .idea/misc.xml
 .*.swp
 .~lock.*#
