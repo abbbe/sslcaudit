@@ -60,7 +60,7 @@ class ServerHandler(BaseServerHandler):
                 return ConnectionAuditResult(conn, profile, res)
 
         except Exception as ex:
-            res = ex.message
+            res = str(ex)
             self.logger.debug('SSL accept failed: %s', ex)
 
         return ConnectionAuditResult(conn, profile, res)
