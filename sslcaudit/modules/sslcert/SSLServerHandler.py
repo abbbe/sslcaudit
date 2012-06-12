@@ -128,7 +128,7 @@ class SSLServerHandler(BaseServerHandler):
                     # got data
                     res = ConnectedGotRequest(client_req, dt)
         except Exception as ex:
-            res = ex.message
+            res = str(ex)
             self.logger.debug('SSL accept failed: %s', ex)
 
         # report the result
