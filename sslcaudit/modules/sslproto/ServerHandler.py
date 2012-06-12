@@ -9,6 +9,7 @@ from time import time
 from M2Crypto.SSL.timeout import timeout
 from sslcaudit.core.ConnectionAuditEvent import ConnectionAuditResult
 from sslcaudit.modules.base.BaseServerHandler import BaseServerHandler
+from M2Crypto import m2
 
 DEFAULT_SOCK_READ_TIMEOUT = 3.0
 MAX_SIZE = 1024
@@ -41,7 +42,20 @@ class ServerHandler(BaseServerHandler):
     def handle(self, conn, profile):
         ctx = M2Crypto.SSL.Context()
         ctx.load_cert_chain(certchainfile=profile.certnkey.cert_filename, keyfile=profile.certnkey.key_filename)
-        #ctx.set_options(m2.SSL_OP_ALL | m2.SSL_OP_NO_SSLv2)
+
+        # set allowed protocols
+        options = m2.SSL_OP_ALL
+        if profile.profile_spec.proto == 'sslv2':
+            options |= m2.SSL_OP_NO_SSLv3 | m2.SSL_OP_NO_TLSv1
+        elif profile.profile_spec.proto == 'sslv3':
+            options |= m2.SSL_OP_NO_SSLv2 | m2.SSL_OP_NO_TLSv1
+        elif profile.profile_spec.proto == 'tlsv1':
+            options |= m2.SSL_OP_NO_SSLv2 | m2.SSL_OP_NO_SSLv3
+        else:
+            raise ValueError('unsupported protocol: %s' % profile.profile_spec.proto)
+        ctx.set_options(options)
+
+        # set allowed ciphers
         ctx.set_cipher_list(profile.profile_spec.cipher)
 
         self.logger.debug('trying to accept SSL connection %s with profile %s', conn, profile)

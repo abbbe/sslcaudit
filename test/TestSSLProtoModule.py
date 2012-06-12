@@ -21,6 +21,7 @@ LOCALHOST = 'localhost'
 HAMMER_HELLO = 'hello'
 
 ALERT_NO_SHARED_CIPHER = 'no shared cipher'
+ALERT_SSLV3_BAD_CERTIFICATE = 'sslv3 alert bad certificate'
 
 class TestSSLProtoModule(TestModule.TestModule):
     '''
@@ -52,7 +53,10 @@ class TestSSLProtoModule(TestModule.TestModule):
                     expected_res = ALERT_NO_SHARED_CIPHER
                 else:
                     # we expect curl to establish the connection to a server offering non-export cipher
-                    expected_res = ALERT_UNKNOWN_CA
+                    if proto == 'sslv3':
+                        expected_res = ALERT_SSLV3_BAD_CERTIFICATE
+                    else:
+                        expected_res = ALERT_UNKNOWN_CA
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
 
         self._main_test(
