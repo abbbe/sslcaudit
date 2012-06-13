@@ -27,6 +27,9 @@ class Connected(object):
     def __hash__(self):
         return hash(self.__class__)
 
+    def __str__(self):
+	return 'Connected()'
+
 class ServerHandler(BaseServerHandler):
     '''
     This class implements SSL/TLS server. Its handle() method tries to perform SSL/TLS handshake using provided
