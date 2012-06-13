@@ -22,6 +22,7 @@ HAMMER_HELLO = 'hello'
 
 ALERT_NO_SHARED_CIPHER = 'no shared cipher'
 ALERT_SSLV3_BAD_CERTIFICATE = 'sslv3 alert bad certificate'
+ALERT_NON_SSLV2_INITIAL_PACKET = 'non sslv2 initial packet'
 
 class TestSSLProtoModule(TestModule.TestModule):
     '''
@@ -43,13 +44,15 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
-    def test_curl_rejects_export_ciphers(self):
+    def test_curl_rejects_sslv2_and_export_ciphers(self):
         # curl (and any other proper SSL client for that purpose) is expected to reject SSLv2 and weak ciphers
         eccars = []
         there_are_export_ciphers = False
         for proto in PROTOCOLS:
             for cipher in CIPHERS:
-                if cipher == EXPORT_CIPHER:
+                if proto == 'sslv2':
+                    expected_res = ALERT_NON_SSLV2_INITIAL_PACKET
+                elif cipher == EXPORT_CIPHER:
                     # we expect curl to refuse connecting to server offering an export-grade ciphers
                     expected_res = ALERT_NO_SHARED_CIPHER
                     there_are_export_ciphers = True
