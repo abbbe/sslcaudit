@@ -40,10 +40,11 @@ class ServerHandler(BaseServerHandler):
         BaseServerHandler.__init__(self)
 
     def handle(self, conn, profile):
-        ctx = M2Crypto.SSL.Context()
+        # create a context, explicitly specify the flavour of the protocol
+        ctx = M2Crypto.SSL.Context(protocol=profile.profile_spec.proto)
         ctx.load_cert_chain(certchainfile=profile.certnkey.cert_filename, keyfile=profile.certnkey.key_filename)
 
-        # set allowed protocols
+        # set restrict all protocols except the one prescribed by the profile
         options = m2.SSL_OP_ALL
         if profile.profile_spec.proto == 'sslv2':
             options |= m2.SSL_OP_NO_SSLv3 | m2.SSL_OP_NO_TLSv1
