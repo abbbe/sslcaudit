@@ -4,6 +4,7 @@
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
 
-PROTOCOLS = ('sslv2', 'sslv3', 'tlsv1')
+#PROTOCOLS = ('sslv2', 'sslv3', 'tlsv1')
+PROTOCOLS = ('sslv3', 'tlsv1')
 EXPORT_CIPHER = 'EXPORT'
 CIPHERS = ('HIGH', 'MEDIUM', 'LOW', EXPORT_CIPHER)
