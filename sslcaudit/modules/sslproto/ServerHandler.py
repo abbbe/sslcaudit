@@ -44,7 +44,7 @@ class ServerHandler(BaseServerHandler):
 
     def handle(self, conn, profile):
         # create a context, explicitly specify the flavour of the protocol
-        ctx = M2Crypto.SSL.Context(protocol=profile.profile_spec.proto)
+        ctx = M2Crypto.SSL.Context(protocol=profile.profile_spec.proto, weak_crypto=True)
         ctx.load_cert_chain(certchainfile=profile.certnkey.cert_filename, keyfile=profile.certnkey.key_filename)
 
         # set restrict all protocols except the one prescribed by the profile
