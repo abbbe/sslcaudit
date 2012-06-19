@@ -28,7 +28,7 @@ class Connected(object):
         return hash(self.__class__)
 
     def __str__(self):
-	return 'Connected()'
+        return 'Connected()'
 
 class ServerHandler(BaseServerHandler):
     '''
