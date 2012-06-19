@@ -11,25 +11,24 @@ EXPORT_CIPHER = 'EXPORT'
 ALL_CIPHERS = ('HIGH', 'MEDIUM', 'LOW', EXPORT_CIPHER)
 
 supported_protocols = None
+error_reported = False
+IS_SSLv2_SUPPORTED = hasattr(M2Crypto.m2, "sslv2_method") and M2Crypto.m2.ssl_ctx_new(M2Crypto.m2.sslv2_method()) is not None
 
-def get_supported_protocols(raw=False):
+def get_supported_protocols(quiet=False):
     """
     Determines the list of SSL protocols supported by OS.
-    In raw mode it does not cache the results and does not log an error in case of lack of SSLv2 support.
-    In non-raw mode (by default) the results get cached and an error is logged (once).
+    In quiet mode it does not log an error in case of lack of SSLv2 support.
+    In non-quiet mode (by default) it logs an error (once).
     """
-    if not raw:
-        global supported_protocols
-        if supported_protocols is not None:
-            return supported_protocols
+    global error_reported, IS_SSLv2_SUPPORTED, supported_protocols
 
-    IS_SSLv2_SUPPORTED = hasattr(M2Crypto.m2, "sslv2_method") and M2Crypto.m2.ssl_ctx_new(M2Crypto.m2.sslv2_method()) is not None
+    if not quiet and not IS_SSLv2_SUPPORTED and not error_reported:
+        logging.getLogger('sslproto').fatal('Excluding SSLv2 from the list of tested protocol because OS does not support it')
+        error_reported = True
 
-    supported_protocols = ('sslv3', 'tlsv1')
-    if IS_SSLv2_SUPPORTED:
-        supported_protocols += ('sslv2',)
-    else:
-        if not raw:
-            logging.getLogger('sslproto').fatal('Excluding SSLv2 from the list of tested protocol because OS does not support it')
+    if supported_protocols is None:
+        supported_protocols = ('sslv3', 'tlsv1')
+        if IS_SSLv2_SUPPORTED:
+            supported_protocols += ('sslv2',)
 
     return supported_protocols

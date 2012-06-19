@@ -74,7 +74,7 @@ class ProfileFactory(BaseProfileFactory):
             # it is responsibility of sslproto.get_supported_protocols() to alert the users about missing OS features if any
             self.protocols = sslproto.get_supported_protocols()
         else:
-            supported_protos = sslproto.get_supported_protocols(raw=True)
+            supported_protos = sslproto.get_supported_protocols(quiet=True)
             user_specified_protocols = []
 
             # check if protocols requested by the users are supported by OS
@@ -92,7 +92,7 @@ class ProfileFactory(BaseProfileFactory):
                 raise ConfigError('Following SSL protocols are not supported by OS libraries: %s'
                     % ','.join(unsupported_protos))
 
-        self.protocols = user_specified_protocols
+            self.protocols = user_specified_protocols
 
     def __str__(self):
         return 'sslproto.ProfileFactory(protocols="%s", ciphers="%s")' % (
