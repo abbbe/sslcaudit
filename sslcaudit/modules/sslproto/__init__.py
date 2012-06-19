@@ -10,7 +10,7 @@ IS_SSLv2_SUPPORTED = hasattr(M2Crypto.m2, "sslv2_method") and M2Crypto.m2.ssl_ct
 
 PROTOCOLS = ('sslv3', 'tlsv1')
 if IS_SSLv2_SUPPORTED:
-    PROTOCOLS += ('sslv2')
+    PROTOCOLS += ('sslv2',)
 else:
     logging.getLogger('sslproto').fatal('Excluding SSLv2 from the list of tested protocol because OS does not support it')
 
