@@ -6,13 +6,23 @@
 import M2Crypto
 import logging
 
-IS_SSLv2_SUPPORTED = hasattr(M2Crypto.m2, "sslv2_method") and M2Crypto.m2.ssl_ctx_new(M2Crypto.m2.sslv2_method()) is not None
-
-PROTOCOLS = ('sslv3', 'tlsv1')
-if IS_SSLv2_SUPPORTED:
-    PROTOCOLS += ('sslv2',)
-else:
-    logging.getLogger('sslproto').fatal('Excluding SSLv2 from the list of tested protocol because OS does not support it')
-
+ALL_PROTOCOLS = ('sslv2', 'sslv3', 'tlsv1')
 EXPORT_CIPHER = 'EXPORT'
-CIPHERS = ('HIGH', 'MEDIUM', 'LOW', EXPORT_CIPHER)
+ALL_CIPHERS = ('HIGH', 'MEDIUM', 'LOW', EXPORT_CIPHER)
+
+supported_protocols = None
+
+def get_supported_protocols():
+    global supported_protocols
+    if supported_protocols is not None:
+        return supported_protocols
+
+    IS_SSLv2_SUPPORTED = hasattr(M2Crypto.m2, "sslv2_method") and M2Crypto.m2.ssl_ctx_new(M2Crypto.m2.sslv2_method()) is not None
+
+    supported_protocols = ('sslv3', 'tlsv1')
+    if IS_SSLv2_SUPPORTED:
+        supported_protocols += ('sslv2',)
+    else:
+        logging.getLogger('sslproto').fatal('Excluding SSLv2 from the list of tested protocol because OS does not support it')
+
+    return supported_protocols

@@ -50,7 +50,7 @@ OPENSSL_PROG = 'openssl'
 
 class OpenSSLHammer(ExternalCommandHammer):
     logger = logging.getLogger('OpenSSLHammer')
-    def __init__(self, nattempts, openssl_args):
+    def __init__(self, nattempts, openssl_args=[]):
         ExternalCommandHammer.__init__(self, nattempts)
         self.openssl_args = openssl_args
 
@@ -58,8 +58,10 @@ class OpenSSLHammer(ExternalCommandHammer):
         assert not self.ca_cert_file
 
         server_n_port = '%s:%d' % (self.peer[0], self.peer[1])
-        return [
+        cmd = [
             OPENSSL_PROG, 's_client',
             '-connect', server_n_port,
             '-cipher', 'ALL'
-        ].extend(self.openssl_args)
+        ]
+        cmd.extend(self.openssl_args)
+        return cmd

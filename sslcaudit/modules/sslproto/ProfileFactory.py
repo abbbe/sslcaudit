@@ -3,11 +3,13 @@
 # Released under terms of GPLv3, see COPYING.TXT
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
+import logging
 from sslcaudit.core.CertFactory import CertFactory
+from sslcaudit.modules import sslproto
 
 from sslcaudit.modules.base.BaseProfileFactory import BaseProfileFactory, BaseProfile, BaseProfileSpec
 from sslcaudit.modules.sslproto.ServerHandler import ServerHandler
-from sslcaudit.modules.sslproto import PROTOCOLS, CIPHERS
+from sslcaudit.modules.sslproto import ALL_CIPHERS
 
 SSLPROTO_CN = 'sslproto'
 sslproto_server_handler = ServerHandler()
@@ -48,8 +50,24 @@ class ProfileFactory(BaseProfileFactory):
         # XXX OS libraries might lack support some protocol (we can expect SSLv2 is not supported by default, unless
         # XXX we run very old or specialized distro like BackTrack. Such faults have to be handled gracefully
         # XXX and the user must be aware they are getting incomplete results
-        for proto in PROTOCOLS:
-            for cipher in CIPHERS:
+
+        self.init_protocols(options.protocols)
+
+        for proto in self.protocols:
+            for cipher in ALL_CIPHERS:
                 # XXX There should be an option to enable per-cipher test (like sslaudit does with servers).
                 profile = SSLServerProtoProfile(SSLServerProtoSpec(proto, cipher), certnkey)
                 self.add_profile(profile)
+
+    def init_protocols(self, protocols):
+        """
+        This method builds a list of protocols to cover and places into .protocols attribute of the factory.
+        It will be used during server profile generation and by unittests.
+        """
+
+        if protocols is None:
+            # by default we test all protocols supported by the OS.
+            # it is responsibility of sslproto.get_supported_protocols() to alert the users about missing OS features if any
+            self.protocols = sslproto.get_supported_protocols()
+        else:
+            self.protocols = protocols.split(',')
