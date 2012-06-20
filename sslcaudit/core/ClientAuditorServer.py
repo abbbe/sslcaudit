@@ -56,9 +56,9 @@ class ClientAuditorServer(Thread):
 
         try:
             orig_dst = get_original_dst(sock)
-	    logger.debug('original destination is %s' % str(orig_dst))
+            logger.debug('original destination is %s' % str(orig_dst))
         except Exception as ex:
-	    logger.debug('get_original_dst() has thrown an exception: %s', ex)
+            logger.debug('get_original_dst() has thrown an exception: %s', ex)
 
         # create new conn object and obtain client id
         conn = ClientConnection(sock, client_address)
