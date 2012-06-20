@@ -10,8 +10,7 @@ def main():
     ctx = M2Crypto.SSL.Context(protocol='sslv23')
     ctx.load_cert_chain(certchainfile=CERTFILE, keyfile=KEYFILE)
     ctx.set_options(m2.SSL_OP_ALL)
-        ctx.set_cipher_list('ALL')
-
+    ctx.set_cipher_list('ALL')
 
     print 'initializing socket ...'
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)

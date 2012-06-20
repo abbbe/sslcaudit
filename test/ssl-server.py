@@ -12,8 +12,7 @@ def main():
     ctx = M2Crypto.SSL.Context()
     ctx.load_cert_chain(certchainfile=CERTFILE, keyfile=KEYFILE)
     ctx.set_options(m2.SSL_OP_ALL)
-        ctx.set_cipher_list('ALL')
-
+    ctx.set_cipher_list('ALL')
 
     print 'initializing socket ...'
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -23,7 +22,7 @@ def main():
 
     print 'ssl handshake ...'
     ssl_conn = M2Crypto.SSL.Connection(ctx=ctx, sock=conn)
-        ssl_conn.set_socket_read_timeout(timeout(3))
+    ssl_conn.set_socket_read_timeout(timeout(3))
     ssl_conn.setup_ssl()
     ssl_conn_res = ssl_conn.accept_ssl()
 
