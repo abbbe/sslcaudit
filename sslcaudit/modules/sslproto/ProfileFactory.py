@@ -7,6 +7,7 @@ from sslcaudit.core.CertFactory import CertFactory
 
 from sslcaudit.modules.base.BaseProfileFactory import BaseProfileFactory, BaseProfile, BaseProfileSpec
 from sslcaudit.modules.sslproto.ServerHandler import ServerHandler
+from sslcaudit.modules.sslproto import PROTOCOLS, CIPHERS
 
 SSLPROTO_CN = 'sslproto'
 sslproto_server_handler = ServerHandler()
@@ -47,8 +48,8 @@ class ProfileFactory(BaseProfileFactory):
         # XXX OS libraries might lack support some protocol (we can expect SSLv2 is not supported by default, unless
         # XXX we run very old or specialized distro like BackTrack. Such faults have to be handled gracefully
         # XXX and the user must be aware they are getting incomplete results
-        for proto in ('sslv23',):
-            for cipher in ('HIGH', 'MEDIUM', 'LOW', 'EXPORT'):
+        for proto in PROTOCOLS:
+            for cipher in CIPHERS:
                 # XXX There should be an option to enable per-cipher test (like sslaudit does with servers).
                 profile = SSLServerProtoProfile(SSLServerProtoSpec(proto, cipher), certnkey)
                 self.add_profile(profile)

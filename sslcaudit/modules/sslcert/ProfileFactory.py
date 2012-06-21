@@ -19,7 +19,9 @@ IM_CA_NONE_CN = 'ca-none'
 IM_CA_FALSE_CN = 'ca-false'
 IM_CA_TRUE_CN = 'ca-true'
 
-sslcert_server_handler = SSLServerHandler('sslv23')
+DEFAULT_PROTO = 'sslv23'
+
+sslcert_server_handler = SSLServerHandler(DEFAULT_PROTO)
 
 class SSLProfileSpec_SelfSigned(BaseProfileSpec):
     def __init__(self, cn):
@@ -67,7 +69,7 @@ class SSLServerCertProfile(BaseProfile):
         return "%s[%s]" % (self.profile_spec, self.certnkey.cert_filename)
 
 class ProfileFactory(BaseProfileFactory):
-    def __init__(self, file_bag, options, protocol='sslv23'):
+    def __init__(self, file_bag, options, protocol=DEFAULT_PROTO):
         BaseProfileFactory.__init__(self, file_bag, options)
 
         self.protocol = protocol

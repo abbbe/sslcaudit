@@ -4,3 +4,5 @@
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
 
+PROTOCOLS = ('sslv2', 'sslv3', 'tlsv1')
+CIPHERS = ('HIGH', 'MEDIUM', 'LOW', 'EXPORT')
