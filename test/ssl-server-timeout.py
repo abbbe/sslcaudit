@@ -2,6 +2,7 @@ import M2Crypto
 from M2Crypto import m2
 import socket
 from M2Crypto.SSL.timeout import timeout
+from sslcaudit.modules.sslproto import resolve_ssl_code
 
 CERTFILE='test/certs/www.example.com-cert.pem'
 KEYFILE='test/certs/www.example.com-key.pem'
@@ -15,6 +16,7 @@ def main():
 
     print 'initializing socket and accepting connection ...'
     sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+    sock.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
     sock.bind(('0.0.0.0', 8443))
     sock.listen(1)
     conn, addr = sock.accept()
@@ -28,7 +30,9 @@ def main():
     if ssl_conn_res == 1:
         print 'SSL connection accepted'
     else:
-        print 'SSL handshake failed: %s' % ssl_conn.ssl_get_error(ssl_conn_res)
+        res = ssl_conn.ssl_get_error(ssl_conn_res)
+        print 'SSL handshake failed: %s (\'%s\')' % (res, resolve_ssl_code(res))
+
 
 if __name__ == "__main__":
     main()
