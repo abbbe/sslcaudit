@@ -5,6 +5,7 @@
 .idea/modules.xml
 .idea/vcs.xml
 .idea/sslcaudit.iml
+.idea/dataSources.xml
 .*.swp
 .~lock.*#
 *.sublime-project
