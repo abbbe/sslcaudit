@@ -2,6 +2,9 @@
 .idea/workspace.xml
 .idea/sslcaudit.iml
 .idea/misc.xml
+.idea/modules.xml
+.idea/vcs.xml
+.idea/sslcaudit.iml
 .*.swp
 .~lock.*#
 *.sublime-project
