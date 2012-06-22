@@ -108,9 +108,10 @@ class SSLServerHandler(BaseServerHandler):
                 self.logger.debug('SSL handshake failed: %s', res)
                 return ConnectionAuditResult(conn, profile, res)
 
-            self.logger.debug('SSL connection accepted, version %s, cipher %s' % (ssl_conn.get_version(), ssl_conn.get_cipher()))
+            self.logger.debug(
+                'SSL connection accepted, version %s, cipher %s' % (ssl_conn.get_version(), ssl_conn.get_cipher()))
             if ssl_conn.get_version() == 'SSLv2' and ssl_conn.get_cipher() is None:
-		## workaround for #46
+                ## workaround for #46
                 raise Exception(UNEXPECTED_EOF)
 
             # try to read something from the client
@@ -128,7 +129,6 @@ class SSLServerHandler(BaseServerHandler):
                     if dt < self.sock_read_timeout:
                         res = ConnectedGotEOFBeforeTimeout(dt)
                     else:
-
                         res = ConnectedReadTimeout(dt)
                 else:
                     # got data

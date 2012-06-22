@@ -44,6 +44,19 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
+    def test_plain_tcp_client_timeout(self):
+        # Plain TCP client causes unexpected UNEXPECTED_EOF.
+        eccars = []
+        for proto in sslproto.get_supported_protocols():
+            for cipher in sslproto.ALL_CIPHERS:
+                eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), UNEXPECTED_EOF))
+
+        self._main_test(
+            ['-m', 'sslproto'],
+            TCPConnectionHammer(len(eccars), delay_before_close=30),
+            eccars
+        )
+
     def test_curl_rejects_sslv2_and_export_ciphers(self):
         # curl (and any other proper SSL client for that purpose) is expected to reject SSLv2 and weak ciphers
         eccars = []

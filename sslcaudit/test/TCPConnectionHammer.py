@@ -6,15 +6,18 @@
 
 import logging, time
 from socket import socket
-from sslcaudit.test.ConnectionHammer import ConnectionHammer
+from sslcaudit.test import ConnectionHammer
 
-class TCPConnectionHammer(ConnectionHammer):
+class TCPConnectionHammer(ConnectionHammer.ConnectionHammer):
     '''
     This class continuously tries to connect to the specified host and port.
     After connection is established, it immediately closes it.
     Normally used for unit tests only.
     '''
     logger = logging.getLogger('TCPConnectionHammer')
+
+    def __init__(self, nattempts, delay_before_close=ConnectionHammer.DEFAULT_DELAY_BEFORE_CLOSE):
+        ConnectionHammer.__init__(nattempts, delay_before_close)
 
     def hammer(self, nround):
         # connect to the peer, do something, disconnect

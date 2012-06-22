@@ -12,6 +12,7 @@ from sslcaudit.modules.base.BaseServerHandler import BaseServerHandler
 from sslcaudit.modules.sslproto import resolve_ssl_code
 from M2Crypto import m2
 from sslcaudit.modules.sslcert.SSLServerHandler import UNEXPECTED_EOF
+
 DEFAULT_SOCK_READ_TIMEOUT = 3.0
 MAX_SIZE = 1024
 
@@ -30,6 +31,7 @@ class Connected(object):
 
     def __str__(self):
         return 'Connected()'
+
 
 class ServerHandler(BaseServerHandler):
     '''
@@ -71,9 +73,10 @@ class ServerHandler(BaseServerHandler):
             ssl_conn.setup_ssl()
             ssl_conn_res = ssl_conn.accept_ssl()
             if ssl_conn_res == 1:
-                self.logger.debug('SSL connection accepted, version %s cipher %s' % (ssl_conn.get_version(), ssl_conn.get_cipher()))
+                self.logger.debug(
+                    'SSL connection accepted, version %s cipher %s' % (ssl_conn.get_version(), ssl_conn.get_cipher()))
                 if ssl_conn.get_version() == 'SSLv2' and ssl_conn.get_cipher() is None:
-		    # workaround for #46
+                    # workaround for #46
                     raise Exception(UNEXPECTED_EOF)
                 return ConnectionAuditResult(conn, profile, Connected())
             else:
