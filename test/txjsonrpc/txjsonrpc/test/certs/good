@@ -1,0 +1,33 @@
+Certificate:
+    Data:
+        Version: 4 (0x3)
+        Serial Number: 1 (0x1)
+    Signature Algorithm: sha1WithRSAEncryption
+        Issuer: CN=ca-true, C=BE, O=Gremwell bvba
+        Validity
+            Not Before: Jan  1 00:00:00 1970 GMT
+            Not After : Jan 19 03:14:07 2038 GMT
+        Subject: CN=txjsonrpc-pyserver, C=BE, O=Gremwell bvba
+        Subject Public Key Info:
+            Public Key Algorithm: rsaEncryption
+                Public-Key: (1024 bit)
+                Modulus:
+                    00:cf:98:91:ee:29:bf:29:a7:30:17:4f:4c:3a:52:
+                    f2:ee:1e:7f:7d:2d:fb:15:9d:54:88:c0:85:b3:2e:
+                    b0:2c:c9:de:30:50:58:a9:66:41:08:b9:74:89:2d:
+                    6b:e1:52:c2:f0:88:ae:e0:ab:a7:43:f6:91:7f:26:
+                    8b:2a:55:63:fd:a2:72:96:1d:6c:89:a2:38:61:9e:
+                    46:ad:84:d5:1b:a6:ca:30:73:51:af:c9:83:86:c9:
+                    57:34:d8:49:84:66:46:ad:32:f8:c8:e6:eb:a1:65:
+                    e0:16:c5:b9:31:a5:4e:c1:1e:ee:5b:03:79:d7:45:
+                    5f:88:2f:a0:bd:26:9d:23:0b
+                Exponent: 65537 (0x10001)
+    Signature Algorithm: sha1WithRSAEncryption
+         9a:1b:fe:2a:df:52:98:66:41:1c:cd:15:ce:c6:f3:a7:54:76:
+         5f:53:cf:8f:59:eb:0d:9d:1a:90:17:1c:00:38:d1:b1:b2:f5:
+         07:49:7d:a7:ef:8b:96:b8:b1:f7:13:8a:d3:11:9e:c7:0f:be:
+         06:b7:f5:43:ae:b6:a2:47:6d:f5:5a:6d:91:43:15:43:1b:5f:
+         fc:a2:4d:fe:51:99:cd:19:9a:a7:29:8f:df:fc:5a:9d:5b:30:
+         8b:59:01:62:11:be:cc:41:2e:8b:5d:7d:4c:3a:4e:12:f0:7a:
+         a1:f6:c1:17:95:49:43:6c:a8:df:0b:82:e0:62:bc:b4:00:a3:
+         ae:1f

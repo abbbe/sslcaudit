@@ -1,0 +1,122 @@
+2012-06-25 12:28:23,406 BaseClientAuditController DEBUG   dumping options
+2012-06-25 12:28:23,406 BaseClientAuditController DEBUG   	self_test = 0
+2012-06-25 12:28:23,406 BaseClientAuditController DEBUG   	nclients = 1
+2012-06-25 12:28:23,406 BaseClientAuditController DEBUG   	user_ca_cert_file = txjsonrpc-test-ca-cacert.pem
+2012-06-25 12:28:23,406 BaseClientAuditController DEBUG   	user_ca_key_file = cacert.key
+2012-06-25 12:28:23,406 BaseClientAuditController DEBUG   	gui = False
+2012-06-25 12:28:23,406 BaseClientAuditController DEBUG   	no_self_signed = False
+2012-06-25 12:28:23,407 BaseClientAuditController DEBUG   	modules = sslcert
+2012-06-25 12:28:23,407 BaseClientAuditController DEBUG   	quiet = False
+2012-06-25 12:28:23,407 BaseClientAuditController DEBUG   	server = ('localhost', 7443)
+2012-06-25 12:28:23,407 BaseClientAuditController DEBUG   	debug_level = 0
+2012-06-25 12:28:23,407 BaseClientAuditController DEBUG   	no_default_cn = False
+2012-06-25 12:28:23,407 BaseClientAuditController DEBUG   	no_user_cert_signed = False
+2012-06-25 12:28:23,407 BaseClientAuditController DEBUG   	user_cert_file = None
+2012-06-25 12:28:23,407 BaseClientAuditController DEBUG   	test_name = None
+2012-06-25 12:28:23,407 BaseClientAuditController DEBUG   	user_key_file = None
+2012-06-25 12:28:23,407 BaseClientAuditController DEBUG   	user_cn = txjsonrpc-pyserver
+2012-06-25 12:28:23,407 BaseClientAuditController DEBUG   	listen_on = ('0.0.0.0', 8443)
+2012-06-25 12:28:23,407 BaseClientAuditController DEBUG   	protocols = None
+2012-06-25 12:28:23,408 BaseClientAuditController DEBUG   end of options dump
+2012-06-25 12:28:23,408 BaseClientAuditController INFO   number of profile factories: 1
+2012-06-25 12:28:23,408 BaseClientAuditController INFO   profile factory: SSLCert (15 profiles)
+2012-06-25 12:28:23,408 SSLCAuditCLI INFO   filebag location: sslcaudit.12
+2012-06-25 12:28:23,408 ClientAuditorTCPServer INFO   listen_on: ('0.0.0.0', 8443)
+2012-06-25 12:28:23,409 BaseClientAuditController DEBUG   entering main loop in run()
+2012-06-25 12:28:24,297 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:24,298 ClientAuditorTCPServer DEBUG   new session [id 127.0.0.1]
+2012-06-25 12:28:24,298 ClientServerSessionHandler DEBUG   will use profile 0 to handle connection 127.0.0.1 [('127.0.0.1', 51635)->('127.0.0.1', 8443)]
+2012-06-25 12:28:24,299 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51635)->('127.0.0.1', 8443)] with profile selfsigned(www.example.com)[tmpjhETbQ-cert.pem]
+2012-06-25 12:28:24,302 SSLServerHandler DEBUG   SSL accept failed: tlsv1 alert unknown ca
+2012-06-25 12:28:24,302 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51635)->('127.0.0.1', 8443)] using selfsigned(www.example.com)[tmpjhETbQ-cert.pem] (0/15) resulted in ConnectionAuditResult(selfsigned(www.example.com)[tmpjhETbQ-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:24,311 BaseClientAuditController DEBUG   got result <sslcaudit.core.ConnectionAuditEvent.SessionStartEvent object at 0x2ea4510>
+2012-06-25 12:28:24,312 BaseClientAuditController DEBUG   got result ConnectionAuditResult(selfsigned(www.example.com)[tmpjhETbQ-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:24,615 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:24,615 ClientServerSessionHandler DEBUG   will use profile 1 to handle connection 127.0.0.1 [('127.0.0.1', 51636)->('127.0.0.1', 8443)]
+2012-06-25 12:28:24,616 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51636)->('127.0.0.1', 8443)] with profile selfsigned(txjsonrpc-pyserver)[tmpycQn1v-cert.pem]
+2012-06-25 12:28:24,619 SSLServerHandler DEBUG   SSL accept failed: tlsv1 alert unknown ca
+2012-06-25 12:28:24,619 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51636)->('127.0.0.1', 8443)] using selfsigned(txjsonrpc-pyserver)[tmpycQn1v-cert.pem] (1/15) resulted in ConnectionAuditResult(selfsigned(txjsonrpc-pyserver)[tmpycQn1v-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:24,620 BaseClientAuditController DEBUG   got result ConnectionAuditResult(selfsigned(txjsonrpc-pyserver)[tmpycQn1v-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:24,916 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:24,916 ClientServerSessionHandler DEBUG   will use profile 2 to handle connection 127.0.0.1 [('127.0.0.1', 51637)->('127.0.0.1', 8443)]
+2012-06-25 12:28:24,917 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51637)->('127.0.0.1', 8443)] with profile selfsigned(txjsonrpc-pyserver)[tmpDkF0bj-cert.pem]
+2012-06-25 12:28:24,919 SSLServerHandler DEBUG   SSL accept failed: tlsv1 alert unknown ca
+2012-06-25 12:28:24,920 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51637)->('127.0.0.1', 8443)] using selfsigned(txjsonrpc-pyserver)[tmpDkF0bj-cert.pem] (2/15) resulted in ConnectionAuditResult(selfsigned(txjsonrpc-pyserver)[tmpDkF0bj-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:24,921 BaseClientAuditController DEBUG   got result ConnectionAuditResult(selfsigned(txjsonrpc-pyserver)[tmpDkF0bj-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:25,216 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:25,216 ClientServerSessionHandler DEBUG   will use profile 3 to handle connection 127.0.0.1 [('127.0.0.1', 51638)->('127.0.0.1', 8443)]
+2012-06-25 12:28:25,217 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51638)->('127.0.0.1', 8443)] with profile signed1(www.example.com, txjsonrpc-test-ca)[tmpAmnkd9-cert.pem]
+2012-06-25 12:28:25,225 SSLServerHandler DEBUG   SSL connection accepted, version TLSv1, cipher AES256-SHA-256
+2012-06-25 12:28:25,226 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51638)->('127.0.0.1', 8443)] using signed1(www.example.com, txjsonrpc-test-ca)[tmpAmnkd9-cert.pem] (3/15) resulted in ConnectionAuditResult(signed1(www.example.com, txjsonrpc-test-ca)[tmpAmnkd9-cert.pem], connected, got 17 octets in 0.0s)
+2012-06-25 12:28:25,229 BaseClientAuditController DEBUG   got result ConnectionAuditResult(signed1(www.example.com, txjsonrpc-test-ca)[tmpAmnkd9-cert.pem], connected, got 17 octets in 0.0s)
+2012-06-25 12:28:25,530 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:25,530 ClientServerSessionHandler DEBUG   will use profile 4 to handle connection 127.0.0.1 [('127.0.0.1', 51639)->('127.0.0.1', 8443)]
+2012-06-25 12:28:25,531 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51639)->('127.0.0.1', 8443)] with profile signed1(txjsonrpc-pyserver, txjsonrpc-test-ca)[tmpavRfvK-cert.pem]
+2012-06-25 12:28:25,537 SSLServerHandler DEBUG   SSL connection accepted, version TLSv1, cipher AES256-SHA-256
+2012-06-25 12:28:25,538 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51639)->('127.0.0.1', 8443)] using signed1(txjsonrpc-pyserver, txjsonrpc-test-ca)[tmpavRfvK-cert.pem] (4/15) resulted in ConnectionAuditResult(signed1(txjsonrpc-pyserver, txjsonrpc-test-ca)[tmpavRfvK-cert.pem], connected, got 17 octets in 0.0s)
+2012-06-25 12:28:25,546 BaseClientAuditController DEBUG   got result ConnectionAuditResult(signed1(txjsonrpc-pyserver, txjsonrpc-test-ca)[tmpavRfvK-cert.pem], connected, got 17 octets in 0.0s)
+2012-06-25 12:28:25,831 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:25,831 ClientServerSessionHandler DEBUG   will use profile 5 to handle connection 127.0.0.1 [('127.0.0.1', 51640)->('127.0.0.1', 8443)]
+2012-06-25 12:28:25,832 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51640)->('127.0.0.1', 8443)] with profile signed1(txjsonrpc-pyserver, txjsonrpc-test-ca)[tmpULFmTL-cert.pem]
+2012-06-25 12:28:25,870 SSLServerHandler DEBUG   SSL connection accepted, version TLSv1, cipher AES256-SHA-256
+2012-06-25 12:28:25,871 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51640)->('127.0.0.1', 8443)] using signed1(txjsonrpc-pyserver, txjsonrpc-test-ca)[tmpULFmTL-cert.pem] (5/15) resulted in ConnectionAuditResult(signed1(txjsonrpc-pyserver, txjsonrpc-test-ca)[tmpULFmTL-cert.pem], connected, got 17 octets in 0.0s)
+2012-06-25 12:28:25,879 BaseClientAuditController DEBUG   got result ConnectionAuditResult(signed1(txjsonrpc-pyserver, txjsonrpc-test-ca)[tmpULFmTL-cert.pem], connected, got 17 octets in 0.0s)
+2012-06-25 12:28:26,168 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:26,168 ClientServerSessionHandler DEBUG   will use profile 6 to handle connection 127.0.0.1 [('127.0.0.1', 51641)->('127.0.0.1', 8443)]
+2012-06-25 12:28:26,169 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51641)->('127.0.0.1', 8443)] with profile signed2(www.example.com, ca-none, txjsonrpc-test-ca)[tmpsoh_IO-cert.pem]
+2012-06-25 12:28:26,172 SSLServerHandler DEBUG   SSL accept failed: tlsv1 alert unknown ca
+2012-06-25 12:28:26,172 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51641)->('127.0.0.1', 8443)] using signed2(www.example.com, ca-none, txjsonrpc-test-ca)[tmpsoh_IO-cert.pem] (6/15) resulted in ConnectionAuditResult(signed2(www.example.com, ca-none, txjsonrpc-test-ca)[tmpsoh_IO-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:26,180 BaseClientAuditController DEBUG   got result ConnectionAuditResult(signed2(www.example.com, ca-none, txjsonrpc-test-ca)[tmpsoh_IO-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:26,472 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:26,472 ClientServerSessionHandler DEBUG   will use profile 7 to handle connection 127.0.0.1 [('127.0.0.1', 51642)->('127.0.0.1', 8443)]
+2012-06-25 12:28:26,474 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51642)->('127.0.0.1', 8443)] with profile signed2(www.example.com, ca-false, txjsonrpc-test-ca)[tmpx8x7so-cert.pem]
+2012-06-25 12:28:26,476 SSLServerHandler DEBUG   SSL accept failed: tlsv1 alert unknown ca
+2012-06-25 12:28:26,477 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51642)->('127.0.0.1', 8443)] using signed2(www.example.com, ca-false, txjsonrpc-test-ca)[tmpx8x7so-cert.pem] (7/15) resulted in ConnectionAuditResult(signed2(www.example.com, ca-false, txjsonrpc-test-ca)[tmpx8x7so-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:26,481 BaseClientAuditController DEBUG   got result ConnectionAuditResult(signed2(www.example.com, ca-false, txjsonrpc-test-ca)[tmpx8x7so-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:26,764 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:26,765 ClientServerSessionHandler DEBUG   will use profile 8 to handle connection 127.0.0.1 [('127.0.0.1', 51643)->('127.0.0.1', 8443)]
+2012-06-25 12:28:26,765 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51643)->('127.0.0.1', 8443)] with profile signed2(www.example.com, ca-true, txjsonrpc-test-ca)[tmpkJ0OAj-cert.pem]
+2012-06-25 12:28:26,773 SSLServerHandler DEBUG   SSL connection accepted, version TLSv1, cipher AES256-SHA-256
+2012-06-25 12:28:26,775 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51643)->('127.0.0.1', 8443)] using signed2(www.example.com, ca-true, txjsonrpc-test-ca)[tmpkJ0OAj-cert.pem] (8/15) resulted in ConnectionAuditResult(signed2(www.example.com, ca-true, txjsonrpc-test-ca)[tmpkJ0OAj-cert.pem], connected, got 17 octets in 0.0s)
+2012-06-25 12:28:26,781 BaseClientAuditController DEBUG   got result ConnectionAuditResult(signed2(www.example.com, ca-true, txjsonrpc-test-ca)[tmpkJ0OAj-cert.pem], connected, got 17 octets in 0.0s)
+2012-06-25 12:28:27,077 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:27,078 ClientServerSessionHandler DEBUG   will use profile 9 to handle connection 127.0.0.1 [('127.0.0.1', 51644)->('127.0.0.1', 8443)]
+2012-06-25 12:28:27,079 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51644)->('127.0.0.1', 8443)] with profile signed2(txjsonrpc-pyserver, ca-none, txjsonrpc-test-ca)[tmpVRyg08-cert.pem]
+2012-06-25 12:28:27,082 SSLServerHandler DEBUG   SSL accept failed: tlsv1 alert unknown ca
+2012-06-25 12:28:27,082 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51644)->('127.0.0.1', 8443)] using signed2(txjsonrpc-pyserver, ca-none, txjsonrpc-test-ca)[tmpVRyg08-cert.pem] (9/15) resulted in ConnectionAuditResult(signed2(txjsonrpc-pyserver, ca-none, txjsonrpc-test-ca)[tmpVRyg08-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:27,082 BaseClientAuditController DEBUG   got result ConnectionAuditResult(signed2(txjsonrpc-pyserver, ca-none, txjsonrpc-test-ca)[tmpVRyg08-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:27,377 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:27,377 ClientServerSessionHandler DEBUG   will use profile 10 to handle connection 127.0.0.1 [('127.0.0.1', 51645)->('127.0.0.1', 8443)]
+2012-06-25 12:28:27,378 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51645)->('127.0.0.1', 8443)] with profile signed2(txjsonrpc-pyserver, ca-false, txjsonrpc-test-ca)[tmpT_tWPy-cert.pem]
+2012-06-25 12:28:27,381 SSLServerHandler DEBUG   SSL accept failed: tlsv1 alert unknown ca
+2012-06-25 12:28:27,381 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51645)->('127.0.0.1', 8443)] using signed2(txjsonrpc-pyserver, ca-false, txjsonrpc-test-ca)[tmpT_tWPy-cert.pem] (10/15) resulted in ConnectionAuditResult(signed2(txjsonrpc-pyserver, ca-false, txjsonrpc-test-ca)[tmpT_tWPy-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:27,383 BaseClientAuditController DEBUG   got result ConnectionAuditResult(signed2(txjsonrpc-pyserver, ca-false, txjsonrpc-test-ca)[tmpT_tWPy-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:27,680 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:27,681 ClientServerSessionHandler DEBUG   will use profile 11 to handle connection 127.0.0.1 [('127.0.0.1', 51646)->('127.0.0.1', 8443)]
+2012-06-25 12:28:27,682 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51646)->('127.0.0.1', 8443)] with profile signed2(txjsonrpc-pyserver, ca-true, txjsonrpc-test-ca)[tmpoNMW9R-cert.pem]
+2012-06-25 12:28:27,690 SSLServerHandler DEBUG   SSL connection accepted, version TLSv1, cipher AES256-SHA-256
+2012-06-25 12:28:27,692 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51646)->('127.0.0.1', 8443)] using signed2(txjsonrpc-pyserver, ca-true, txjsonrpc-test-ca)[tmpoNMW9R-cert.pem] (11/15) resulted in ConnectionAuditResult(signed2(txjsonrpc-pyserver, ca-true, txjsonrpc-test-ca)[tmpoNMW9R-cert.pem], connected, got 17 octets in 0.0s)
+2012-06-25 12:28:27,700 BaseClientAuditController DEBUG   got result ConnectionAuditResult(signed2(txjsonrpc-pyserver, ca-true, txjsonrpc-test-ca)[tmpoNMW9R-cert.pem], connected, got 17 octets in 0.0s)
+2012-06-25 12:28:27,992 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:27,992 ClientServerSessionHandler DEBUG   will use profile 12 to handle connection 127.0.0.1 [('127.0.0.1', 51647)->('127.0.0.1', 8443)]
+2012-06-25 12:28:27,993 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51647)->('127.0.0.1', 8443)] with profile signed2(txjsonrpc-pyserver, ca-none, txjsonrpc-test-ca)[tmpQDD2b4-cert.pem]
+2012-06-25 12:28:27,996 SSLServerHandler DEBUG   SSL accept failed: tlsv1 alert unknown ca
+2012-06-25 12:28:27,996 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51647)->('127.0.0.1', 8443)] using signed2(txjsonrpc-pyserver, ca-none, txjsonrpc-test-ca)[tmpQDD2b4-cert.pem] (12/15) resulted in ConnectionAuditResult(signed2(txjsonrpc-pyserver, ca-none, txjsonrpc-test-ca)[tmpQDD2b4-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:28,001 BaseClientAuditController DEBUG   got result ConnectionAuditResult(signed2(txjsonrpc-pyserver, ca-none, txjsonrpc-test-ca)[tmpQDD2b4-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:28,290 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:28,290 ClientServerSessionHandler DEBUG   will use profile 13 to handle connection 127.0.0.1 [('127.0.0.1', 51648)->('127.0.0.1', 8443)]
+2012-06-25 12:28:28,291 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51648)->('127.0.0.1', 8443)] with profile signed2(txjsonrpc-pyserver, ca-false, txjsonrpc-test-ca)[tmpDtYYVp-cert.pem]
+2012-06-25 12:28:28,294 SSLServerHandler DEBUG   SSL accept failed: tlsv1 alert unknown ca
+2012-06-25 12:28:28,294 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51648)->('127.0.0.1', 8443)] using signed2(txjsonrpc-pyserver, ca-false, txjsonrpc-test-ca)[tmpDtYYVp-cert.pem] (13/15) resulted in ConnectionAuditResult(signed2(txjsonrpc-pyserver, ca-false, txjsonrpc-test-ca)[tmpDtYYVp-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:28,301 BaseClientAuditController DEBUG   got result ConnectionAuditResult(signed2(txjsonrpc-pyserver, ca-false, txjsonrpc-test-ca)[tmpDtYYVp-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:28,596 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:28,596 ClientServerSessionHandler DEBUG   will use profile 14 to handle connection 127.0.0.1 [('127.0.0.1', 51649)->('127.0.0.1', 8443)]
+2012-06-25 12:28:28,597 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 51649)->('127.0.0.1', 8443)] with profile signed2(txjsonrpc-pyserver, ca-true, txjsonrpc-test-ca)[tmpdhs8mY-cert.pem]
+2012-06-25 12:28:28,599 SSLServerHandler DEBUG   SSL accept failed: tlsv1 alert unknown ca
+2012-06-25 12:28:28,600 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 51649)->('127.0.0.1', 8443)] using signed2(txjsonrpc-pyserver, ca-true, txjsonrpc-test-ca)[tmpdhs8mY-cert.pem] (14/15) resulted in ConnectionAuditResult(signed2(txjsonrpc-pyserver, ca-true, txjsonrpc-test-ca)[tmpdhs8mY-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:28,600 ClientServerSessionHandler DEBUG   last profile for connection 127.0.0.1 [('127.0.0.1', 51649)->('127.0.0.1', 8443)]
+2012-06-25 12:28:28,602 BaseClientAuditController DEBUG   got result ConnectionAuditResult(signed2(txjsonrpc-pyserver, ca-true, txjsonrpc-test-ca)[tmpdhs8mY-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 12:28:28,603 BaseClientAuditController DEBUG   got result <sslcaudit.core.ConnectionAuditEvent.SessionEndResult object at 0x2ea4590>
+2012-06-25 12:28:28,892 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 12:28:28,892 ClientServerSessionHandler DEBUG   no unused profiles for connection 127.0.0.1 [('127.0.0.1', 51650)->('127.0.0.1', 8443)], invoking the posttest handler
+2012-06-25 12:28:28,892 BaseClientAuditController DEBUG   exited main loop in run()

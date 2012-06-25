@@ -1,0 +1,36 @@
+2012-06-25 11:46:42,944 BaseClientAuditController DEBUG   dumping options
+2012-06-25 11:46:42,944 BaseClientAuditController DEBUG   	self_test = 0
+2012-06-25 11:46:42,944 BaseClientAuditController DEBUG   	nclients = 1
+2012-06-25 11:46:42,944 BaseClientAuditController DEBUG   	user_ca_cert_file = None
+2012-06-25 11:46:42,944 BaseClientAuditController DEBUG   	user_ca_key_file = None
+2012-06-25 11:46:42,944 BaseClientAuditController DEBUG   	gui = False
+2012-06-25 11:46:42,945 BaseClientAuditController DEBUG   	no_self_signed = False
+2012-06-25 11:46:42,945 BaseClientAuditController DEBUG   	modules = sslcert
+2012-06-25 11:46:42,945 BaseClientAuditController DEBUG   	quiet = False
+2012-06-25 11:46:42,945 BaseClientAuditController DEBUG   	server = None
+2012-06-25 11:46:42,945 BaseClientAuditController DEBUG   	debug_level = 0
+2012-06-25 11:46:42,945 BaseClientAuditController DEBUG   	no_default_cn = False
+2012-06-25 11:46:42,945 BaseClientAuditController DEBUG   	no_user_cert_signed = False
+2012-06-25 11:46:42,945 BaseClientAuditController DEBUG   	user_cert_file = None
+2012-06-25 11:46:42,945 BaseClientAuditController DEBUG   	test_name = None
+2012-06-25 11:46:42,945 BaseClientAuditController DEBUG   	user_key_file = None
+2012-06-25 11:46:42,945 BaseClientAuditController DEBUG   	user_cn = None
+2012-06-25 11:46:42,946 BaseClientAuditController DEBUG   	listen_on = ('127.0.0.1', 7443)
+2012-06-25 11:46:42,946 BaseClientAuditController DEBUG   	protocols = None
+2012-06-25 11:46:42,946 BaseClientAuditController DEBUG   end of options dump
+2012-06-25 11:46:42,946 BaseClientAuditController INFO   number of profile factories: 1
+2012-06-25 11:46:42,946 BaseClientAuditController INFO   profile factory: SSLCert (1 profiles)
+2012-06-25 11:46:42,946 SSLCAuditCLI INFO   filebag location: sslcaudit.0
+2012-06-25 11:46:42,947 ClientAuditorTCPServer INFO   listen_on: ('127.0.0.1', 7443)
+2012-06-25 11:46:42,947 BaseClientAuditController DEBUG   entering main loop in run()
+2012-06-25 11:46:46,994 ClientAuditorTCPServer DEBUG   get_original_dst() has thrown an exception: [Errno 92] Protocol not available
+2012-06-25 11:46:46,994 ClientAuditorTCPServer DEBUG   new session [id 127.0.0.1]
+2012-06-25 11:46:46,994 ClientServerSessionHandler DEBUG   will use profile 0 to handle connection 127.0.0.1 [('127.0.0.1', 34074)->('127.0.0.1', 7443)]
+2012-06-25 11:46:46,996 SSLServerHandler DEBUG   trying to accept SSL connection 127.0.0.1 [('127.0.0.1', 34074)->('127.0.0.1', 7443)] with profile selfsigned(www.example.com)[/home/abb/dvp/txjsonrpc/sslcaudit.0/tmpWMgLmd-cert.pem]
+2012-06-25 11:46:46,998 SSLServerHandler DEBUG   SSL accept failed: tlsv1 alert unknown ca
+2012-06-25 11:46:46,999 ClientServerSessionHandler DEBUG   handling connection 127.0.0.1 [('127.0.0.1', 34074)->('127.0.0.1', 7443)] using selfsigned(www.example.com)[/home/abb/dvp/txjsonrpc/sslcaudit.0/tmpWMgLmd-cert.pem] (0/1) resulted in ConnectionAuditResult(selfsigned(www.example.com)[/home/abb/dvp/txjsonrpc/sslcaudit.0/tmpWMgLmd-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 11:46:46,999 ClientServerSessionHandler DEBUG   last profile for connection 127.0.0.1 [('127.0.0.1', 34074)->('127.0.0.1', 7443)]
+2012-06-25 11:46:47,019 BaseClientAuditController DEBUG   got result <sslcaudit.core.ConnectionAuditEvent.SessionStartEvent object at 0x1039b50>
+2012-06-25 11:46:47,019 BaseClientAuditController DEBUG   got result ConnectionAuditResult(selfsigned(www.example.com)[/home/abb/dvp/txjsonrpc/sslcaudit.0/tmpWMgLmd-cert.pem], tlsv1 alert unknown ca)
+2012-06-25 11:46:47,019 BaseClientAuditController DEBUG   got result <sslcaudit.core.ConnectionAuditEvent.SessionEndResult object at 0x1039bd0>
+2012-06-25 11:46:47,495 BaseClientAuditController DEBUG   exited main loop in run()

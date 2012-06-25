@@ -1,0 +1,68 @@
+=======
+Changes
+=======
+
+txJSON-RPC 0.3.1
+----------------
+
+* Fixed a setup.py bug in the source distribution.
+
+* Removed web2 support (which was breaking txJSON-RPC on modern Twisted
+  releases.)
+
+* Updated json support for modern Python versions.
+
+
+txJSON-RPC 0.3.0
+----------------
+
+* Removed unneeded dependency upon twisted.web2 for the TCP/Netstring JSON-RPC
+  code.
+
+* Updated Netstring JSON-RPC code to allow for setting the MAX_LENGTH
+  attribute.
+
+* Improved documentation.
+
+
+txJSON-RPC 0.2.0
+----------------
+
+* Added a datetime serializer.
+
+
+txJSON-RPC 0.1.0
+----------------
+
+* Bug fix from Moshe Zadka for SimpleParser and long replies.
+
+
+txJSON-RPC 0.0.5
+----------------
+
+* SimpleParser bug fix, improved code abstractions.
+
+
+Twisted-JSONRPC 0.0.4
+---------------------
+
+* Changed name in accord with Twisted community projects recommendations.
+
+
+Twisted-JSONRPC 0.0.3
+---------------------
+
+* Includes support for Twisted JSON-RPC servers/clients over TCP by means of
+  the Netstring protocol.
+
+
+Twisted-JSONRPC 0.0.2
+---------------------
+
+* Includes support for twisted.web2 JSON-RPC servers over HTTP.
+
+
+Twisted-JSONRPC 0.0.1
+---------------------
+
+* Includes support for twisted.web JSON-RPC servers/clients over HTTP.
