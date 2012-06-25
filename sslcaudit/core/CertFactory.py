@@ -228,7 +228,7 @@ class CertFactory(object):
         version = orig_cert.get_version()
 
         v3_exts = []
-        for i in range(orig_cert.get_ext_count()):
-            v3_exts.append(orig_cert.get_ext_at(i))
+        #for i in range(orig_cert.get_ext_count()):
+        #    v3_exts.append(orig_cert.get_ext_at(i))
 
         return self.dododo(bits, subj, not_before, not_after, v3_exts, version)
