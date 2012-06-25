@@ -17,7 +17,7 @@ class TCPConnectionHammer(ConnectionHammer.ConnectionHammer):
     logger = logging.getLogger('TCPConnectionHammer')
 
     def __init__(self, nattempts, delay_before_close=ConnectionHammer.DEFAULT_DELAY_BEFORE_CLOSE):
-        ConnectionHammer.__init__(nattempts, delay_before_close)
+        ConnectionHammer.ConnectionHammer.__init__(self, nattempts, delay_before_close)
 
     def hammer(self, nround):
         # connect to the peer, do something, disconnect

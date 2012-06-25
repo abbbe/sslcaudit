@@ -49,7 +49,11 @@ class TestSSLProtoModule(TestModule.TestModule):
         eccars = []
         for proto in sslproto.get_supported_protocols():
             for cipher in sslproto.ALL_CIPHERS:
-                eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), UNEXPECTED_EOF))
+                if proto == 'sslv2':
+                    expected_error = 'SSL_ERROR_ZERO_RETURN'
+                else:
+                    expected_error = 'SSL_ERROR_SYSCALL'
+                eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_error))
 
         self._main_test(
             ['-m', 'sslproto'],
