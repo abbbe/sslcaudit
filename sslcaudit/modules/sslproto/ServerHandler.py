@@ -9,7 +9,9 @@ from time import time
 from M2Crypto.SSL.timeout import timeout
 from sslcaudit.core.ConnectionAuditEvent import ConnectionAuditResult
 from sslcaudit.modules.base.BaseServerHandler import BaseServerHandler
+from sslcaudit.modules.sslproto import resolve_ssl_code
 from M2Crypto import m2
+from sslcaudit.modules.sslcert.SSLServerHandler import UNEXPECTED_EOF
 
 DEFAULT_SOCK_READ_TIMEOUT = 3.0
 MAX_SIZE = 1024
@@ -28,7 +30,8 @@ class Connected(object):
         return hash(self.__class__)
 
     def __str__(self):
-	return 'Connected()'
+        return 'Connected()'
+
 
 class ServerHandler(BaseServerHandler):
     '''
@@ -44,7 +47,7 @@ class ServerHandler(BaseServerHandler):
 
     def handle(self, conn, profile):
         # create a context, explicitly specify the flavour of the protocol
-        ctx = M2Crypto.SSL.Context(protocol=profile.profile_spec.proto)
+        ctx = M2Crypto.SSL.Context(protocol=profile.profile_spec.proto, weak_crypto=True)
         ctx.load_cert_chain(certchainfile=profile.certnkey.cert_filename, keyfile=profile.certnkey.key_filename)
 
         # set restrict all protocols except the one prescribed by the profile
@@ -70,11 +73,16 @@ class ServerHandler(BaseServerHandler):
             ssl_conn.setup_ssl()
             ssl_conn_res = ssl_conn.accept_ssl()
             if ssl_conn_res == 1:
-                self.logger.debug('SSL connection accepted')
+                self.logger.debug(
+                    'SSL connection accepted, version %s cipher %s' % (ssl_conn.get_version(), ssl_conn.get_cipher()))
+                if ssl_conn.get_version() == 'SSLv2' and ssl_conn.get_cipher() is None:
+                    # workaround for #46
+                    raise Exception(UNEXPECTED_EOF)
                 return ConnectionAuditResult(conn, profile, Connected())
             else:
-                self.logger.debug('SSL handshake failed: %s', ssl_conn.ssl_get_error(ssl_conn_res))
                 res = ssl_conn.ssl_get_error(ssl_conn_res)
+                res = resolve_ssl_code(res)
+                self.logger.debug('SSL handshake failed: %s', res)
                 return ConnectionAuditResult(conn, profile, res)
 
         except Exception as ex:

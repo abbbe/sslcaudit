@@ -15,7 +15,7 @@ from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
 from sslcaudit.test.TestConfig import *
 from test import TestModule
 from test.TestModule import ECCAR, mk_sslcaudit_argv
-from sslcaudit.modules.sslproto import PROTOCOLS, CIPHERS, EXPORT_CIPHER
+from sslcaudit.modules import sslproto
 
 LOCALHOST = 'localhost'
 HAMMER_HELLO = 'hello'
@@ -34,8 +34,8 @@ class TestSSLProtoModule(TestModule.TestModule):
     def test_plain_tcp_client(self):
         # Plain TCP client causes unexpected UNEXPECTED_EOF.
         eccars = []
-        for proto in PROTOCOLS:
-            for cipher in CIPHERS:
+        for proto in sslproto.get_supported_protocols():
+            for cipher in sslproto.ALL_CIPHERS:
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), UNEXPECTED_EOF))
 
         self._main_test(
@@ -44,15 +44,33 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
+    def test_plain_tcp_client_timeout(self):
+        # Plain TCP client causes unexpected UNEXPECTED_EOF.
+        eccars = []
+        for proto in sslproto.get_supported_protocols():
+            for cipher in sslproto.ALL_CIPHERS:
+                if proto == 'sslv2':
+                    expected_error = 'SSL_ERROR_ZERO_RETURN'
+                else:
+                    expected_error = 'SSL_ERROR_SYSCALL'
+                eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_error))
+
+        self._main_test(
+            ['-m', 'sslproto'],
+            TCPConnectionHammer(len(eccars), delay_before_close=30),
+            eccars
+        )
+
     def test_curl_rejects_sslv2_and_export_ciphers(self):
         # curl (and any other proper SSL client for that purpose) is expected to reject SSLv2 and weak ciphers
         eccars = []
         there_are_export_ciphers = False
-        for proto in PROTOCOLS:
-            for cipher in CIPHERS:
+        protos = sslproto.get_supported_protocols()
+        for proto in protos:
+            for cipher in sslproto.ALL_CIPHERS:
                 if proto == 'sslv2':
                     expected_res = ALERT_NON_SSLV2_INITIAL_PACKET
-                elif cipher == EXPORT_CIPHER:
+                elif cipher == sslproto.EXPORT_CIPHER:
                     # we expect curl to refuse connecting to server offering an export-grade ciphers
                     expected_res = ALERT_NO_SHARED_CIPHER
                     there_are_export_ciphers = True
@@ -72,18 +90,29 @@ class TestSSLProtoModule(TestModule.TestModule):
 
     def test_opensssl_accepts_all_ciphers(self):
         # openssl client is expected to connect to anything
-        # XXX in practice it fails to connect to export ciphers, not clear why
-        eccars = []
-        for proto in PROTOCOLS:
-            for cipher in CIPHERS:
+        for proto in sslproto.get_supported_protocols():
+            self._test_opensssl_accepts_all_ciphers_for_proto(proto)
+
+    def _test_opensssl_accepts_all_ciphers_for_proto(self, proto):
+            eccars = []
+            for cipher in sslproto.ALL_CIPHERS:
                 expected_res = Connected()
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
 
-        self._main_test(
-            ['-m', 'sslproto'],
-            OpenSSLHammer(len(eccars)),
-            eccars
-        )
+            if proto == 'sslv2':
+                openssl_args = '-ssl2'
+            elif proto == 'sslv3':
+                openssl_args = '-ssl3'
+            elif proto == 'tlsv1':
+                openssl_args = '-tls1'
+            else:
+                raise ValueError()
+
+            self._main_test(
+                ['-m', 'sslproto', '--protocols', proto],
+                OpenSSLHammer(len(eccars), [openssl_args]),
+                eccars
+            )
 
 if __name__ == '__main__':
     TestModule.init_logging()

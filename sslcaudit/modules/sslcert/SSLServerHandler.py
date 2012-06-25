@@ -9,6 +9,7 @@ from time import time
 from M2Crypto.SSL.timeout import timeout
 from sslcaudit.core.ConnectionAuditEvent import ConnectionAuditResult
 from sslcaudit.modules.base.BaseServerHandler import BaseServerHandler
+from sslcaudit.modules.sslproto import resolve_ssl_code
 
 DEFAULT_SOCK_READ_TIMEOUT = 3.0
 MAX_SIZE = 1024
@@ -100,12 +101,18 @@ class SSLServerHandler(BaseServerHandler):
             ssl_conn.set_socket_read_timeout(timeout(self.sock_read_timeout))
             ssl_conn.setup_ssl()
             ssl_conn_res = ssl_conn.accept_ssl()
-            if ssl_conn_res == 1:
-                self.logger.debug('SSL connection accepted')
-            else:
-                self.logger.debug('SSL handshake failed: %s', ssl_conn.ssl_get_error(ssl_conn_res))
+
+            if ssl_conn_res != 1:
                 res = ssl_conn.ssl_get_error(ssl_conn_res)
+                res = resolve_ssl_code(res)
+                self.logger.debug('SSL handshake failed: %s', res)
                 return ConnectionAuditResult(conn, profile, res)
+
+            self.logger.debug(
+                'SSL connection accepted, version %s, cipher %s' % (ssl_conn.get_version(), ssl_conn.get_cipher()))
+            if ssl_conn.get_version() == 'SSLv2' and ssl_conn.get_cipher() is None:
+                ## workaround for #46
+                raise Exception(UNEXPECTED_EOF)
 
             # try to read something from the client
             start_time = time()
@@ -122,7 +129,6 @@ class SSLServerHandler(BaseServerHandler):
                     if dt < self.sock_read_timeout:
                         res = ConnectedGotEOFBeforeTimeout(dt)
                     else:
-
                         res = ConnectedReadTimeout(dt)
                 else:
                     # got data
