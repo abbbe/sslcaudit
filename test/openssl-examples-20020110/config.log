@@ -1,0 +1,37 @@
+This file contains any messages produced by compilers while
+running configure, to aid debugging if configure makes a mistake.
+
+configure:535: checking for gcc
+configure:648: checking whether the C compiler (gcc  ) works
+configure:664: gcc -o conftest    conftest.c  1>&5
+configure:690: checking whether the C compiler (gcc  ) is a cross-compiler
+configure:695: checking whether we are using GNU C
+configure:704: gcc -E conftest.c
+configure:723: checking whether gcc accepts -g
+configure:755: checking whether make sets ${MAKE}
+configure:785: checking for pow in -lm
+configure:804: gcc -o conftest -g -O2   conftest.c -lm   1>&5
+configure:797:6: warning: conflicting types for built-in function 'pow' [enabled by default]
+configure:867: checking for OpenSSL include files
+configure:885: checking for OpenSSL libraries
+configure:911: gcc -o conftest -g -O2  -L/usr/lib/x86_64-linux-gnu  conftest.c -lssl -lcrypto -lm  1>&5
+configure:933: gcc -o conftest -g -O2  -L/usr/lib/x86_64-linux-gnu  conftest.c -lssl -lcrypto -lm  1>&5
+configure:967: checking how to run the C preprocessor
+configure:988: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1047: checking for ANSI C header files
+configure:1060: gcc -E  conftest.c >/dev/null 2>conftest.out
+configure:1127: gcc -o conftest -g -O2  -L/usr/lib/x86_64-linux-gnu  conftest.c -lssl -lcrypto -lm  1>&5
+configure: In function 'main':
+configure:1122:67: warning: incompatible implicit declaration of built-in function 'exit' [enabled by default]
+configure:1152: checking for 8-bit clean memcmp
+configure:1170: gcc -o conftest -g -O2  -L/usr/lib/x86_64-linux-gnu  conftest.c -lssl -lcrypto -lm  1>&5
+configure: In function 'main':
+configure:1165:3: warning: incompatible implicit declaration of built-in function 'exit' [enabled by default]
+configure:1188: checking return type of signal handlers
+configure:1210: gcc -c -g -O2  conftest.c 1>&5
+configure:1229: checking for vprintf
+configure:1257: gcc -o conftest -g -O2  -L/usr/lib/x86_64-linux-gnu  conftest.c -lssl -lcrypto -lm  1>&5
+configure:1241:6: warning: conflicting types for built-in function 'vprintf' [enabled by default]
+configure:1336: checking for strdup
+configure:1364: gcc -o conftest -g -O2  -L/usr/lib/x86_64-linux-gnu  conftest.c -lssl -lcrypto -lm  1>&5
+configure:1348:6: warning: conflicting types for built-in function 'strdup' [enabled by default]
