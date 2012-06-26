@@ -1,0 +1,6 @@
+*.o
+sclient
+wclient
+wclient2
+wserver
+wserver2
