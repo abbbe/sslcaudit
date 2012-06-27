@@ -13,8 +13,9 @@ def main():
     ctx = M2Crypto.SSL.Context(protocol=PROTOCOL, weak_crypto=True)
     ctx.load_cert_chain(certchainfile=CERTFILE, keyfile=KEYFILE)
     ctx.set_options(M2Crypto.m2.SSL_OP_ALL)
-    ctx.set_tmp_rsa(M2Crypto.RSA.gen_key(512, 65537))
-    ctx.set_tmp_dh(DHFILE)
+    ctx.set_tmp_rsa(M2Crypto.RSA.gen_key(512, 65537))     # e.g. openssl s_client -connect localhost:4433 -cipher EXP-RC4-MD5  <- won't work without RSA params (EXP-RC4-MD5 SSLv3 Kx=RSA(512) Au=RSA Enc=RC4(40) Mac=MD5 export)
+    ctx.set_tmp_dh(DHFILE)                                # e.g. openssl s_client -connect localhost:4433 -cipher EXP-EDH-RSA-DES-CBC-SHA  <- won't work without DH params (EXP-EDH-RSA-DES-CBC-SHA SSLv3 Kx=DH(512) Au=RSA Enc=DES(40) Mac=SHA1 export)
+    # still problematic: openssl s_client -connect localhost:4433 -cipher EXP-EDH-DSS-DES-CBC-SHA (EXP-EDH-DSS-DES-CBC-SHA SSLv3 Kx=DH(512) Au=DSS Enc=DES(40) Mac=SHA1 export)
     ctx.set_cipher_list("ALL")
 
     print "[i] Initializing socket ..."
