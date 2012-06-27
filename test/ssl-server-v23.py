@@ -21,6 +21,7 @@ def main():
     print 'ssl handshake ...'
     ssl_conn = M2Crypto.SSL.Connection(ctx=ctx, sock=conn)
     ssl_conn.setup_ssl()
+    ssl_conn.set_accept_state() 
     ssl_conn_res = ssl_conn.accept_ssl()
 
     if ssl_conn_res == 1:
