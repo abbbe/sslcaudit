@@ -10,6 +10,7 @@ from M2Crypto.SSL.timeout import timeout
 from sslcaudit.core.ConnectionAuditEvent import ConnectionAuditResult
 from sslcaudit.modules.base.BaseServerHandler import BaseServerHandler
 from sslcaudit.modules.sslproto import resolve_ssl_code
+from sslcaudit.modules.sslproto import set_ephemeral_params
 
 DEFAULT_SOCK_READ_TIMEOUT = 3.0
 MAX_SIZE = 1024
@@ -91,8 +92,9 @@ class SSLServerHandler(BaseServerHandler):
         self.proto = proto
 
     def handle(self, conn, profile):
-        ctx = M2Crypto.SSL.Context(self.proto)
+        ctx = M2Crypto.SSL.Context(self.proto, weak_crypto=True)
         ctx.load_cert_chain(certchainfile=profile.certnkey.cert_filename, keyfile=profile.certnkey.key_filename)
+        set_ephemeral_params(ctx)
 
         self.logger.debug('trying to accept SSL connection %s with profile %s', conn, profile)
         try:

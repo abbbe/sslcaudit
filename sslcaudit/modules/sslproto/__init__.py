@@ -45,3 +45,10 @@ def resolve_ssl_code(code):
     Resolves SSL codes in a human readable form (e.g. 3 -> 'SSL_ERROR_WANT_WRITE')
     """
     return SSL_CODES.get(code, "UNKNOWN")
+
+def set_ephemeral_params(ctx):
+    """
+    Sets ephemeral params for given context needed by SSL server instances (e.g. EXPORT ciphers)
+    """
+    ctx.set_tmp_rsa(EPHEMERAL_RSA_KEY)
+    ctx.set_tmp_dh(EPHEMERAL_DH_PARAMS)
