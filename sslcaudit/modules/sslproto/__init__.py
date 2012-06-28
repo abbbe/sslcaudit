@@ -11,10 +11,10 @@ EXPORT_CIPHER = 'EXPORT'
 ALL_CIPHERS = ('HIGH', 'MEDIUM', 'LOW', EXPORT_CIPHER)
 
 SSL_CODES = dict(((getattr(M2Crypto.m2, _), _.upper()) for _ in filter(lambda _: _.upper().startswith("SSL_") and isinstance(getattr(M2Crypto.m2, _), int), dir(M2Crypto.m2))))
+IS_SSLv2_SUPPORTED = hasattr(M2Crypto.m2, "sslv2_method") and M2Crypto.m2.ssl_ctx_new(M2Crypto.m2.sslv2_method()) is not None
 
 supported_protocols = None
 error_reported = False
-IS_SSLv2_SUPPORTED = hasattr(M2Crypto.m2, "sslv2_method") and M2Crypto.m2.ssl_ctx_new(M2Crypto.m2.sslv2_method()) is not None
 
 def get_supported_protocols(quiet=False):
     """
