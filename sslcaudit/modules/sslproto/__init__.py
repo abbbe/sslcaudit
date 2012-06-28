@@ -5,6 +5,7 @@
 # ----------------------------------------------------------------------
 import M2Crypto
 import logging
+import os
 
 ALL_PROTOCOLS = ('sslv2', 'sslv3', 'tlsv1')
 EXPORT_CIPHER = 'EXPORT'
@@ -12,6 +13,10 @@ ALL_CIPHERS = ('HIGH', 'MEDIUM', 'LOW', EXPORT_CIPHER)
 
 SSL_CODES = dict(((getattr(M2Crypto.m2, _), _.upper()) for _ in filter(lambda _: _.upper().startswith("SSL_") and isinstance(getattr(M2Crypto.m2, _), int), dir(M2Crypto.m2))))
 IS_SSLv2_SUPPORTED = hasattr(M2Crypto.m2, "sslv2_method") and M2Crypto.m2.ssl_ctx_new(M2Crypto.m2.sslv2_method()) is not None
+
+_ = os.path.dirname(os.path.abspath(__file__))
+EPHEMERAL_RSA_KEY = M2Crypto.RSA.load_key(os.path.join(_, "../../files/rsa512.pem"))  # ctx.set_tmp_rsa(EPHEMERAL_RSA_KEY)
+EPHEMERAL_DH_PARAMS = os.path.join(_, "../../files/dh512.pem")  # ctx.set_tmp_dh(EPHEMERAL_DH_PARAMS)
 
 supported_protocols = None
 error_reported = False
