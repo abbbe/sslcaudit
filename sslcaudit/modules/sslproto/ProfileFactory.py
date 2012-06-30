@@ -11,6 +11,7 @@ from sslcaudit.modules import sslproto
 from sslcaudit.modules.base.BaseProfileFactory import BaseProfileFactory, BaseProfile, BaseProfileSpec
 from sslcaudit.modules.sslproto.ServerHandler import ServerHandler
 from sslcaudit.modules.sslproto import ALL_CIPHERS
+from sslcaudit.modules.sslproto.suites import SUITES
 
 SSLPROTO_CN = 'sslproto'
 sslproto_server_handler = ServerHandler()
@@ -55,13 +56,14 @@ class ProfileFactory(BaseProfileFactory):
         # XXX and the user must be aware they are getting incomplete results
 
         self.init_protocols(options.protocols)
-        self.ciphers = ALL_CIPHERS
 
         for proto in self.protocols:
-            for cipher in self.ciphers:
+            for cipher in ALL_CIPHERS if not options.iterate_suites else SUITES[proto]:
                 # XXX There should be an option to enable per-cipher test (like sslaudit does with servers).
                 profile = SSLServerProtoProfile(SSLServerProtoSpec(proto, cipher), certnkey)
                 self.add_profile(profile)
+
+        self.ciphers = ALL_CIPHERS if not options.iterate_suites else sorted(set(reduce(lambda x, y: x + y, SUITES.values(), ())))
 
     def init_protocols(self, user_specified_protocols_str):
         """
