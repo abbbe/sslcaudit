@@ -61,8 +61,8 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
-    def test_curl_rejects_sslv2_and_export_ciphers(self):
-        # curl (and any other proper SSL client for that purpose) is expected to reject SSLv2 and weak ciphers
+    def test_curl_works_with_sslv2_and_export_ciphers(self):
+        # curl is expected to work with SSLv2 and weak ciphers
         eccars = []
         there_are_export_ciphers = False
         protos = sslproto.get_supported_protocols()
@@ -77,7 +77,7 @@ class TestSSLProtoModule(TestModule.TestModule):
                     expected_res = ALERT_SSLV3_BAD_CERTIFICATE
                 else:
                     expected_res = ALERT_UNKNOWN_CA
-                    
+
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
         self.assertTrue(there_are_export_ciphers)
         self._main_test(
