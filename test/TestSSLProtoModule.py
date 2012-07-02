@@ -68,18 +68,16 @@ class TestSSLProtoModule(TestModule.TestModule):
         protos = sslproto.get_supported_protocols()
         for proto in protos:
             for cipher in sslproto.ALL_CIPHERS:
+                if cipher == sslproto.EXPORT_CIPHER:
+                    there_are_export_ciphers = True
+
                 if proto == 'sslv2':
                     expected_res = ALERT_NON_SSLV2_INITIAL_PACKET
-                elif cipher == sslproto.EXPORT_CIPHER:
-                    # we expect curl to refuse connecting to server offering an export-grade ciphers
-                    expected_res = ALERT_NO_SHARED_CIPHER
-                    there_are_export_ciphers = True
+                elif proto == 'sslv3':
+                    expected_res = ALERT_SSLV3_BAD_CERTIFICATE
                 else:
-                    # we expect curl to establish the connection to a server offering non-export cipher
-                    if proto == 'sslv3':
-                        expected_res = ALERT_SSLV3_BAD_CERTIFICATE
-                    else:
-                        expected_res = ALERT_UNKNOWN_CA
+                    expected_res = ALERT_UNKNOWN_CA
+                    
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
         self.assertTrue(there_are_export_ciphers)
         self._main_test(
