@@ -8,6 +8,7 @@ import logging, unittest
 
 from sslcaudit.modules.sslcert.ProfileFactory import DEFAULT_CN, SSLProfileSpec_SelfSigned, SSLProfileSpec_IMCA_Signed, SSLProfileSpec_Signed, IM_CA_FALSE_CN, IM_CA_TRUE_CN, IM_CA_NONE_CN, SSLProfileSpec_UserSupplied
 from sslcaudit.modules.sslcert.SSLServerHandler import     UNEXPECTED_EOF, ALERT_UNKNOWN_CA, ConnectedGotEOFBeforeTimeout, ConnectedGotRequest
+from sslcaudit.modules.sslproto.suites import SUITES
 from sslcaudit.modules.sslproto.ProfileFactory import SSLServerProtoSpec
 from sslcaudit.modules.sslproto.ServerHandler import Connected
 from sslcaudit.test.ExternalCommandHammer import CurlHammer, OpenSSLHammer
@@ -29,7 +30,6 @@ class TestSSLProtoModule(TestModule.TestModule):
     Unittests for SSLCert.
     '''
     logger = logging.getLogger('TestSSLProtoModule')
-
 
     def test_plain_tcp_client(self):
         # Plain TCP client causes unexpected UNEXPECTED_EOF.
@@ -88,14 +88,15 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
-    def test_opensssl_accepts_all_ciphers(self):
-        # openssl client is expected to connect to anything
-        for proto in sslproto.get_supported_protocols():
-            self._test_opensssl_accepts_all_ciphers_for_proto(proto)
+    #def test_openssl_accepts_all_ciphers(self):
+        ## openssl client is expected to connect to anything
+        #for proto in sslproto.get_supported_protocols():
+            #self._test_openssl_accepts_all_ciphers_for_proto(proto)
 
-    def _test_opensssl_accepts_all_ciphers_for_proto(self, proto):
+    def _test_openssl_accepts_all_ciphers_for_proto(self, proto):
             eccars = []
-            for cipher in sslproto.ALL_CIPHERS:
+            #for cipher in sslproto.ALL_CIPHERS:
+            for cipher in SUITES[proto]:
                 expected_res = Connected()
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
 
@@ -113,6 +114,14 @@ class TestSSLProtoModule(TestModule.TestModule):
                 OpenSSLHammer(len(eccars), [openssl_args]),
                 eccars
             )
+
+def create_more_tests():
+    def _(self, proto):
+        self._test_openssl_accepts_all_ciphers_for_proto(proto)
+    for proto in sslproto.get_supported_protocols():
+        setattr(TestSSLProtoModule, "test_openssl_accepts_%s" % proto, lambda self: _(self, proto))
+
+create_more_tests()
 
 if __name__ == '__main__':
     TestModule.init_logging()
