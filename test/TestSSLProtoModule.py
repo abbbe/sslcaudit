@@ -95,8 +95,7 @@ class TestSSLProtoModule(TestModule.TestModule):
 
     def _test_openssl_accepts_all_ciphers_for_proto(self, proto):
             eccars = []
-            #for cipher in sslproto.ALL_CIPHERS:
-            for cipher in SUITES[proto]:
+            for cipher in sslproto.ALL_CIPHERS:
                 expected_res = Connected()
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
 
@@ -119,7 +118,7 @@ def create_more_tests():
     def _(self, proto):
         self._test_openssl_accepts_all_ciphers_for_proto(proto)
     for proto in sslproto.get_supported_protocols():
-        setattr(TestSSLProtoModule, "test_openssl_accepts_%s" % proto, lambda self: _(self, proto))
+        setattr(TestSSLProtoModule, "test_openssl_accepts_all_ciphers_for_proto_%s" % proto, lambda self: _(self, proto))
 
 create_more_tests()
 
