@@ -9,10 +9,10 @@ from sslcaudit.test.Hammer import Hammer
 DEFAULT_DELAY_BEFORE_CLOSE = 1
 
 class ConnectionHammer(Hammer):
-    def __init__(self, nattempts):
+    def __init__(self, nattempts, delay_before_close = DEFAULT_DELAY_BEFORE_CLOSE):
         Hammer.__init__(self, nattempts)
         self.peer = None
-        self.delay_before_close = DEFAULT_DELAY_BEFORE_CLOSE
+        self.delay_before_close = delay_before_close
 
     def set_peer(self, peer):
         self.peer = peer

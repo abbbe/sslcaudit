@@ -8,6 +8,7 @@ import logging, unittest
 
 from sslcaudit.modules.sslcert.ProfileFactory import DEFAULT_CN, SSLProfileSpec_SelfSigned, SSLProfileSpec_IMCA_Signed, SSLProfileSpec_Signed, IM_CA_FALSE_CN, IM_CA_TRUE_CN, IM_CA_NONE_CN, SSLProfileSpec_UserSupplied
 from sslcaudit.modules.sslcert.SSLServerHandler import     UNEXPECTED_EOF, ALERT_UNKNOWN_CA, ConnectedGotEOFBeforeTimeout, ConnectedGotRequest
+from sslcaudit.modules.sslproto.suites import SUITES
 from sslcaudit.modules.sslproto.ProfileFactory import SSLServerProtoSpec
 from sslcaudit.modules.sslproto.ServerHandler import Connected
 from sslcaudit.test.ExternalCommandHammer import CurlHammer, OpenSSLHammer
@@ -15,12 +16,14 @@ from sslcaudit.test.TCPConnectionHammer import TCPConnectionHammer
 from sslcaudit.test.TestConfig import *
 from test import TestModule
 from test.TestModule import ECCAR, mk_sslcaudit_argv
-from sslcaudit.modules.sslproto import PROTOCOLS, CIPHERS
+from sslcaudit.modules import sslproto
 
 LOCALHOST = 'localhost'
 HAMMER_HELLO = 'hello'
 
 ALERT_NO_SHARED_CIPHER = 'no shared cipher'
+ALERT_SSLV3_BAD_CERTIFICATE = 'sslv3 alert bad certificate'
+ALERT_NON_SSLV2_INITIAL_PACKET = 'non sslv2 initial packet'
 
 class TestSSLProtoModule(TestModule.TestModule):
     '''
@@ -28,12 +31,11 @@ class TestSSLProtoModule(TestModule.TestModule):
     '''
     logger = logging.getLogger('TestSSLProtoModule')
 
-
     def test_plain_tcp_client(self):
         # Plain TCP client causes unexpected UNEXPECTED_EOF.
         eccars = []
-        for proto in PROTOCOLS:
-            for cipher in CIPHERS:
+        for proto in sslproto.get_supported_protocols():
+            for cipher in sslproto.ALL_CIPHERS:
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), UNEXPECTED_EOF))
 
         self._main_test(
@@ -42,41 +44,81 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
-    def test_curl_rejects_weak_ciphers(self):
+    def test_plain_tcp_client_timeout(self):
+        # Plain TCP client causes unexpected UNEXPECTED_EOF.
+        eccars = []
+        for proto in sslproto.get_supported_protocols():
+            for cipher in sslproto.ALL_CIPHERS:
+                if proto == 'sslv2':
+                    expected_error = 'SSL_ERROR_ZERO_RETURN'
+                else:
+                    expected_error = 'SSL_ERROR_SYSCALL'
+                eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_error))
+
+        self._main_test(
+            ['-m', 'sslproto'],
+            TCPConnectionHammer(len(eccars), delay_before_close=30),
+            eccars
+        )
+
+    def test_curl_rejects_sslv2_and_export_ciphers(self):
         # curl (and any other proper SSL client for that purpose) is expected to reject SSLv2 and weak ciphers
         eccars = []
-        for proto in PROTOCOLS:
-            for cipher in CIPHERS:
-                if cipher == 'HIGH' or cipher == 'MEDIUM':
-                    # we expect curl to establish the connection to a server offering a reasonably strong cipher,
-                    # but complain about CA (we didn't bother specifying it)
-                    # XXX in practice curl rejects MEDIUM-grade ciphers, not clear why
-                    expected_res = ALERT_UNKNOWN_CA
-                else:
-                    # we expect curl to refuse connecting to server offering weak ciphers
-                    expected_res = ALERT_NO_SHARED_CIPHER
-                eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
+        there_are_export_ciphers = False
+        protos = sslproto.get_supported_protocols()
+        for proto in protos:
+            for cipher in sslproto.ALL_CIPHERS:
+                if cipher == sslproto.EXPORT_CIPHER:
+                    there_are_export_ciphers = True
 
+                if proto == 'sslv2':
+                    expected_res = ALERT_NON_SSLV2_INITIAL_PACKET
+                elif proto == 'sslv3':
+                    expected_res = ALERT_SSLV3_BAD_CERTIFICATE
+                else:
+                    expected_res = ALERT_UNKNOWN_CA
+                    
+                eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
+        self.assertTrue(there_are_export_ciphers)
         self._main_test(
             ['-m', 'sslproto'],
             CurlHammer(len(eccars)),
             eccars
         )
 
-    def test_opensssl_accepts_all_ciphers(self):
-        # openssl client is expected to connect to anything
-        # XXX in practice it fails to connect to export ciphers, not clear why
-        eccars = []
-        for proto in PROTOCOLS:
-            for cipher in CIPHERS:
+    #def test_openssl_accepts_all_ciphers(self):
+        ## openssl client is expected to connect to anything
+        #for proto in sslproto.get_supported_protocols():
+            #self._test_openssl_accepts_all_ciphers_for_proto(proto)
+
+    def _test_openssl_accepts_all_ciphers_for_proto(self, proto):
+            eccars = []
+            for cipher in sslproto.ALL_CIPHERS:
                 expected_res = Connected()
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
 
-        self._main_test(
-            ['-m', 'sslproto'],
-            OpenSSLHammer(len(eccars)),
-            eccars
-        )
+            if proto == 'sslv2':
+                openssl_args = '-ssl2'
+            elif proto == 'sslv3':
+                openssl_args = '-ssl3'
+            elif proto == 'tlsv1':
+                openssl_args = '-tls1'
+            else:
+                raise ValueError()
+
+            self._main_test(
+                ['-m', 'sslproto', '--protocols', proto],
+                OpenSSLHammer(len(eccars), [openssl_args]),
+                eccars
+            )
+
+def create_more_tests():
+    def _(self, proto):
+        self._test_openssl_accepts_all_ciphers_for_proto(proto)
+    for proto in sslproto.get_supported_protocols():
+        setattr(TestSSLProtoModule, "test_openssl_accepts_all_ciphers_for_proto_%s" % proto, lambda self: _(self, proto))
+
+create_more_tests()
 
 if __name__ == '__main__':
     TestModule.init_logging()

@@ -60,6 +60,11 @@ def parse_options(argv):
     parser.add_option("--no-user-cert-signed", action="store_true", default=False, dest="no_user_cert_signed",
         help="Do not sign server certificates with the user-supplied one.")
 
+    parser.add_option("--iterate-suites", dest="iterate_suites", action="store_true", default=False,
+        help="Iterate through protocol cipher suites.")
+    parser.add_option("--protocols", dest="protocols",
+        help="A comma-separated list of SSL protocols (sslv2, sslv3, tlsv1). If not specified, all protocols are used.")
+
     (options, args) = parser.parse_args(argv)
     if len(args) > 0:
         raise ConfigError("unexpected arguments: %s" % args)

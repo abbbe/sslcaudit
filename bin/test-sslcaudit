@@ -8,6 +8,9 @@
 
 import os, sys, logging
 
+#logging.basicConfig(level = logging.DEBUG)
+logging.basicConfig()
+
 # if the script is launched from sources, make sure it uses modules located in the same place
 base_dir = os.path.join(os.path.dirname(__file__), '..')
 src_dir = os.path.join(base_dir, 'sslcaudit')
@@ -19,11 +22,11 @@ from test.TestFileBag import TestFileBag
 from test.TestCertFactory import TestCertFactory
 from test.TestDummyModule import TestDummyModule
 from test.TestSSLCertModule import TestSSLCertModule
+from test.TestSSLProtoModule import TestSSLProtoModule
 
 if __name__ == '__main__':
-    #logging.basicConfig(level = logging.DEBUG)
-    logging.basicConfig()
     suite = unittest.TestSuite()
-    for ut in [TestFileBag, TestCertFactory, TestDummyModule, TestSSLCertModule]:
+    #for ut in [TestFileBag, TestCertFactory, TestDummyModule, TestSSLCertModule, TestSSLProtoModule]:
+    for ut in [TestSSLProtoModule]:
         suite.addTest(unittest.makeSuite(ut))
     unittest.TextTestRunner(verbosity=2).run(suite)

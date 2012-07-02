@@ -165,7 +165,7 @@ class Cert:
         # signing
         #
 
-        #		self.X509Certificate.sign( pkey=self.PKey, md='sha1' )
+        #        self.X509Certificate.sign( pkey=self.PKey, md='sha1' )
 
         ca_cert = M2Crypto.X509.load_cert('sslcaudit-test-cacert.pem')
         ca_pkey = M2Crypto.EVP.load_key('sslcaudit-test-cakey.pem')

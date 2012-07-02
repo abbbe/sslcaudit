@@ -66,7 +66,7 @@ class CertFactory(object):
         '''
         This function loads the content of the certificate file
         and initializes paths to the certificate and the key.
-	    '''
+        '''
         try:
             cert = X509.load_cert(cert_file)
         except M2Crypto.X509.X509Error as ex:

@@ -3,6 +3,7 @@
 # Released under terms of GPLv3, see COPYING.TXT
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
+import os
 
 import socket
 from M2Crypto import X509
@@ -66,7 +67,7 @@ class SSLServerCertProfile(BaseProfile):
         return sslcert_server_handler
 
     def __str__(self):
-        return "%s[%s]" % (self.profile_spec, self.certnkey.cert_filename)
+        return "%s[%s]" % (self.profile_spec, os.path.basename(self.certnkey.cert_filename))
 
 class ProfileFactory(BaseProfileFactory):
     def __init__(self, file_bag, options, protocol=DEFAULT_PROTO):
