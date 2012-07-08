@@ -6,10 +6,11 @@
 import M2Crypto
 import logging
 import os
+from sslcaudit.modules.sslproto.suites import SUITES
 
 ALL_PROTOCOLS = ('sslv2', 'sslv3', 'tlsv1')
 EXPORT_CIPHER = 'EXPORT'
-ALL_CIPHERS = ('HIGH', 'MEDIUM', 'LOW', EXPORT_CIPHER)
+DEFAULT_CIPHER_SUITES = ('HIGH', 'MEDIUM', 'LOW', EXPORT_CIPHER)
 
 SSL_CODES = dict(((getattr(M2Crypto.m2, _), _.upper()) for _ in filter(lambda _: _.upper().startswith("SSL_") and isinstance(getattr(M2Crypto.m2, _), int), dir(M2Crypto.m2))))
 IS_SSLv2_SUPPORTED = hasattr(M2Crypto.m2, "sslv2_method") and M2Crypto.m2.ssl_ctx_new(M2Crypto.m2.sslv2_method()) is not None
@@ -52,3 +53,9 @@ def set_ephemeral_params(ctx):
     """
     ctx.set_tmp_rsa(EPHEMERAL_RSA_KEY)
     ctx.set_tmp_dh(EPHEMERAL_DH_PARAMS)
+
+
+def get_ciphers(proto):
+    """ Returns a list of individual ciphers supported by given protocol.
+    """
+    return SUITES[proto]

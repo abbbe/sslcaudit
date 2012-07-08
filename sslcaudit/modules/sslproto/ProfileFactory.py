@@ -10,7 +10,7 @@ from sslcaudit.modules import sslproto
 
 from sslcaudit.modules.base.BaseProfileFactory import BaseProfileFactory, BaseProfile, BaseProfileSpec
 from sslcaudit.modules.sslproto.ServerHandler import ServerHandler
-from sslcaudit.modules.sslproto import ALL_CIPHERS
+from sslcaudit.modules.sslproto import DEFAULT_CIPHER_SUITES
 from sslcaudit.modules.sslproto.suites import SUITES
 
 SSLPROTO_CN = 'sslproto'
@@ -50,20 +50,16 @@ class ProfileFactory(BaseProfileFactory):
         certreq_n_keys = cert_factory.mk_certreq_n_keys(SSLPROTO_CN)
         certnkey = cert_factory.sign_cert_req(certreq_n_keys, None)
 
-        # XXX Test protocols separately, see what protocols other tools consider (like sslaudit) and do the same.
-        # XXX OS libraries might lack support some protocol (we can expect SSLv2 is not supported by default, unless
-        # XXX we run very old or specialized distro like BackTrack. Such faults have to be handled gracefully
-        # XXX and the user must be aware they are getting incomplete results
-
         self.init_protocols(options.protocols)
 
         for proto in self.protocols:
-            for cipher in ALL_CIPHERS if not options.iterate_suites else SUITES[proto]:
-                # XXX There should be an option to enable per-cipher test (like sslaudit does with servers).
+            if not options.iterate_suites:
+                ciphers = DEFAULT_CIPHER_SUITES
+            else:
+                ciphers = SUITES[proto]
+            for cipher in ciphers:
                 profile = SSLServerProtoProfile(SSLServerProtoSpec(proto, cipher), certnkey)
                 self.add_profile(profile)
-
-        self.ciphers = ALL_CIPHERS if not options.iterate_suites else sorted(set(reduce(lambda x, y: x + y, SUITES.values(), ())))
 
     def init_protocols(self, user_specified_protocols_str):
         """
@@ -97,6 +93,6 @@ class ProfileFactory(BaseProfileFactory):
             self.protocols = user_specified_protocols
 
     def __str__(self):
-        return 'sslproto.ProfileFactory(protocols="%s", ciphers="%s")' % (
+        return 'sslproto.ProfileFactory(protocols="%s", %d profiles loaded)' % (
             ','.join(self.protocols),
-            ','.join(self.ciphers))
+            len(self.profiles))

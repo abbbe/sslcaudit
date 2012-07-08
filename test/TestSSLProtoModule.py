@@ -4,7 +4,7 @@
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
 
-import logging, unittest
+import logging, unittest, re
 
 from sslcaudit.modules.sslcert.ProfileFactory import DEFAULT_CN, SSLProfileSpec_SelfSigned, SSLProfileSpec_IMCA_Signed, SSLProfileSpec_Signed, IM_CA_FALSE_CN, IM_CA_TRUE_CN, IM_CA_NONE_CN, SSLProfileSpec_UserSupplied
 from sslcaudit.modules.sslcert.SSLServerHandler import     UNEXPECTED_EOF, ALERT_UNKNOWN_CA, ConnectedGotEOFBeforeTimeout, ConnectedGotRequest
@@ -32,7 +32,7 @@ class TestSSLProtoModule(TestModule.TestModule):
         # Plain TCP client causes unexpected UNEXPECTED_EOF.
         eccars = []
         for proto in sslproto.get_supported_protocols():
-            for cipher in sslproto.ALL_CIPHERS:
+            for cipher in sslproto.DEFAULT_CIPHER_SUITES:
                 eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), UNEXPECTED_EOF))
 
         self._main_test(
@@ -45,7 +45,7 @@ class TestSSLProtoModule(TestModule.TestModule):
         # Plain TCP client causes unexpected UNEXPECTED_EOF.
         eccars = []
         for proto in sslproto.get_supported_protocols():
-            for cipher in sslproto.ALL_CIPHERS:
+            for cipher in sslproto.DEFAULT_CIPHER_SUITES:
                 if proto == 'sslv2':
                     expected_error = 'SSL_ERROR_ZERO_RETURN'
                 else:
@@ -64,7 +64,7 @@ class TestSSLProtoModule(TestModule.TestModule):
         there_are_export_ciphers = False
         protos = sslproto.get_supported_protocols()
         for proto in protos:
-            for cipher in sslproto.ALL_CIPHERS:
+            for cipher in sslproto.DEFAULT_CIPHER_SUITES:
                 if cipher == sslproto.EXPORT_CIPHER:
                     there_are_export_ciphers = True
 
@@ -83,9 +83,10 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
-    def _test_openssl_accepts_all_ciphers_for_proto(self, proto):
+    def _test_openssl_accepts_default_ciphers_for_proto(self, proto):
+        print "TRYING PROTO >%s<" % proto
         eccars = []
-        for cipher in sslproto.ALL_CIPHERS:
+        for cipher in sslproto.DEFAULT_CIPHER_SUITES:
             expected_res = Connected()
             eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
 
@@ -104,16 +105,42 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
+    def _test_openssl_accepts_selected_proto_cipher(self, selected_proto, selected_cipher):
+        eccars = []
+        for cipher in sslproto.get_ciphers(selected_proto):
+            #expected_res = Connected()
+            expected_res = ALERT_NO_SHARED_CIPHER
+            eccars.append(ECCAR(SSLServerProtoSpec(selected_proto, cipher), expected_res=expected_res))
+        print "TRYING >%s<" % selected_cipher
+        self._main_test(
+            ['-m', 'sslproto', '--protocols', selected_proto, '--iterate-suites', '-d', '1'],
+            OpenSSLHammer(len(eccars), cipher=selected_cipher),
+            eccars
+        )
 
 def create_per_proto_tests():
     def _(self, proto):
-        self._test_openssl_accepts_all_ciphers_for_proto(proto)
+        self._test_openssl_accepts_default_ciphers_for_proto(proto)
 
     for proto in sslproto.get_supported_protocols():
+        print "PLANNING PROTO >%s<" % proto
         setattr(TestSSLProtoModule, "test_openssl_accepts_all_ciphers_for_proto_%s" % proto,
             lambda self: _(self, proto))
 
+def create_per_cipher_tests():
+    def _(self, proto, cipher):
+        self._test_openssl_accepts_selected_proto_cipher(proto, cipher)
+
+    for proto in sslproto.get_supported_protocols():
+        ciphers = sslproto.get_ciphers(proto)
+        for cipher in ciphers:
+            cipher_slug_name = re.sub('-', '_', cipher)
+            print "PLANNING >%s<" % cipher
+            setattr(TestSSLProtoModule, "test_openssl_accepts_proto_%s_cipher_%s" % (proto, cipher_slug_name),
+                lambda self: _(self, proto, cipher))
+
 create_per_proto_tests()
+#create_per_cipher_tests()
 
 if __name__ == '__main__':
     TestModule.init_logging()
