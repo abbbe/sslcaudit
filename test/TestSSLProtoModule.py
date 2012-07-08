@@ -118,6 +118,7 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
+
 def create_per_proto_tests():
     def _(self, proto):
         self._test_openssl_accepts_default_ciphers_for_proto(proto)
@@ -125,6 +126,7 @@ def create_per_proto_tests():
     for proto in sslproto.get_supported_protocols():
         setattr(TestSSLProtoModule, "test_openssl_accepts_default_ciphers_for_proto_%s" % proto,
             lambda self, proto=proto: _(self, proto))
+
 
 def create_per_cipher_tests():
     def _(self, proto, cipher):
