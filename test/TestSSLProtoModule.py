@@ -18,9 +18,6 @@ from test import TestModule
 from test.TestModule import ECCAR, mk_sslcaudit_argv
 from sslcaudit.modules import sslproto
 
-LOCALHOST = 'localhost'
-HAMMER_HELLO = 'hello'
-
 ALERT_NO_SHARED_CIPHER = 'no shared cipher'
 ALERT_SSLV3_BAD_CERTIFICATE = 'sslv3 alert bad certificate'
 ALERT_NON_SSLV2_INITIAL_PACKET = 'non sslv2 initial packet'
