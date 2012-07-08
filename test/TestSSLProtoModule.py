@@ -86,39 +86,37 @@ class TestSSLProtoModule(TestModule.TestModule):
             eccars
         )
 
-    #def test_openssl_accepts_all_ciphers(self):
-        ## openssl client is expected to connect to anything
-        #for proto in sslproto.get_supported_protocols():
-            #self._test_openssl_accepts_all_ciphers_for_proto(proto)
-
     def _test_openssl_accepts_all_ciphers_for_proto(self, proto):
-            eccars = []
-            for cipher in sslproto.ALL_CIPHERS:
-                expected_res = Connected()
-                eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
+        eccars = []
+        for cipher in sslproto.ALL_CIPHERS:
+            expected_res = Connected()
+            eccars.append(ECCAR(SSLServerProtoSpec(proto, cipher), expected_res=expected_res))
 
-            if proto == 'sslv2':
-                openssl_args = '-ssl2'
-            elif proto == 'sslv3':
-                openssl_args = '-ssl3'
-            elif proto == 'tlsv1':
-                openssl_args = '-tls1'
-            else:
-                raise ValueError()
+        if proto == 'sslv2':
+            openssl_args = '-ssl2'
+        elif proto == 'sslv3':
+            openssl_args = '-ssl3'
+        elif proto == 'tlsv1':
+            openssl_args = '-tls1'
+        else:
+            raise ValueError()
 
-            self._main_test(
-                ['-m', 'sslproto', '--protocols', proto],
-                OpenSSLHammer(len(eccars), [openssl_args]),
-                eccars
-            )
+        self._main_test(
+            ['-m', 'sslproto', '--protocols', proto],
+            OpenSSLHammer(len(eccars), [openssl_args]),
+            eccars
+        )
 
-def create_more_tests():
+
+def create_per_proto_tests():
     def _(self, proto):
         self._test_openssl_accepts_all_ciphers_for_proto(proto)
-    for proto in sslproto.get_supported_protocols():
-        setattr(TestSSLProtoModule, "test_openssl_accepts_all_ciphers_for_proto_%s" % proto, lambda self: _(self, proto))
 
-create_more_tests()
+    for proto in sslproto.get_supported_protocols():
+        setattr(TestSSLProtoModule, "test_openssl_accepts_all_ciphers_for_proto_%s" % proto,
+            lambda self: _(self, proto))
+
+create_per_proto_tests()
 
 if __name__ == '__main__':
     TestModule.init_logging()
