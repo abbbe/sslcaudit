@@ -84,7 +84,6 @@ class TestSSLProtoModule(TestModule.TestModule):
         )
 
     def _test_openssl_accepts_default_ciphers_for_proto(self, proto):
-        print "TRYING PROTO >%s<" % proto
         eccars = []
         for cipher in sslproto.DEFAULT_CIPHER_SUITES:
             expected_res = Connected()
@@ -108,10 +107,11 @@ class TestSSLProtoModule(TestModule.TestModule):
     def _test_openssl_accepts_selected_proto_cipher(self, selected_proto, selected_cipher):
         eccars = []
         for cipher in sslproto.get_ciphers(selected_proto):
-            #expected_res = Connected()
-            expected_res = ALERT_NO_SHARED_CIPHER
+            if cipher == selected_cipher:
+                expected_res = Connected()
+            else:
+                expected_res = ALERT_NO_SHARED_CIPHER
             eccars.append(ECCAR(SSLServerProtoSpec(selected_proto, cipher), expected_res=expected_res))
-        print "TRYING >%s<" % selected_cipher
         self._main_test(
             ['-m', 'sslproto', '--protocols', selected_proto, '--iterate-suites', '-d', '1'],
             OpenSSLHammer(len(eccars), cipher=selected_cipher),
@@ -123,9 +123,8 @@ def create_per_proto_tests():
         self._test_openssl_accepts_default_ciphers_for_proto(proto)
 
     for proto in sslproto.get_supported_protocols():
-        print "PLANNING PROTO >%s<" % proto
         setattr(TestSSLProtoModule, "test_openssl_accepts_all_ciphers_for_proto_%s" % proto,
-            lambda self: _(self, proto))
+            lambda self, proto=proto: _(self, proto))
 
 def create_per_cipher_tests():
     def _(self, proto, cipher):
@@ -135,12 +134,11 @@ def create_per_cipher_tests():
         ciphers = sslproto.get_ciphers(proto)
         for cipher in ciphers:
             cipher_slug_name = re.sub('-', '_', cipher)
-            print "PLANNING >%s<" % cipher
             setattr(TestSSLProtoModule, "test_openssl_accepts_proto_%s_cipher_%s" % (proto, cipher_slug_name),
-                lambda self: _(self, proto, cipher))
+                lambda self, proto=proto, cipher=cipher: _(self, proto, cipher))
 
 create_per_proto_tests()
-#create_per_cipher_tests()
+create_per_cipher_tests()
 
 if __name__ == '__main__':
     TestModule.init_logging()
