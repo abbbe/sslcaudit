@@ -9,6 +9,7 @@ from exceptions import Exception
 import logging
 import sys
 from threading import Thread
+from sslcaudit.core import CFG_PTA_EXIT
 from sslcaudit.core.ClientAuditorServer import ClientAuditorServer
 from sslcaudit.core.ConnectionAuditEvent import SessionEndResult
 from sslcaudit.core.ConfigError import ConfigError
@@ -96,11 +97,10 @@ class BaseClientAuditController(Thread):
         '''
         SSLCAuditCLI loop function. Will run until the desired number of clients is handled.
         '''
-        nresults = 0
         logger.debug('entering main loop in run()')
 
         # loop until get all desired results, quit if stopped
-        while nresults < self.options.nclients and not self.do_stop:
+        while not self.do_stop:
             try:
                 # wait for a message blocking for short intervals, check stop flag frequently
                 res = self.server.res_queue.get(True, self.queue_read_timeout)
@@ -108,7 +108,8 @@ class BaseClientAuditController(Thread):
                 self.event_handler(res)
 
                 if isinstance(res, SessionEndResult):
-                    nresults = nresults + 1
+                    if self.options.post_test_action == CFG_PTA_EXIT:
+                        break
             except Empty:
                 pass
 

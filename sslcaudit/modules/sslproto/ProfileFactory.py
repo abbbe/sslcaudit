@@ -10,8 +10,7 @@ from sslcaudit.modules import sslproto
 
 from sslcaudit.modules.base.BaseProfileFactory import BaseProfileFactory, BaseProfile, BaseProfileSpec
 from sslcaudit.modules.sslproto.ServerHandler import ServerHandler
-from sslcaudit.modules.sslproto import DEFAULT_CIPHER_SUITES
-from sslcaudit.modules.sslproto.suites import SUITES
+from sslcaudit.modules.sslproto import DEFAULT_CIPHER_SUITES, suites
 
 SSLPROTO_CN = 'sslproto'
 sslproto_server_handler = ServerHandler()
@@ -53,10 +52,7 @@ class ProfileFactory(BaseProfileFactory):
         self.init_protocols(options.protocols)
 
         for proto in self.protocols:
-            if not options.iterate_suites:
-                ciphers = DEFAULT_CIPHER_SUITES
-            else:
-                ciphers = SUITES[proto]
+            ciphers = self.get_ciphers(proto, options.ciphers)
             for cipher in ciphers:
                 profile = SSLServerProtoProfile(SSLServerProtoSpec(proto, cipher), certnkey)
                 self.add_profile(profile)
@@ -96,3 +92,21 @@ class ProfileFactory(BaseProfileFactory):
         return 'sslproto.ProfileFactory(protocols="%s", %d profiles loaded)' % (
             ','.join(self.protocols),
             len(self.profiles))
+
+    def get_ciphers(self, proto, user_specified_ciphers_str):
+        """ This method returns a list of ciphers to try for given protocol. The list of ciphers comes from the
+        built-in list of suites (default), a built-in long list of ciphers (per protocol, if user specified
+        ITERATE as a cipher), or as specified by the user via command-line parameter.
+        """
+        if user_specified_ciphers_str:
+            if user_specified_ciphers_str == 'ITERATE':
+                ciphers = suites.SUITES[proto]
+            else:
+                ciphers = []
+                for cipher in user_specified_ciphers_str.split(','):
+                    cipher.strip()
+                    ciphers.append(cipher)
+        else:
+            ciphers = DEFAULT_CIPHER_SUITES
+
+        return ciphers

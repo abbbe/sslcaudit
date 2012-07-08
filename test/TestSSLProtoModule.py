@@ -113,7 +113,7 @@ class TestSSLProtoModule(TestModule.TestModule):
                 expected_res = ALERT_NO_SHARED_CIPHER
             eccars.append(ECCAR(SSLServerProtoSpec(selected_proto, cipher), expected_res=expected_res))
         self._main_test(
-            ['-m', 'sslproto', '--protocols', selected_proto, '--iterate-suites', '-d', '1'],
+            ['-m', 'sslproto', '--protocols', selected_proto, '--ciphers', 'ITERATE'],
             OpenSSLHammer(len(eccars), cipher=selected_cipher),
             eccars
         )
@@ -140,7 +140,7 @@ def create_per_cipher_tests():
                 lambda self, proto=proto, cipher=cipher: _(self, proto, cipher))
 
 create_per_proto_tests()
-create_per_cipher_tests()
+#create_per_cipher_tests()
 
 if __name__ == '__main__':
     TestModule.init_logging()

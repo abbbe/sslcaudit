@@ -4,3 +4,7 @@
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
 
+CFG_PTA_REPEAT = 'repeat'
+#CFG_PTA_PASSTHROUGH = 'passthrough'
+CFG_PTA_DROP = 'drop'
+CFG_PTA_EXIT = 'exit'
