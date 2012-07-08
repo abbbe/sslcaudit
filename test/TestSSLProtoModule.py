@@ -84,6 +84,7 @@ class TestSSLProtoModule(TestModule.TestModule):
         )
 
     def _test_openssl_accepts_all_ciphers_for_proto(self, proto):
+        print "ACTUALLY TESTING PROTO %s" % proto
         eccars = []
         for cipher in sslproto.ALL_CIPHERS:
             expected_res = Connected()
@@ -110,6 +111,7 @@ def create_per_proto_tests():
         self._test_openssl_accepts_all_ciphers_for_proto(proto)
 
     for proto in sslproto.get_supported_protocols():
+        print "PLANNING TO TEST PROTO %s" % proto
         setattr(TestSSLProtoModule, "test_openssl_accepts_all_ciphers_for_proto_%s" % proto,
             lambda self: _(self, proto))
 
