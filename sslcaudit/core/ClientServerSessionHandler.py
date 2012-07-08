@@ -6,6 +6,7 @@
 
 import logging, threading
 from exceptions import StopIteration
+from sslcaudit.core import CFG_PTA_REPEAT, CFG_PTA_DROP, CFG_PTA_EXIT
 from sslcaudit.core.ConnectionAuditEvent import SessionStartEvent, SessionEndResult
 
 class ClientServerSessionHandler(object):
@@ -23,12 +24,14 @@ class ClientServerSessionHandler(object):
     '''
     logger = logging.getLogger('ClientServerSessionHandler')
 
-    def __init__(self, session_id, profiles, res_queue):
+    def __init__(self, session_id, profiles, post_test_action, res_queue):
         self.session_id = session_id
         self.result = SessionEndResult(self.session_id)
         self.res_queue = res_queue
 
         self.profiles = profiles
+        self.post_test_action = post_test_action
+
         self.nused_profiles = 0
         self.lock = threading.Lock()  # this lock has to be acquired before using nused_profiles and result attributes
 
@@ -43,23 +46,41 @@ class ClientServerSessionHandler(object):
         '''
 
         # get the index of the profile to use to handle this connection
+        # in PTA_REPEAT mode, 'excess' flag will be set if the number of handled connections exceeds
+        # the number of available profiles
         with self.lock:
             if self.nused_profiles < len(self.profiles):
                 profile_index = self.nused_profiles
                 self.nused_profiles += 1
+                excess = False
             else:
-                profile_index = -1
+                if (self.post_test_action == CFG_PTA_DROP) or (self.post_test_action == CFG_PTA_EXIT):
+                    # no more profiles to apply, just let the connection drop
+                    self.logger.debug('no unused profiles for connection %s', conn)
+                    return
 
-        if profile_index != -1:
+                if self.post_test_action != CFG_PTA_REPEAT:
+                    raise ValueError('unexpected post-test-action value')
+
+                profile_index = self.nused_profiles%len(self.profiles)
+                self.nused_profiles += 1
+                excess = True
+
+        if True:
             # handle this connection with this profile
             self.logger.debug('will use profile %d to handle connection %s', profile_index, conn)
             profile = self.profiles[profile_index]
             handler = profile.get_handler()
             res = handler.handle(conn, profile)
 
-            # log and record the results of the test
-            self.logger.debug('handling connection %s using %s (%d/%d) resulted in %s',
-                conn, profile, profile_index, len(self.profiles), res)
+            # log the results of the test
+            self.logger.debug('handling connection %s (excess=%s) using %s (%d/%d) resulted in %s',
+                conn, str(excess), profile, profile_index, len(self.profiles), res)
+
+            if excess:
+                return
+
+            # record the results of the test
             self.res_queue.put(res)
 
             # see if this thread is the very last handler out there
@@ -70,11 +91,3 @@ class ClientServerSessionHandler(object):
                     # submit the final result to the queue
                     self.logger.debug('last profile for connection %s', conn)
                     self.res_queue.put(self.result)
-
-        else:
-            # no more profiles to apply, resort to the posttest handler
-            self.logger.debug('no unused profiles for connection %s, invoking the posttest handler', conn)
-            self.handle_posttest_connection(conn)
-
-    def handle_posttest_connection(self, conn):
-        pass

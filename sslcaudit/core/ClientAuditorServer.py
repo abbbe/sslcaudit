@@ -31,7 +31,7 @@ class ClientAuditorServer(Thread):
     If res_queue is None, this class will create its own Queue and make accessible to users via res_queue attribute.
     '''
 
-    def __init__(self, listen_on, profile_factories, res_queue=None):
+    def __init__(self, listen_on, profile_factories, post_test_action, res_queue=None):
         Thread.__init__(self, target=self.run, name='ClientAuditorServer')
         self.daemon = True
 
@@ -39,6 +39,7 @@ class ClientAuditorServer(Thread):
         self.client_server_sessions = {}
         self.lock = threading.Lock()  # this lock has to be acquired before using clients dictionary
         self.profile_factories = profile_factories
+        self.post_test_action = post_test_action
 
         # create a local result queue unless one is already provided
         if res_queue == None:
@@ -69,7 +70,7 @@ class ClientAuditorServer(Thread):
             if not self.client_server_sessions.has_key(session_id):
                 logger.debug('new session [id %s]', session_id)
                 profiles = self.mk_session_profiles()
-                handler = ClientServerSessionHandler(session_id, profiles, self.res_queue)
+                handler = ClientServerSessionHandler(session_id, profiles, self.post_test_action, self.res_queue)
                 self.client_server_sessions[session_id] = handler
             else:
                 handler = self.client_server_sessions[session_id]
