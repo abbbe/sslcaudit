@@ -113,7 +113,7 @@ def create_per_proto_tests():
     for proto in sslproto.get_supported_protocols():
         print "PLANNING TO TEST PROTO %s" % proto
         setattr(TestSSLProtoModule, "test_openssl_accepts_all_ciphers_for_proto_%s" % proto,
-            lambda self: _(self, proto))
+            lambda self, proto=proto: _(self, proto))
 
 create_per_proto_tests()
 
