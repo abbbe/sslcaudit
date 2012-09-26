@@ -4,7 +4,7 @@
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
 
-import logging, unittest
+import functools, logging, types, unittest
 
 from sslcaudit.modules.sslcert.ProfileFactory import DEFAULT_CN, SSLProfileSpec_SelfSigned, SSLProfileSpec_IMCA_Signed, SSLProfileSpec_Signed, IM_CA_FALSE_CN, IM_CA_TRUE_CN, IM_CA_NONE_CN, SSLProfileSpec_UserSupplied
 from sslcaudit.modules.sslcert.SSLServerHandler import     UNEXPECTED_EOF, ALERT_UNKNOWN_CA, ConnectedGotEOFBeforeTimeout, ConnectedGotRequest
@@ -112,11 +112,16 @@ class TestSSLProtoModule(TestModule.TestModule):
                 eccars
             )
 
+class partial(functools.partial):  # just for preventing of ugly "partial function..." string output
+    def __repr__(self):
+        pass
+
 def create_more_tests():
     def _(self, proto):
         self._test_openssl_accepts_all_ciphers_for_proto(proto)
     for proto in sslproto.get_supported_protocols():
-        setattr(TestSSLProtoModule, "test_openssl_accepts_all_ciphers_for_proto_%s" % proto, lambda self: _(self, proto))
+        __ = partial(_, proto=proto)
+        setattr(TestSSLProtoModule, "test_openssl_accepts_all_ciphers_for_proto_%s" % proto, types.MethodType(__, None, TestSSLProtoModule))
 
 create_more_tests()
 
