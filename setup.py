@@ -18,7 +18,7 @@ setup(
     package_dir={'sslcaudit': 'sslcaudit'},
     packages=['sslcaudit', 'sslcaudit.core', 'sslcaudit.modules',
               'sslcaudit.modules.base', 'sslcaudit.modules.dummy',
-              'sslcaudit.modules.sslcert', 'sslcaudit.profile', 'sslcaudit.test',
+              'sslcaudit.modules.sslcert', 'sslcaudit.modules.sslproto', 'sslcaudit.profile', 'sslcaudit.test',
               'sslcaudit.ui'],
     requires=['m2crypto', 'qt4']
 )
