@@ -1,3 +1,9 @@
+sslcaudit (1.1-2) precise; urgency=low
+
+  * Added some required files and modules into DEB package. 
+
+ -- Alexandre Bezroutchko <abb@e6510.home>  Wed, 24 Oct 2012 14:53:38 +0200
+
 sslcaudit (1.1-1) quantal; urgency=low
 
   * Packaging sslcaudit 1.1. New feature include: sslproto module, GUI, multithreading.
