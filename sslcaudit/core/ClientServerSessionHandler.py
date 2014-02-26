@@ -77,8 +77,8 @@ class ClientServerSessionHandler(object):
             self.logger.debug('handling connection %s (excess=%s) using %s (%d/%d) resulted in %s',
                 conn, str(excess), profile, profile_index, len(self.profiles), res)
 
-            if excess:
-                return
+            #if excess:
+            #    return
 
             # record the results of the test
             self.res_queue.put(res)
