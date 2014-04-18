@@ -134,9 +134,8 @@ class ProfileFactory(BaseProfileFactory):
 
         if self.user_ca_certnkey is not None:
             self.add_signed_profiles(ca_certnkey=self.user_ca_certnkey)
-
-        if not self.options.no_ca_cert_signed2:
-            self.add_im_basic_constraints_profiles()
+            if not self.options.no_ca_cert_signed2:
+                self.add_im_basic_constraints_profiles()
 
     def add_raw_user_certnkey_profile(self):
         spec = SSLProfileSpec_UserSupplied(self.user_certnkey.cert.get_subject().CN)
