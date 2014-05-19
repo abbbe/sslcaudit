@@ -40,7 +40,7 @@ class BaseClientAuditController(Thread):
 
         self.init_profile_factories()
 
-        self.server = ClientAuditorServer(self.options.listen_on, self.profile_factories, options.post_test_action)
+        self.server = ClientAuditorServer(self.options.listen_on, self.profile_factories, options.post_test_action, None, self.file_bag)
         self.res_queue = self.server.res_queue
 
         logger.debug('dumping options')

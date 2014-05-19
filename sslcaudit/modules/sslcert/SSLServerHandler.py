@@ -91,7 +91,7 @@ class SSLServerHandler(BaseServerHandler):
 
         self.proto = proto
 
-    def handle(self, conn, profile):
+    def handle(self, conn, profile, file_bag):
         ctx = M2Crypto.SSL.Context(self.proto, weak_crypto=True)
         ctx.load_cert_chain(certchainfile=profile.certnkey.cert_filename, keyfile=profile.certnkey.key_filename)
         set_ephemeral_params(ctx)
