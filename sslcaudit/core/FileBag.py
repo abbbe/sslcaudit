@@ -74,3 +74,10 @@ class FileBag(object):
                 f2 = open(f2name, 'w')
 
                 return (f1, f2)
+
+    def store(self, data):
+        f = self.mk_file()
+        f.write(data)
+        f.close()
+        return f.name
+
