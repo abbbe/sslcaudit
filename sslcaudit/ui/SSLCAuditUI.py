@@ -61,6 +61,8 @@ def parse_options(argv):
         help="Don't try self-signed certificates.")
     parser.add_option("--no-user-cert-signed", action="store_true", default=False, dest="no_user_cert_signed",
         help="Do not sign server certificates with the user-supplied one.")
+    parser.add_option("--no-ca-cert-signed2", action="store_true", default=False, dest="no_ca_cert_signed2",
+        help="Do not sign server certificates with intermediate CA.")
 
 #    parser.add_option("--iterate-suites", dest="iterate_suites", action="store_true", default=False,
 #        help="Iterate through protocol cipher suites.")

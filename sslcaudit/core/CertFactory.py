@@ -5,6 +5,7 @@
 # ----------------------------------------------------------------------
 
 import socket
+import time
 
 from M2Crypto import X509, ASN1, RSA, EVP, util, SSL
 import M2Crypto
@@ -133,8 +134,9 @@ class CertFactory(object):
         # hardcoded parameters
         md = 'sha1'
 
-        # XXX
-        cert_req.set_serial_number(1)
+        # XXX FIXME
+        millis = int(round(time.time() * 1000))
+        cert_req.set_serial_number(millis)
 
         # set issuer
         if ca_certnkey is not None:
