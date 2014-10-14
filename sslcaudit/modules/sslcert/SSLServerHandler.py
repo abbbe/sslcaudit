@@ -12,7 +12,7 @@ from sslcaudit.modules.base.BaseServerHandler import BaseServerHandler
 from sslcaudit.modules.sslproto import resolve_ssl_code
 from sslcaudit.modules.sslproto import set_ephemeral_params
 
-DEFAULT_SOCK_READ_TIMEOUT = 3.0
+DEFAULT_SOCK_READ_TIMEOUT = 5.0
 MAX_SIZE = 1024
 
 # --- some classes and constants here should be moved elsewhere, to be shared between different modules
