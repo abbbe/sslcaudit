@@ -31,7 +31,7 @@ class ClientAuditorServer(Thread):
     If res_queue is None, this class will create its own Queue and make accessible to users via res_queue attribute.
     '''
 
-    def __init__(self, listen_on, profile_factories, post_test_action, res_queue=None):
+    def __init__(self, listen_on, profile_factories, post_test_action, res_queue, file_bag):
         Thread.__init__(self, target=self.run, name='ClientAuditorServer')
         self.daemon = True
 
@@ -46,6 +46,7 @@ class ClientAuditorServer(Thread):
             self.res_queue = Queue()
         else:
             self.res_queue = res_queue
+	self.file_bag = file_bag
 
         # create TCP server and make it use our method to handle the requests
         self.tcp_server = ThreadingTCPServer(self.listen_on)
@@ -70,7 +71,7 @@ class ClientAuditorServer(Thread):
             if not self.client_server_sessions.has_key(session_id):
                 logger.debug('new session [id %s]', session_id)
                 profiles = self.mk_session_profiles()
-                handler = ClientServerSessionHandler(session_id, profiles, self.post_test_action, self.res_queue)
+                handler = ClientServerSessionHandler(session_id, profiles, self.post_test_action, self.res_queue, self.file_bag)
                 self.client_server_sessions[session_id] = handler
             else:
                 handler = self.client_server_sessions[session_id]

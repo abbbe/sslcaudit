@@ -28,7 +28,7 @@ class DummyServerHandler(BaseServerHandler):
     This dummy server handler does nothing, but returns a value from the profile.
     '''
 
-    def handle(self, conn, profile):
+    def handle(self, conn, profile, file_bag):
         # do nothing with client connection
         # just return a value from the profile as a result
         return ConnectionAuditResult(conn, profile, profile.value)

@@ -14,7 +14,7 @@ class BaseServerHandler(object):
     module-specific profiles.
     '''
 
-    def handle(self, conn, profile):
+    def handle(self, conn, profile, file_bag):
         '''
         This method will be invoked by ClientServerSessionHandler when new client connection arrives. It is expected to treat given
         connection using given profile and return SessionEndResult describing the outcome. This method gets

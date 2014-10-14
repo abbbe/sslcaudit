@@ -24,10 +24,11 @@ class ClientServerSessionHandler(object):
     '''
     logger = logging.getLogger('ClientServerSessionHandler')
 
-    def __init__(self, session_id, profiles, post_test_action, res_queue):
+    def __init__(self, session_id, profiles, post_test_action, res_queue, file_bag):
         self.session_id = session_id
         self.result = SessionEndResult(self.session_id)
         self.res_queue = res_queue
+        self.file_bag = file_bag
 
         self.profiles = profiles
         self.post_test_action = post_test_action
@@ -71,7 +72,7 @@ class ClientServerSessionHandler(object):
             self.logger.debug('will use profile %d to handle connection %s', profile_index, conn)
             profile = self.profiles[profile_index]
             handler = profile.get_handler()
-            res = handler.handle(conn, profile)
+            res = handler.handle(conn, profile, self.file_bag)
 
             # log the results of the test
             self.logger.debug('handling connection %s (excess=%s) using %s (%d/%d) resulted in %s',

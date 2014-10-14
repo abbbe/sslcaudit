@@ -4,6 +4,7 @@
 # Copyright (C) 2012 Alexandre Bezroutchko abb@gremwell.com
 # ----------------------------------------------------------------------
 
+import os
 import M2Crypto, logging
 from time import time
 from M2Crypto.SSL.timeout import timeout
@@ -53,9 +54,11 @@ class ConnectedReadTimeout(Connected):
 
 
 class ConnectedGotRequest(Connected):
-    def __init__(self, req=None, dt=None):
+    def __init__(self, req, dt, file_bag):
         self.req = req
         self.dt = dt
+
+	self.req_file = file_bag.store(self.req)
 
     def __eq__(self, other):
         if self.__class__ != other.__class__: return False
@@ -71,7 +74,7 @@ class ConnectedGotRequest(Connected):
             noctets_str = '%d' % len(self.req)
         else:
             noctets_str = '?'
-        return 'connected, got %s octets in %s' % (noctets_str, dt_str)
+        return 'connected, got %s octets in %s (see %s)' % (noctets_str, dt_str, os.path.basename(self.req_file))
 
 # ------------------
 
@@ -91,7 +94,7 @@ class SSLServerHandler(BaseServerHandler):
 
         self.proto = proto
 
-    def handle(self, conn, profile):
+    def handle(self, conn, profile, file_bag):
         ctx = M2Crypto.SSL.Context(self.proto, weak_crypto=True)
         ctx.load_cert_chain(certchainfile=profile.certnkey.cert_filename, keyfile=profile.certnkey.key_filename)
         set_ephemeral_params(ctx)
@@ -134,7 +137,7 @@ class SSLServerHandler(BaseServerHandler):
                         res = ConnectedReadTimeout(dt)
                 else:
                     # got data
-                    res = ConnectedGotRequest(client_req, dt)
+                    res = ConnectedGotRequest(client_req, dt, file_bag)
         except Exception as ex:
             res = str(ex)
             self.logger.debug('SSL accept failed: %s', ex)
