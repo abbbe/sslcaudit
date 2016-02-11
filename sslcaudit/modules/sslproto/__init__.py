@@ -17,7 +17,7 @@ IS_SSLv2_SUPPORTED = hasattr(M2Crypto.m2, "sslv2_method") and M2Crypto.m2.ssl_ct
 
 _ = os.path.dirname(os.path.abspath(__file__))
 EPHEMERAL_RSA_KEY = M2Crypto.RSA.load_key(os.path.join(_, "../../files/rsa512.pem"))  # ctx.set_tmp_rsa(EPHEMERAL_RSA_KEY)
-EPHEMERAL_DH_PARAMS = os.path.join(_, "../../files/dh512.pem")  # ctx.set_tmp_dh(EPHEMERAL_DH_PARAMS)
+EPHEMERAL_DH_PARAMS = os.path.join(_, "../../files/dh2048.pem")  # ctx.set_tmp_dh(EPHEMERAL_DH_PARAMS)
 
 supported_protocols = None
 error_reported = False
